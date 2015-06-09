@@ -1,4 +1,4 @@
-@(title: String)(content: Html)
+@(title: String)(content: Html)(styles: Html)(javascripts: Html)
 
 <!DOCTYPE html>
 
@@ -13,21 +13,18 @@
         <link rel='stylesheet' href='@routes.Assets.at("theme/global/plugins/uniform/css/uniform.default.css")' type='text/css'>
         <link rel='stylesheet' href='@routes.Assets.at("theme/global/plugins/bootstrap-switch/css/bootstrap-switch.min.css")' type='text/css'>
 
-        <! Page level styles >
-        <link rel='stylesheet' href='@routes.Assets.at("theme/global/plugins/select2/select2.css")' type='text/css'>
-        <link rel='stylesheet' href='@routes.Assets.at("theme/global/plugins/datatables/extensions/Scroller/css/dataTables.scroller.min.css")' type='text/css'>
-        <link rel='stylesheet' href='@routes.Assets.at("theme/global/plugins/datatables/extensions/ColReorder/css/dataTables.colReorder.min.css")' type='text/css'>
-        <link rel='stylesheet' href='@routes.Assets.at("theme/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.css")' type='text/css'>
-
         <! Theme specific styles>
         <link rel='stylesheet' href='@routes.Assets.at("theme/global/css/components-rounded.css")' type='text/css' id='style_components'>
         <link rel='stylesheet' href='@routes.Assets.at("theme/global/css/plugins.css")' type='text/css'>
         <link rel='stylesheet' href='@routes.Assets.at("theme/admin/layout4/css/layout.css")' type='text/css'>
-        <link rel='stylesheet' href='@routes.Assets.at("theme/admin/layout4/css/themes/light.css")' type='text/css'>
+        <link rel='stylesheet' href='@routes.Assets.at("theme/admin/layout4/css/themes/default.css")' type='text/css'>
         <link rel='stylesheet' href='@routes.Assets.at("theme/admin/layout4/css/custom.css")' type='text/css'>
 
         <! Personal >
-        <script src='@routes.Assets.at("stylesheets/main.css")' type='text/javascript'></script>
+        <script src='@routes.Assets.at("less/main.css")' type='text/javascript'></script>
+
+        <! Page level styles >
+        @styles
 
     </head>
     <body>
@@ -45,27 +42,9 @@
 		<script src='https://cdnjs.cloudflare.com/ajax/libs/Uniform.js/2.1.2/jquery.uniform.min.js' type='text/javascript'></script>
 		<script src='@routes.Assets.at("theme/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js")' type='text/javascript'></script>
 
-		<! Page level plugins>
-		<script type='text/javascript' src='@routes.Assets.at("theme/global/plugins/select2/select2.min.js")' ></script>
-		<script type='text/javascript' src='@routes.Assets.at("theme/global/plugins/datatables/media/js/jquery.dataTables.min.js")' ></script>
-		<script type='text/javascript' src='@routes.Assets.at("theme/global/plugins/datatables/extensions/TableTools/js/dataTables.tableTools.js")'></script>
-		<script type='text/javascript' src='@routes.Assets.at("theme/global/plugins/datatables/extensions/ColReorder/js/dataTables.colReorder.min.js")'></script>
-		<script type='text/javascript' src='@routes.Assets.at("theme/global/plugins/datatables/extensions/Scroller/js/dataTables.scroller.min.js")'></script>
-		<script type='text/javascript' src='@routes.Assets.at("theme/global/plugins/datatables/plugins/bootstrap/dataTables.bootstrap.js")'></script>
-
-		<! Page level scripts >
-		<script src='@routes.Assets.at("theme/global/scripts/metronic.js")' type='text/javascript'></script>
-		<script src='@routes.Assets.at("theme/admin/layout4/scripts/layout.js")' type='text/javascript'></script>
-		<script src='@routes.Assets.at("theme/admin/layout4/scripts/demo.js")' type='text/javascript'></script>
-		<script src='@routes.Assets.at("theme/admin/pages/scripts/table-advanced.js")' type='text/javascript'></script>
-		<script>
-			jQuery(document).ready(function() {       
-			   	Metronic.init(); // init metronic core components
-				Layout.init(); // init current layout
-				Demo.init(); // init demo features
-			   	TableAdvanced.init();
-			});
-		</script>
+		<! Page level javascripts>
+		@javascripts
+		
 		
     </body>
 </html>

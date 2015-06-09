@@ -17,5 +17,3 @@ libraryDependencies ++= Seq(
 
 includeFilter in (Assets, LessKeys.less) := "*.less"
 
-includeFilter in (Assets, LessKeys.less) := "*.css"
-
