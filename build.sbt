@@ -17,3 +17,9 @@ libraryDependencies ++= Seq(
 
 includeFilter in (Assets, LessKeys.less) := "*.less"
 
+scalacOptions ++= Seq(
+	"-deprecation",
+	"-feature",
+	"-language:postfixOps"
+)
+
