@@ -39,9 +39,9 @@ object Authentication extends AnormModel {
 		case id ~ email ~ password ~ admin => User(id, email, password, admin)
 	}
 
-	def create(user: User): Option[Long] = user match {
+	def create(u: User): Option[Long] = u match {
 		case User(id, email, password, admin) => {
-			if( !exists(user) ) {
+			if( !exists(u) ) {
 				DB.withConnection {
 					implicit session => {
 						SQL(
@@ -59,7 +59,7 @@ object Authentication extends AnormModel {
 		case _ => None
 	}
 
-	def delete(user: User): Boolean = user match {
+	def delete(u: User): Boolean = u match {
 		case User(id, email, password, admin) => {
 			DB.withConnection {
 				implicit session => {
@@ -76,7 +76,7 @@ object Authentication extends AnormModel {
 		case _ => false
 	}
 
-	def exists(user: User): Boolean = user match {
+	def exists(u: User): Boolean = u match {
 		case User(id, email, password, admin) => {
 			DB.withConnection {
 				implicit session => {
@@ -95,7 +95,7 @@ object Authentication extends AnormModel {
 		case _ => false
 	}
 
-	def login(user: Login): Option[User] = user match {
+	def login(u: Login): Option[User] = u match {
 		case Login(email, password) => {
 			DB.withConnection {
 				implicit session => {

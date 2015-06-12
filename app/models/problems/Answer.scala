@@ -28,7 +28,7 @@ object Answer extends AnormModel {
 		case id ~ contents ~ picture ~ problem ~ bool => Answer(id, contents, picture, problem, bool)
 	}
 
-	def create(answer: Answer): Option[Long] = answer match {
+	def create(a: Answer): Option[Long] = a match {
 		case Answer(id, contents, picture, problem, correct) => {
 				DB.withConnection {
 					implicit session => {
@@ -45,7 +45,7 @@ object Answer extends AnormModel {
 		case _ => None
 	}
 
-	def delete(item: Answer): Boolean = item match {
+	def delete(a: Answer): Boolean = a match {
 		case Answer(id, contents, picture, problem, correct) => {
 			DB.withConnection {
 				implicit session => {
@@ -55,7 +55,7 @@ object Answer extends AnormModel {
 							answers a
 						where
 							a.id = $id
-							""").execute()
+						""").execute()
 				}
 			}
 		}

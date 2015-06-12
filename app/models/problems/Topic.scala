@@ -19,7 +19,7 @@ object Topic extends AnormModel {
 	val tableStatements = List(
 		"create table if not exists topics (id bigserial primary key, contents text, parent bigint);",
 		"create index topics_i on topics using gin(to_tsvector('english', contents));",
-		"create table if not existse topics_a (id bigserial primary key, topic bigint, problem bigint);",
+		"create table if not exists topics_a (id bigserial primary key, topic bigint, problem bigint);",
 		"create index topics_ai on topics_a (topic, problem);")
 
 

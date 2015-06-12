@@ -19,8 +19,8 @@ object Subtopic extends AnormModel {
 
 	val tableStatements = List(
 		"create table if not exists subtopics (id bigserial primary key, contents text, hint text);",
-		"create index subtopics_i on subtopics using gin(to_tsvector('englih', contents));",
-		"create table subtopics_a (id bigserial primary key, subtopic bigint, solution bigint);",
+		"create index subtopics_i on subtopics using gin(to_tsvector('english', contents));",
+		"create table if not exists subtopics_a (id bigserial primary key, subtopic bigint, solution bigint);",
 		"create index subtopics_ai on subtopics_a (subtopic, solution);")
 
 	val parser = long("id") ~ str("contents") ~ str("hint") map {
