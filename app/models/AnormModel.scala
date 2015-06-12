@@ -72,7 +72,6 @@ abstract class AnormModel {
 				val statements = dropQueries(tableStatements) ++ tableStatements
 				if(reset){
 					for(statement <- statements) {
-						println(statement)
 						SQL(statement).execute()
 					}
 				}

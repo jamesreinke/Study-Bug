@@ -47,9 +47,9 @@ object Authentication extends AnormModel {
 						SQL(
 							s"""
 							insert into users
-								(id, email, password, admin)
+								(email, password, admin)
 							values
-								($id, '$email', '${password.bcrypt}', $admin)
+								('$email', '${password.bcrypt}', $admin)
 							""").executeInsert()
 					}
 				}
@@ -87,7 +87,7 @@ object Authentication extends AnormModel {
 						from
 							users u
 						where
-							lower(u.email) = lower($email)
+							lower(u.email) = lower('$email')
 						""").as(scalar[Long].single) > 0
 				}
 			}
@@ -95,24 +95,48 @@ object Authentication extends AnormModel {
 		case _ => false
 	}
 
-	def login(u: Login): Option[User] = u match {
+	def login(l: Login): Option[User] = l match {
 		case Login(email, password) => {
-			DB.withConnection {
-				implicit session => {
-					SQL(
-						s"""
-						select
-							(id, email, password, admin)
-						from
-							users u
-						where
-							lower(u.email) = lower($email)
-						and
-							u.password = ${password.bcrypt}
-						""").as(parser*).headOption
+			getByEmail(email) match {
+				case Some(User(id, userEmail, userPassword, admin)) => {
+					password.isBcrypted(userPassword) match {
+						case true => Some(new User(id, userEmail, userPassword, admin))
+						case false => None
+					}
 				}
+				case _ => None
 			}
 		}
 		case _ => None
+	}
+
+	private def getByEmail(e: String): Option[User] = {
+		DB.withConnection {
+			implicit session => {
+				SQL(
+					s"""
+					select
+						*
+					from
+						users u
+					where
+						lower(u.email) = lower('$e')
+					""").as(parser*).headOption
+			}
+		}
+	}
+
+	def getAll: List[User] = {
+		DB.withConnection {
+			implicit session => {
+				SQL(
+					s"""
+					select
+						*
+					from
+						users
+					""").as(parser*)
+			}
+		}
 	}
 }

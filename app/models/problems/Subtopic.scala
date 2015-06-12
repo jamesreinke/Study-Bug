@@ -37,9 +37,9 @@ object Subtopic extends AnormModel {
 						SQL(
 							s"""
 							insert into subtopics
-								(id, contents, hint)
+								(contents, hint)
 							values
-								(id, '${formatString(contents)}', '${formatString(hint)}')
+								('${formatString(contents)}', '${formatString(hint)}')
 							""").executeInsert()
 					}
 				}

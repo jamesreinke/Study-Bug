@@ -35,9 +35,9 @@ object Answer extends AnormModel {
 						SQL(
 							s"""
 							insert into answers
-								(id, contents, picture, problem, correct)
+								(contents, picture, problem, correct)
 							values
-								($id, ${formatString(contents)}, ${formatString(picture)}, $problem, $correct)
+								('${formatString(contents)}', '$picture', $problem, $correct)
 							""").executeInsert()
 					}
 				}
@@ -68,7 +68,7 @@ object Answer extends AnormModel {
 				SQL(
 					s"""
 					select 
-						(id, contents, picture, problem, correct)
+						*
 					from
 						answers a
 					where

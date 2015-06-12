@@ -1,29 +1,166 @@
-import org.specs2._
-import org.junit.runner._
+import org.scalatest.WordSpec
 
 import play.api.test._
 import play.api.test.Helpers._
 
-/**
- * Add your spec here.
- * You can mock out a whole application including requests, plugins etc.
- * For more information, consult the wiki.
- */
-@RunWith(classOf[JUnitRunner])
-class ApplicationSpec extends Specification {
+class Answers extends WordSpec {
 
-  "Application" should {
+  import models.problems.Answer._
+  import models.problems.Answer
 
-    "send 404 on a bad request" in new WithApplication{
-      route(FakeRequest(GET, "/boum")) must beSome.which (status(_) == NOT_FOUND)
+  "Model" when {
+    val a = new Answer(1, "contents", "picture", 1, true)
+    val b = new Answer(1, "contents", "picture", 1, true)
+    val c = new Answer(1, "contents", "picture", 1, false)
+    "inserting 3 distinct rows" should {
+      "have size 3" in new WithApplication {
+        create(a)
+        create(b)
+        create(c)
+        val d = getByProblemId(a.problem)
+        assert(d.length == 3)
+      }
     }
-
-    "render the index page" in new WithApplication{
-      val home = route(FakeRequest(GET, "/")).get
-
-      status(home) must equalTo(OK)
-      contentType(home) must beSome.which(_ == "text/html")
-      contentAsString(home) must contain ("Your new application is ready.")
+    "deleting 1 of 3 rows" should {
+      "have size 2" in new WithApplication {
+        create(a)
+        create(b)
+        create(c)
+        delete(a)
+        val d = getByProblemId(a.problem)
+        assert(d.length == 2)
+      }
     }
   }
 }
+
+class Solutions extends WordSpec {
+
+  import models.problems.SolutionStep
+  import models.problems.Solution._
+
+  "Model" when {
+    val a = new SolutionStep(1, "contents", "picture", 1, 1, 1)
+    val b = new SolutionStep(1, "contents", "picture", 1, 1, 2)
+    val c = new SolutionStep(1, "contents", "picture", 1, 1, 3)
+    "inserting 3 distinct rows" should {
+      "have size 3" in new WithApplication {
+        create(a)
+        create(b)
+        create(c)
+        val d = getByProblemId(a.problem)
+        assert(d.length == 3)
+      }
+    }
+    "deleting 1 of 3 rows" should {
+      "have size 2" in new WithApplication {
+        create(a)
+        create(b)
+        create(c)
+        delete(a)
+        val d = getByProblemId(a.problem)
+        assert(d.length == 2)
+      }
+    }
+  }
+}
+
+class Subtopics extends WordSpec {
+
+  import models.problems.Subtopic
+  import models.problems.Subtopic._
+
+  "Model" when {
+    val a = new Subtopic(1, "contents", "hint")
+    val b = new Subtopic(1, "different contents", "hint")
+    val c = new Subtopic(1, "contents", "hint")
+    "inserting 3 rows (2 distinct)" should {
+      "have size 2" in new WithApplication {
+        create(a)
+        create(b)
+        create(c)
+        val d = getAll
+        assert(d.length == 2)
+      }
+    }
+    "inserting 3 rows (2 distinct) with 1 deletion" should {
+      "have size 1" in new WithApplication {
+        create(a)
+        create(b)
+        create(c)
+        delete(a)
+        assert(getAll.length == 1)
+      }
+    }
+    "inserting 1 row and checking if same item exists" should {
+      "return true" in new WithApplication {
+        create(a)
+        assert(exists(a))
+      }
+    }
+  }
+}
+
+class Topics extends WordSpec {
+
+  import models.problems.Topic
+  import models.problems.Topic._
+
+  "Model" when {
+    val a = new Topic(1, "root", 0)
+    val b = new Topic(1, "sub-root", 1)
+    val c = new Topic(1, "sub-sub-root", 2)
+    "inserting 3 distinct rows" should {
+      "have size 3" in new WithApplication {
+        create(a)
+        create(b)
+        create(c)
+        assert(getAll.length == 3)
+      }
+    }
+    "inserting 3 rows such that root->child->leaf" should {
+      "return 2 parents when asking for the parents of the leaf" in new WithApplication {
+        create(a)
+        create(b)
+        create(c)
+        val d = getParents(c)
+        assert(d.length == 2)
+      }
+    }
+  }
+}
+
+class Authentication extends WordSpec {
+
+  import models.users.{User, Login, Register}
+  import models.users.Authentication._
+
+  "Model" when {
+    val a = new User(1, "jamesreinke91@gmail.com", "t00thbrush", true)
+    val b = new User(1, "james@rtsystems.io", "t00thbrusht00thbrush", false)
+    val c = new User(1, "jamesreinke91@gmail.com", "anotherpassword", false)
+    val d = new Login("jamesreinke91@gmail.com", "t00thbrush")
+    val e = new Login("jamesreinke91@gmail.com", "brusht00th")
+    "inserting 3 rows (2 distinct)" should {
+      "have size 2" in new WithApplication {
+        create(a)
+        create(b)
+        create(c)
+        (getAll.length == 2)
+      }
+    }
+    "inserting 1 user and supplying the correct password" should {
+      "return the user" in new WithApplication {
+        create(a)
+        assert(login(d) != None)
+      }
+    }
+    "inserting 1 user and supplying an incrrect password" should {
+      "return None" in new WithApplication {
+        create(a)
+        assert(login(e) == None)
+      }
+    }
+  }
+}
+

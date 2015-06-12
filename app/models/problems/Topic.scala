@@ -37,9 +37,9 @@ object Topic extends AnormModel {
 						SQL(
 						s"""
 						insert into topics
-							(id, contents, parent)
+							(contents, parent)
 						values
-							(id, '${formatString(contents)}', parent)
+							('${formatString(contents)}', $parent)
 						""").executeInsert()
 					}
 				}

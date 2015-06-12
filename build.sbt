@@ -1,4 +1,4 @@
-name := """Study Buddy"""
+name := """Study Bug"""
 
 version := "0.0.1"
 
@@ -11,8 +11,9 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "anorm" % "2.4.0",
   cache,
   ws,
-  "postgresql" % "postgresql" % "9.1-901.jdbc4",
-  "com.github.t3hnar" %% "scala-bcrypt" % "2.4"
+  "postgresql" 			% 	"postgresql" 	% 	"9.1-901.jdbc4",
+  "com.github.t3hnar" 	%% 	"scala-bcrypt" 	% 	"2.4",
+  "org.scalatest"		%%	"scalatest"		%	"2.2.4"	%	"test"
 )
 
 includeFilter in (Assets, LessKeys.less) := "*.less"
