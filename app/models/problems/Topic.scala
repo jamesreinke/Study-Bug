@@ -128,15 +128,27 @@ object Topic extends AnormModel {
 
 	/* Returns a list in order from leaf to root of all parents of a given topic */
 	def getParents(t: Topic, list: List[Topic] = List()): List[Topic] = {
+		getParent(t) match {
+			case Some(Topic(id, contents, parent)) => {
+				val t = Topic(id, contents, parent)
+				getParents(t, list :+ t)
+			}
+			case _ => list
+		}
+	}
+
+	def getChildren(t: Topic, list: List[Topic] = List()): List[Topic] = {
 		DB.withConnection {
 			implicit session => {
-				getParent(t) match {
-					case Some(Topic(id, contents, parent)) => {
-						val t = Topic(id, contents, parent)
-						getParents(t, list :+ t)
-					}
-					case _ => list
-				}
+				SQL(
+					s"""
+					select
+						*
+					from
+						topics t
+					where
+						t.parent = ${t.id}
+					""").as(parser*)
 			}
 		}
 	}

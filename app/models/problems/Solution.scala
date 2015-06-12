@@ -19,28 +19,33 @@ object Solution extends AnormModel {
 	type T = SolutionStep
 
 	val tableStatements = List(
-		"create table if not exists solution_steps (id bigserial primary key, contents text, picture varchar, subtopic_id bigint, problem_id bigint, position int);",
-		"create index solution_steps_i on solution_steps (subtopic_id, problem_id);")
+		"create table if not exists solution_steps (id bigserial primary key, contents text, picture varchar, problem_id bigint, position int);",
+		"create index solution_steps_i on solution_steps (problem_id);")
 
-	val parser = long("id") ~ str("contents") ~ str("picture") ~ long("problem") ~ int("position") map {
+	val parser = long("id") ~ str("contents") ~ str("picture") ~ long("problem_id") ~ int("position") map {
 		case id ~ contents ~ picture ~ problemId ~ position => SolutionStep(id, contents, picture, problemId, position, List())
 	}
 
 	val columns = List("id", "contents", "picture", "problem_id", "position")
 
 	def create(ss: SolutionStep): Option[Long] = ss match {
-		case SolutionStep(id, contents, picture, problemId, position, _) => {
-			DB.withConnection {
+		case SolutionStep(id, contents, picture, problemId, position, subtopics) => {
+			val ssid = DB.withConnection {
 				implicit session => {
 					SQL(
 						s"""
 						insert into solution_steps
-							(contents, picture, subtopic_id, problem_id, position)
+							(contents, picture, problem_id, position)
 						values
 							('${formatString(contents)}', '$picture', $problemId, $position)
 						""").executeInsert()
 				}
 			}
+			// assign the subtopics to the solution step
+			for(subtopic <- subtopics) {
+				Subtopic.assign(subtopic.id, ssid.getOrElse(0))
+			}
+			ssid // return value
 		}
 		case _ => None
 	}
@@ -69,12 +74,18 @@ object Solution extends AnormModel {
 				SQL(
 					s"""
 					select
-						(ss.id, ss.contents, ss.picture, ss.problem_id, ss.position)
+						*
 					from
-						solution_steps ss, subtopics s
+						solution_steps ss
 					where
 						ss.problem_id = $pid
-					""").as(parser*).sortBy(x => x.position)
+					""").as(parser*).map(x => {
+							val subtopics: List[Subtopic] = Subtopic.getByStepId(x.id)
+							new SolutionStep(
+							x.id, 		x.contents, 
+							x.picture, 	x.problemId, 
+							x.position, subtopics)
+						}).sortBy(x => x.position)  // we 'tack' on the subtopics after the query is complete
 			}
 		}
 	}

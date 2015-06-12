@@ -20,8 +20,8 @@ object Subtopic extends AnormModel {
 	val tableStatements = List(
 		"create table if not exists subtopics (id bigserial primary key, contents text, hint text);",
 		"create index subtopics_i on subtopics using gin(to_tsvector('english', contents));",
-		"create table if not exists subtopics_a (id bigserial primary key, subtopic_id bigint, solution_id bigint);",
-		"create index subtopics_ai on subtopics_a (subtopic_id, solution_id);")
+		"create table if not exists subtopics_a (id bigserial primary key, subtopic_id bigint, step_id bigint);",
+		"create index subtopics_ai on subtopics_a (subtopic_id, step_id);")
 
 	val parser = long("id") ~ str("contents") ~ str("hint") map {
 		case id ~ contents ~ hint => Subtopic(id, contents, hint)
@@ -29,7 +29,7 @@ object Subtopic extends AnormModel {
 
 	val columns = List("id", "contents", "hint")
 
-	def create(s: Subtopic): Option[Long] = s match {
+	def create(s: Subtopic): Option[Long] = {
 		if( !exists(s) ) {
 			DB.withConnection { 
 				implicit session => {
@@ -45,17 +45,17 @@ object Subtopic extends AnormModel {
 		}
 		else None
 	}
-	
-	/* Assigned a subtopic to a solution step */
-	def assign(s: Subtopic, ss: SolutionStep): Option[Long] = {
+
+	/* Assign a subtopic to a solution step */
+	def assign(sid: Long, ssid: Long): Option[Long] = {
 		DB.withConnection {
 			implicit session => {
 				SQL(
 					s"""
 					insert into subtopics_a
-						(subtopic_id, solution_id)
+						(subtopic_id, step_id)
 					values
-						(${s.id}. ${ss.id})
+						(${sid}, ${ssid})
 					""").executeInsert()
 			}
 		}
@@ -136,19 +136,19 @@ object Subtopic extends AnormModel {
 		}
 	}
 
-	def getByStepId(sid: Long): List[Subtopic] = {
+	def getByStepId(ssid: Long): List[Subtopic] = {
 		DB.withConnection {
 			implicit session => {
 				SQL(
 					s"""
 					select
-						(s.id, s.contents, s.hint)
+						s.id, s.contents, s.hint
 					from
 						subtopics s, subtopics_a sa
 					where
 						sa.subtopic_id = s.id
 					and
-						sa.step_id = $sid
+						sa.step_id = $ssid
 					""").as(parser*)
 			}
 		}

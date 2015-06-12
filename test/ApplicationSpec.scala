@@ -42,9 +42,9 @@ class Solutions extends WordSpec {
 
   "Model" when {
     val s = new Subtopic(1, "contents", "hint")
-    val a = new SolutionStep(1, "contents", "picture", s, 1, 1)
-    val b = new SolutionStep(1, "contents", "picture", s, 1, 2)
-    val c = new SolutionStep(1, "contents", "picture", s, 1, 3)
+    val a = new SolutionStep(1, "contents", "picture", 1, 1, List(s))
+    val b = new SolutionStep(1, "contents", "picture", 1, 2, List(s))
+    val c = new SolutionStep(1, "contents", "picture", 1, 3, List(s))
     "inserting 3 distinct rows" should {
       "have size 3" in new WithApplication {
         models.problems.Subtopic.create(s)
