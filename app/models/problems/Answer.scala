@@ -10,7 +10,7 @@ case class Answer(
 	id: Long,
 	contents: String,
 	picture: String,
-	problem: Long,
+	problemId: Long,
 	correct: Boolean
 	)
 
@@ -19,25 +19,25 @@ object Answer extends AnormModel {
 	type T = Answer
 
 	val tableStatements = List(
-		"create table if not exists answers (id bigserial primary key, contents text, picture varchar, problem bigint, correct boolean);",
-		"create index answers_i on answers (problem);")
+		"create table if not exists answers (id bigserial primary key, contents text, picture varchar, problem_id bigint, correct boolean);",
+		"create index answers_i on answers (problem_id);")
 
-	val columns = List("id", "contents", "picture", "problem", "correct")
+	val columns = List("id", "contents", "picture", "problem id", "correct")
 
-	val parser = long("id") ~ str("contents") ~ str("picture") ~ long("problem") ~ bool("correct") map {
-		case id ~ contents ~ picture ~ problem ~ bool => Answer(id, contents, picture, problem, bool)
+	val parser = long("id") ~ str("contents") ~ str("picture") ~ long("problem_id") ~ bool("correct") map {
+		case id ~ contents ~ picture ~ problemId ~ bool => Answer(id, contents, picture, problemId, bool)
 	}
 
 	def create(a: Answer): Option[Long] = a match {
-		case Answer(id, contents, picture, problem, correct) => {
+		case Answer(id, contents, picture, problemId, correct) => {
 				DB.withConnection {
 					implicit session => {
 						SQL(
 							s"""
 							insert into answers
-								(contents, picture, problem, correct)
+								(contents, picture, problem_id, correct)
 							values
-								('${formatString(contents)}', '$picture', $problem, $correct)
+								('${formatString(contents)}', '$picture', $problemId, $correct)
 							""").executeInsert()
 					}
 				}
@@ -46,7 +46,7 @@ object Answer extends AnormModel {
 	}
 
 	def delete(a: Answer): Boolean = a match {
-		case Answer(id, contents, picture, problem, correct) => {
+		case Answer(id, contents, picture, problemId, correct) => {
 			DB.withConnection {
 				implicit session => {
 					SQL(
@@ -72,7 +72,7 @@ object Answer extends AnormModel {
 					from
 						answers a
 					where
-						a.problem = $pid
+						a.problem_id = $pid
 					""").as(parser*)
 			}
 		}

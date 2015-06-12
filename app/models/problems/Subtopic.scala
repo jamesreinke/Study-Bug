@@ -20,8 +20,8 @@ object Subtopic extends AnormModel {
 	val tableStatements = List(
 		"create table if not exists subtopics (id bigserial primary key, contents text, hint text);",
 		"create index subtopics_i on subtopics using gin(to_tsvector('english', contents));",
-		"create table if not exists subtopics_a (id bigserial primary key, subtopic bigint, solution bigint);",
-		"create index subtopics_ai on subtopics_a (subtopic, solution);")
+		"create table if not exists subtopics_a (id bigserial primary key, subtopic_id bigint, solution_id bigint);",
+		"create index subtopics_ai on subtopics_a (subtopic_id, solution_id);")
 
 	val parser = long("id") ~ str("contents") ~ str("hint") map {
 		case id ~ contents ~ hint => Subtopic(id, contents, hint)
@@ -30,23 +30,35 @@ object Subtopic extends AnormModel {
 	val columns = List("id", "contents", "hint")
 
 	def create(s: Subtopic): Option[Long] = s match {
-		case Subtopic(id, contents, hint) => {
-			if( !exists(s) ) {
-				DB.withConnection { 
-					implicit session => {
-						SQL(
-							s"""
-							insert into subtopics
-								(contents, hint)
-							values
-								('${formatString(contents)}', '${formatString(hint)}')
-							""").executeInsert()
-					}
+		if( !exists(s) ) {
+			DB.withConnection { 
+				implicit session => {
+					SQL(
+						s"""
+						insert into subtopics
+							(contents, hint)
+						values
+							('${formatString(s.contents)}', '${formatString(s.hint)}')
+						""").executeInsert()
 				}
 			}
-			else None
 		}
-		case _ => None
+		else None
+	}
+	
+	/* Assigned a subtopic to a solution step */
+	def assign(s: Subtopic, ss: SolutionStep): Option[Long] = {
+		DB.withConnection {
+			implicit session => {
+				SQL(
+					s"""
+					insert into subtopics_a
+						(subtopic_id, solution_id)
+					values
+						(${s.id}. ${ss.id})
+					""").executeInsert()
+			}
+		}
 	}
 
 	/* Checks whether a subtopic already exists */
@@ -108,7 +120,23 @@ object Subtopic extends AnormModel {
 		}
 	}
 
-	def getByProblemId(pid: Long): List[Subtopic] = {
+	def getById(sid: Long): Option[Subtopic] = {
+		DB.withConnection {
+			implicit session => {
+				SQL(
+					s"""
+					select
+						*
+					from
+						subtopics s
+					where
+						s.id = $sid
+					""").as(parser*).headOption
+			}
+		}
+	}
+
+	def getByStepId(sid: Long): List[Subtopic] = {
 		DB.withConnection {
 			implicit session => {
 				SQL(
@@ -118,9 +146,9 @@ object Subtopic extends AnormModel {
 					from
 						subtopics s, subtopics_a sa
 					where
-						sa.subtopic = s.id
+						sa.subtopic_id = s.id
 					and
-						sa.problem = $pid
+						sa.step_id = $sid
 					""").as(parser*)
 			}
 		}

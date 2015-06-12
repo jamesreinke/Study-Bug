@@ -10,34 +10,34 @@ case class SolutionStep(
 	id: Long,
 	contents: String,
 	picture: String,
-	subtopic: Long,
-	problem: Long,
-	position: Int)
+	problemId: Long,
+	position: Int,
+	subtopics: List[Subtopic])
 
 object Solution extends AnormModel {
 
 	type T = SolutionStep
 
 	val tableStatements = List(
-		"create table if not exists solution_steps (id bigserial primary key, contents text, picture varchar, subtopic bigint, problem bigint, position int);",
-		"create index solution_steps_i on solution_steps (subtopic, problem);")
+		"create table if not exists solution_steps (id bigserial primary key, contents text, picture varchar, subtopic_id bigint, problem_id bigint, position int);",
+		"create index solution_steps_i on solution_steps (subtopic_id, problem_id);")
 
-	val parser = long("id") ~ str("contents") ~ str("picture") ~ long("subtopic") ~ long("problem") ~ int("position") map {
-		case id ~ contents ~ picture ~ subtopic ~ problem ~ position => SolutionStep(id, contents, picture, subtopic, problem, position)
+	val parser = long("id") ~ str("contents") ~ str("picture") ~ long("problem") ~ int("position") map {
+		case id ~ contents ~ picture ~ problemId ~ position => SolutionStep(id, contents, picture, problemId, position, List())
 	}
 
-	val columns = List("id", "contents", "picture", "subtopic", "problem", "position")
+	val columns = List("id", "contents", "picture", "problem_id", "position")
 
 	def create(ss: SolutionStep): Option[Long] = ss match {
-		case SolutionStep(id, contents, picture, subtopic, problem, position) => {
+		case SolutionStep(id, contents, picture, problemId, position, _) => {
 			DB.withConnection {
 				implicit session => {
 					SQL(
 						s"""
 						insert into solution_steps
-							(contents, picture, subtopic, problem, position)
+							(contents, picture, subtopic_id, problem_id, position)
 						values
-							('${formatString(contents)}', '$picture', $subtopic, $problem, $position)
+							('${formatString(contents)}', '$picture', $problemId, $position)
 						""").executeInsert()
 				}
 			}
@@ -46,7 +46,7 @@ object Solution extends AnormModel {
 	}
 
 	def delete(ss: SolutionStep): Boolean = ss match {
-		case SolutionStep(id, contents, picture, subtopic, problem, position) => {
+		case SolutionStep(id, contents, picture, problemId, position, _) => {
 			DB.withConnection {
 				implicit session => {
 					SQL(
@@ -69,11 +69,11 @@ object Solution extends AnormModel {
 				SQL(
 					s"""
 					select
-						*
+						(ss.id, ss.contents, ss.picture, ss.problem_id, ss.position)
 					from
-						solution_steps ss
+						solution_steps ss, subtopics s
 					where
-						ss.problem = $pid
+						ss.problem_id = $pid
 					""").as(parser*).sortBy(x => x.position)
 			}
 		}

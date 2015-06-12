@@ -17,7 +17,7 @@ class Answers extends WordSpec {
         create(a)
         create(b)
         create(c)
-        val d = getByProblemId(a.problem)
+        val d = getByProblemId(a.problemId)
         assert(d.length == 3)
       }
     }
@@ -27,7 +27,7 @@ class Answers extends WordSpec {
         create(b)
         create(c)
         delete(a)
-        val d = getByProblemId(a.problem)
+        val d = getByProblemId(a.problemId)
         assert(d.length == 2)
       }
     }
@@ -36,19 +36,22 @@ class Answers extends WordSpec {
 
 class Solutions extends WordSpec {
 
+  import models.problems.Subtopic
   import models.problems.SolutionStep
   import models.problems.Solution._
 
   "Model" when {
-    val a = new SolutionStep(1, "contents", "picture", 1, 1, 1)
-    val b = new SolutionStep(1, "contents", "picture", 1, 1, 2)
-    val c = new SolutionStep(1, "contents", "picture", 1, 1, 3)
+    val s = new Subtopic(1, "contents", "hint")
+    val a = new SolutionStep(1, "contents", "picture", s, 1, 1)
+    val b = new SolutionStep(1, "contents", "picture", s, 1, 2)
+    val c = new SolutionStep(1, "contents", "picture", s, 1, 3)
     "inserting 3 distinct rows" should {
       "have size 3" in new WithApplication {
+        models.problems.Subtopic.create(s)
         create(a)
         create(b)
         create(c)
-        val d = getByProblemId(a.problem)
+        val d = getByProblemId(a.problemId)
         assert(d.length == 3)
       }
     }
@@ -58,7 +61,7 @@ class Solutions extends WordSpec {
         create(b)
         create(c)
         delete(a)
-        val d = getByProblemId(a.problem)
+        val d = getByProblemId(a.problemId)
         assert(d.length == 2)
       }
     }
