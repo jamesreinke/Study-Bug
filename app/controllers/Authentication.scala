@@ -5,20 +5,29 @@ import play.api.mvc._
 import play.api.data._
 import play.api.data.Forms._
 import models.users.User
+import models.users.Authentication.{login}
 
 object Authentication extends Controller {
+
+
+
+	val loginForm = Form(
+		tuple(
+			"email" -> text,
+			"password" -> text))
+
 
 	def loginPost = Action {
 
 		implicit request => {
-			request.body.asFormUrlEncoded match {
-				case Some(s: Map[String, Seq[String]]) => {
-					println(s.getOrElse("email", "not what we wanted"))
-					println(s.getOrElse("password", "not what we wanted"))
+			
+			val (email, password) = loginForm.bindFromRequest.get
+			login(new User(id = 0, email = email, password = password, admin = false)) match {
+				case Some(User(id, email, password, admin)) => {
+					Ok("You Logged in.  That is a good thing!")
 				}
+				case _ => Ok("You fucked up...")
 			}
-			println(request.body.asFormUrlEncoded)
-			Ok(request.body.asFormUrlEncoded.toString)
 		}
 
 	}

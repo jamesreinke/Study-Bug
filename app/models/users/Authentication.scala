@@ -87,7 +87,7 @@ object Authentication extends AnormModel {
 		case _ => false
 	}
 
-	def login(l: User): Option[User] = l match {
+	def login(u: User): Option[User] = u match {
 		case User(_, email, password, _) => {
 			getByEmail(email) match {
 				case Some(User(id, userEmail, userPassword, admin)) => {
