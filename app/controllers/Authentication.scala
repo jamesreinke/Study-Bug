@@ -10,8 +10,10 @@ import models.users.Authentication.{login, register}
 
 object Authentication extends Controller {
 
-	val conKey = "connected"
-	val adKey = "admin"
+	/* START: Helper Functions */
+
+	private val conKey = "connected"
+	private val adKey = "admin"
 
 	def auth(f: Request[AnyContent]): Boolean = {
 		f.session.get(conKey).map {
@@ -29,20 +31,36 @@ object Authentication extends Controller {
 		}
 	}
 
-	val userForm = Form(
+	val loginForm = Form(
 		mapping(
 			"id" -> default(of[Long], 0L),
 			"email" -> of[String],
 			"password" -> of[String],
-			"adin" -> default(of[Boolean], false)
+			"admin" -> default(of[Boolean], false)
 			)(User.apply)(User.unapply))
-	
 
+	val registerForm = Form(
+		mapping(
+			"id" -> default(of[Long], 0L),
+			"email" -> of[String],
+			"password" -> tuple(
+				"first" -> text,
+				"second" -> text
+				).verifying(
+					"Passwords don't match", p => p._1 == p._2
+				).transform(
+					{ case (main, confirm) => main },
+					( main: String) => ("", "") ),
+			"admin" -> default(of[Boolean], false))(User.apply)(User.unapply))
+
+	/* END: Helper Functions */
+
+	/* START: Actions */
 
 	def loginPost = Action {
 		implicit request => {
-			userForm.bindFromRequest.fold(
-				formWithErrors => Ok(views.html.pages.login()),
+			loginForm.bindFromRequest.fold(
+				formWithErrors => Ok(views.html.pages.login(formWithErrors, registerForm)),
 				user => {
 					login(user) match {
 						case Some(User(id, email, password, admin)) => {
@@ -50,7 +68,9 @@ object Authentication extends Controller {
 								conKey -> email,
 								adKey -> admin.toString)
 						}
-						case _ => Ok(views.html.pages.login())
+						case _ => {
+							Ok(views.html.pages.login(loginForm, registerForm))
+						}
 					}
 				})
 		}
@@ -62,8 +82,8 @@ object Authentication extends Controller {
 
 	def registerPost = Action {
 		implicit request => {
-			userForm.bindFromRequest.fold(
-				formWithErrors => Ok(views.html.pages.login()),
+			loginForm.bindFromRequest.fold(
+				formWithErrors => Ok(views.html.pages.login(loginForm, formWithErrors)),
 				user => {
 					register(user) match {
 						case Some(User(id, email, password, admin)) => {
@@ -71,10 +91,11 @@ object Authentication extends Controller {
 								"connected" -> email,
 								"admin" -> admin.toString)
 						}
-						case _ => Ok(views.html.pages.login())
+						case _ => Ok(views.html.pages.login(loginForm, registerForm))
 					}
 				})
 		}
 	}
+	/* END: Actions */
 
 }

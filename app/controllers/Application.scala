@@ -9,7 +9,7 @@ object Application extends Controller {
 
   	implicit request => {
 
-  		Ok(views.html.pages.login())
+  		Ok(views.html.pages.login(Authentication.loginForm, Authentication.registerForm))
   		
   	}
     
