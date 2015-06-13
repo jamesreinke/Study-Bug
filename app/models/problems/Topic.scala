@@ -18,9 +18,7 @@ object Topic extends AnormModel {
 
 	val tableStatements = List(
 		"create table if not exists topics (id bigserial primary key, contents text, parent bigint);",
-		"create index topics_i on topics using gin(to_tsvector('english', contents));",
-		"create table if not exists topics_a (id bigserial primary key, topic_id bigint, problem_id bigint);",
-		"create index topics_ai on topics_a (topic_id, problem_id);")
+		"create index topics_i on topics using gin(to_tsvector('english', contents));")
 
 
 	val parser = long("id") ~ str("contents") ~ long("parent") map {

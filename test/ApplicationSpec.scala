@@ -177,3 +177,41 @@ class Authentication extends WordSpec {
   }
 }
 
+
+class Problem extends WordSpec {
+
+  import models.problems._
+
+  val s = new Subtopic(1, "contents", "hint")
+  val ssa = new SolutionStep(1, "contents", "picture", 1, 1, List(s))
+  val ssb = new SolutionStep(1, "contents", "picture", 1, 2, List(s))
+  val ssc = new SolutionStep(1, "contents", "picture", 1, 3, List(s))
+  val aa = new Answer(1, "contents", "picture", 1, true)
+  val ab = new Answer(1, "contents", "picture", 1, false)
+  val ac = new Answer(1, "contents", "picture", 1, false)
+  val ta = new Topic(1, "root", 0)
+  val tb = new Topic(1, "sub-root", 1)
+  val tc = new Topic(1, "sub-sub-root", 2)
+
+
+  "Model" when {
+    "inserting 1 problem" should {
+      "have size 1" in new WithApplication {
+        Subtopic.create(s)
+        Solution.create(ssa)
+        Solution.create(ssb)
+        Solution.create(ssc)
+        Answer.create(aa)
+        Answer.create(ab)
+        Answer.create(ac)
+        Topic.create(ta)
+        Topic.create(tb)
+        Topic.create(tc)
+        val p = new models.problems.Problem(0, "contents", List(new Picture(0, 0, "picture path", 0)), List(aa, ab, ac), List(ssa, ssb, ssc), tc)
+        models.problems.Problem.create(p)
+        assert(Problem.getAll.length == 1)
+      }
+    }
+  }
+}
+

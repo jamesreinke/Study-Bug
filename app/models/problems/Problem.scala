@@ -18,7 +18,7 @@ case class Picture(
 	id: Long,
 	problem_id: Long,
 	picture: String,
-	order: Int)
+	position: Int)
 
 
 object Problem extends AnormModel {
@@ -27,16 +27,16 @@ object Problem extends AnormModel {
 
 	val tableStatements = List(
 		"create table if not exists problems (id bigserial primary key, contents text, topic_id bigint);",
-		"create index problems_i on problems (to_tsvector('english', contents));",
-		"create table if not exists problems_p (id bigserial primary key, problem_id bigint, picture varchar, order int);",
+		"create index problems_i on problems (to_tsvector('english', contents), topic_id);",
+		"create table if not exists problems_p (id bigserial primary key, problem_id bigint, picture varchar, position int);",
 		"create index problems_pi on problems_p (problem_id);")
 
-	val parser = long("id") ~ str("contents") ~ long("topic_id") ~ Topic.parser map {
-		case id ~ contents ~ topicId ~ topic => Problem(id, contents, List(), List(), List(), topic)
+	val parser = long("id") ~ str("contents") ~ Topic.parser map {
+		case id ~ contents ~ topic => Problem(id, contents, List(), List(), List(), topic)
 	}
 
-	val picParser = long("id") ~ long("problem_id") ~ str("picture") ~ int("order") map {
-		case id ~ problemId ~ picture ~ order => Picture(id, problemId, picture, order)
+	val picParser = long("id") ~ long("problem_id") ~ str("picture") ~ int("position") map {
+		case id ~ problemId ~ picture ~ position => Picture(id, problemId, picture, position)
 	}
 
 	def create(p: Problem): Option[Long] = {
@@ -56,7 +56,7 @@ object Problem extends AnormModel {
 					SQL(
 						s"""
 						insert into problems_p
-							(problem_id, picture, order)
+							(problem_id, picture, position)
 						values
 							(${pid}, '${formatString(pic.picture)}', $i)
 						""").executeInsert()
@@ -103,7 +103,7 @@ object Problem extends AnormModel {
 					select
 						*
 					from
-						porblems_p pp
+						problems_p pp
 					where
 						pp.id = $pid
 					""").as(picParser*)
@@ -120,6 +120,8 @@ object Problem extends AnormModel {
 						p.id, p.contents, t.id, t.contents, t.parent
 					from
 						problems p, topics t
+					where
+						t.id = p.topic_id
 					""").as(parser*).map(x => {
 						new Problem(
 							x.id, 

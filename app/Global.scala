@@ -12,6 +12,7 @@ class Global extends GlobalSettings {
 		Solution.init
 		Answer.init
 		Authentication.init
-		
+		Problem.init
+		Authentication.init
 	}
 }
