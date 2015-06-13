@@ -113,6 +113,9 @@ class Topics extends WordSpec {
     val a = new Topic(1, "root", 0)
     val b = new Topic(1, "sub-root", 1)
     val c = new Topic(1, "sub-sub-root", 2)
+    val x = new Topic(1, "parent", 0)
+    val y = new Topic(1, "child one", 1)
+    val z = new Topic(1, "child two", 1)
     "inserting 3 distinct rows" should {
       "have size 3" in new WithApplication {
         create(a)
@@ -126,8 +129,15 @@ class Topics extends WordSpec {
         create(a)
         create(b)
         create(c)
-        val d = getParents(c)
-        assert(d.length == 2)
+        assert(getParents(c).length == 2)
+      }
+    }
+    "insert 3 topics, two of which are children of the parent" should {
+      "return 2 children when asking for the roots" in new WithApplication {
+        create(x)
+        create(y)
+        create(z)
+        assert(getChildren(x).length == 2)
       }
     }
   }

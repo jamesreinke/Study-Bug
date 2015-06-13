@@ -17,9 +17,6 @@ abstract class AnormModel {
 	/* Parser for parsing the case class */
 	val parser: RowParser[T]
 
-	/* Column name access */
-	val columns: List[String]
-
 	/* Insert an item into the database, returning the auto incremented id */
 	def create(item: T): Option[Long]
 

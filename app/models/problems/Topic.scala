@@ -19,15 +19,13 @@ object Topic extends AnormModel {
 	val tableStatements = List(
 		"create table if not exists topics (id bigserial primary key, contents text, parent bigint);",
 		"create index topics_i on topics using gin(to_tsvector('english', contents));",
-		"create table if not exists topics_a (id bigserial primary key, topic bigint, problem bigint);",
-		"create index topics_ai on topics_a (topic, problem);")
+		"create table if not exists topics_a (id bigserial primary key, topic_id bigint, problem_id bigint);",
+		"create index topics_ai on topics_a (topic_id, problem_id);")
 
 
 	val parser = long("id") ~ str("contents") ~ long("parent") map {
 		case id ~ contents ~ parent => Topic(id, contents, parent)
 	}
-
-	val columns = List("id", "contents", "parent")
 
 	def create(t: Topic): Option[Long] = t match {
 		case Topic(id, contents, parent) => {
@@ -162,7 +160,7 @@ object Topic extends AnormModel {
 					select
 						t.id, t.contents, t.parent
 					from
-						topics t, topic_assignments ta
+						topics t, topics_a ta
 					where
 						ta.problem = $pid
 					and

@@ -22,8 +22,6 @@ object Answer extends AnormModel {
 		"create table if not exists answers (id bigserial primary key, contents text, picture varchar, problem_id bigint, correct boolean);",
 		"create index answers_i on answers (problem_id);")
 
-	val columns = List("id", "contents", "picture", "problem id", "correct")
-
 	val parser = long("id") ~ str("contents") ~ str("picture") ~ long("problem_id") ~ bool("correct") map {
 		case id ~ contents ~ picture ~ problemId ~ bool => Answer(id, contents, picture, problemId, bool)
 	}

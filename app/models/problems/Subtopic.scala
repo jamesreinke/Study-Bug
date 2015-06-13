@@ -27,8 +27,6 @@ object Subtopic extends AnormModel {
 		case id ~ contents ~ hint => Subtopic(id, contents, hint)
 	}
 
-	val columns = List("id", "contents", "hint")
-
 	def create(s: Subtopic): Option[Long] = {
 		if( !exists(s) ) {
 			DB.withConnection { 

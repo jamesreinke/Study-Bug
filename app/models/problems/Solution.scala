@@ -26,8 +26,6 @@ object Solution extends AnormModel {
 		case id ~ contents ~ picture ~ problemId ~ position => SolutionStep(id, contents, picture, problemId, position, List())
 	}
 
-	val columns = List("id", "contents", "picture", "problem_id", "position")
-
 	def create(ss: SolutionStep): Option[Long] = ss match {
 		case SolutionStep(id, contents, picture, problemId, position, subtopics) => {
 			val ssid = DB.withConnection {
