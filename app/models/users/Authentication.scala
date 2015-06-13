@@ -12,14 +12,6 @@ import com.github.t3hnar.bcrypt._
 
 import models.AnormModel
 
-case class Login(
-	email: String,
-	password: String)
-
-case class Register(
-	email: String,
-	passwords: (String, String))
-
 case class User(
 	id: Long,
 	email: String,
@@ -95,8 +87,8 @@ object Authentication extends AnormModel {
 		case _ => false
 	}
 
-	def login(l: Login): Option[User] = l match {
-		case Login(email, password) => {
+	def login(l: User): Option[User] = l match {
+		case User(_, email, password, _) => {
 			getByEmail(email) match {
 				case Some(User(id, userEmail, userPassword, admin)) => {
 					password.isBcrypted(userPassword) match {

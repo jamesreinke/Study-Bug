@@ -5,7 +5,7 @@
 	<!-- BEGIN LOGIN -->
 	<div class="content">
 		<!-- BEGIN LOGIN FORM -->
-		<form class="login-form" action="index.html" method="post">
+		@helper.form(action = routes.Authentication.loginPost, 'class -> "login-form") {
 			<div class="form-title">
 				<span class="form-title">Study Bug</span>
 				<span class="form-subtitle">Please login.</span>
@@ -41,10 +41,10 @@
 					<a href="javascript:;" id="register-btn">Create an account</a>
 				</p>
 			</div>
-		</form>
+		}
 		<!-- END LOGIN FORM -->
 		<!-- BEGIN FORGOT PASSWORD FORM -->
-		<form class="forget-form" action="index.html" method="post">
+		<form class="forget-form" action="auth/forget" method="post">
 			<div class="form-title">
 				<span class="form-title">Forget Password ?</span>
 				<span class="form-subtitle">Enter your e-mail to reset it.</span>
@@ -59,7 +59,7 @@
 		</form>
 		<!-- END FORGOT PASSWORD FORM -->
 		<!-- BEGIN REGISTRATION FORM -->
-		<form class="register-form" action="index.html" method="post">
+		<form class="register-form" action="auth/register" method="post">
 			<div class="form-title">
 				<span class="form-title">Sign Up</span>
 			</div>
