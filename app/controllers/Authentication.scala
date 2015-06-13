@@ -31,7 +31,7 @@ object Authentication extends Controller {
 		}
 	}
 
-	val loginForm = Form(
+	val userForm = Form(
 		mapping(
 			"id" -> default(of[Long], 0L),
 			"email" -> of[String],
@@ -39,28 +39,14 @@ object Authentication extends Controller {
 			"admin" -> default(of[Boolean], false)
 			)(User.apply)(User.unapply))
 
-	val registerForm = Form(
-		mapping(
-			"id" -> default(of[Long], 0L),
-			"email" -> of[String],
-			"password" -> tuple(
-				"first" -> text,
-				"second" -> text
-				).verifying(
-					"Passwords don't match", p => p._1 == p._2
-				).transform(
-					{ case (main, confirm) => main },
-					( main: String) => ("", "") ),
-			"admin" -> default(of[Boolean], false))(User.apply)(User.unapply))
-
 	/* END: Helper Functions */
 
 	/* START: Actions */
 
 	def loginPost = Action {
 		implicit request => {
-			loginForm.bindFromRequest.fold(
-				formWithErrors => Ok(views.html.pages.login(formWithErrors, registerForm)),
+			userForm.bindFromRequest.fold(
+				formWithErrors => Redirect("/"),
 				user => {
 					login(user) match {
 						case Some(User(id, email, password, admin)) => {
@@ -68,9 +54,7 @@ object Authentication extends Controller {
 								conKey -> email,
 								adKey -> admin.toString)
 						}
-						case _ => {
-							Ok(views.html.pages.login(loginForm, registerForm))
-						}
+						case _ => Redirect(routes.Application.index(msg = "Invalid username or password"))
 					}
 				})
 		}
@@ -82,16 +66,17 @@ object Authentication extends Controller {
 
 	def registerPost = Action {
 		implicit request => {
-			loginForm.bindFromRequest.fold(
-				formWithErrors => Ok(views.html.pages.login(loginForm, formWithErrors)),
+			userForm.bindFromRequest.fold(
+				formWithErrors => Redirect("/"),
 				user => {
 					register(user) match {
 						case Some(User(id, email, password, admin)) => {
-							Ok("Connected as: " + email).withSession(
+							Redirect("/").withSession(
+								"id" -> id.toString,
 								"connected" -> email,
 								"admin" -> admin.toString)
 						}
-						case _ => Ok(views.html.pages.login(loginForm, registerForm))
+						case _ => Redirect(routes.Application.index(msg = "Email already exists"))
 					}
 				})
 		}

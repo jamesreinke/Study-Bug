@@ -3,11 +3,11 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
+GET     /                           controllers.Application.index(msg: String ?= "")
 
-POST	/auth/loginpost				controllers.Authentication.loginPost
+POST	/login						controllers.Authentication.loginPost
 
-POST 	/auth/register				controllers.Authentication.registerPost
+POST 	/register					controllers.Authentication.registerPost
 
 POST 	/auth/forget 				controllers.Authentication.forgetPost
 

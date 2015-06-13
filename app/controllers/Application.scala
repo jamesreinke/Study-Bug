@@ -5,11 +5,12 @@ import play.api.mvc._
 
 object Application extends Controller {
 
-  def index = Action {
+  def index(a: String) = Action {
 
   	implicit request => {
 
-  		Ok(views.html.pages.login(Authentication.loginForm, Authentication.registerForm))
+  		if(!Authentication.auth(request)) Ok(views.html.pages.login(Authentication.userForm, msg = a))
+  		else Ok("Well this is all you get...")
   		
   	}
     

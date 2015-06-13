@@ -1,26 +1,31 @@
-@(loginForm: Form[models.users.User], registerForm: Form[models.users.User])
+@(userForm: Form[models.users.User], msg: String = "")
 
 @import views.html.forms.Custom._
 
 @main("Study Bug") {
 <body class="login">
+	<div id="study-bug-logo"></div>
 	<!-- BEGIN LOGIN -->
 	<div class="content">
+		<div class="alert alert-danger @if(msg == ""){display-hide}" >
+			<button class="close" data-close="alert"></button>
+			<span style="margin:15px;">@msg</span>
+		</div>
 		<!-- BEGIN LOGIN FORM -->
-		@helper.form(action = routes.Authentication.loginPost, 'class -> "login-form", 'novalidate -> "validate") {
+		@helper.form(action = routes.Authentication.loginPost, 'class -> "login-form") {
 			<div class="form-title">
 				<span class="form-title">Study Bug</span>
 				<span class="form-subtitle">Please login.</span>
 			</div>
 
 			@helper.inputText(
-			loginForm("email"),
+			userForm("email"),
 			'placeholder -> "Email",
 			'type -> "email",
 			'class -> "form-control placeholder-no-fix")
 
 			@helper.inputText(
-			loginForm("password"),
+			userForm("password"),
 			'type -> "password",
 			'placeholder -> "Password",
 			'class -> "form-control placeholder-no-fix")
@@ -52,7 +57,7 @@
 			</div>
 
 			@helper.inputText(
-			registerForm("email"),
+			userForm("email"),
 			'placeholder -> "Email",
 			'type -> "email",
 			'class -> "form-control placeholder-no-fix")
@@ -73,19 +78,20 @@
 			</p>
 
 			@helper.inputText(
-			registerForm("email"),
+			userForm("email"),
 			'placeholder -> "Email",
 			'type -> "email",
 			'class -> "form-control placeholder-no-fix")
 
 			@helper.inputText(
-			registerForm("password.second"),
+			userForm("password"),
+			'id -> "password-first",
 			'type -> "password",
 			'placeholder -> "Password",
 			'class -> "form-control placeholder-no-fix")
 
 			@helper.inputText(
-			registerForm("password.second"),
+			userForm("password-second"),
 			'type -> "password",
 			'placeholder -> "Repeat Password",
 			'class -> "form-control placeholder-no-fix")
