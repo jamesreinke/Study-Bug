@@ -102,6 +102,13 @@ object Authentication extends AnormModel {
 		case _ => None
 	}
 
+	def register(u: User): Option[User] = {
+		create(u) match {
+			case Some(number) => Some(User(number, u.email, u.password, u.admin))
+			case _ => None
+		}
+	}
+
 	private def getByEmail(e: String): Option[User] = {
 		DB.withConnection {
 			implicit session => {
