@@ -6,7 +6,13 @@ import play.api.mvc._
 object Application extends Controller {
 
   def index = Action {
-    Ok(views.html.pages.login())
+
+  	implicit request => {
+
+  		Ok(views.html.pages.login())
+  		
+  	}
+    
   }
 
 }
