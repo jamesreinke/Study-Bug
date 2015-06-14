@@ -9,7 +9,9 @@ POST	/login						controllers.Authentication.loginPost
 
 POST 	/register					controllers.Authentication.registerPost
 
-POST 	/auth/forget 				controllers.Authentication.forgetPost
+POST 	/forget 					controllers.Authentication.forgetPost
+
+GET		/logout						controllers.Authentication.logout
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file: String)

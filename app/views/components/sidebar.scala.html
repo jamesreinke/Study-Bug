@@ -1,3 +1,4 @@
+
 <!-- BEGIN SIDEBAR -->
 		<div class="page-sidebar-wrapper">
 			<!-- DOC: Set data-auto-scroll="false" to disable the sidebar from auto scrolling/focusing -->
@@ -26,16 +27,13 @@
 						<span class="arrow "></span>
 						</a>
 						<ul class="sub-menu">
-							<li>
-								<a href="">
-								<i class="fa fa-bug"></i>
-								Biology</a>
-							</li>
-							<li>
-								<a href="">
-								<i class="fa fa-calculator"></i>
-								Calculus</a>
-							</li>
+							@for(topic <- models.problems.Topic.getAll) {
+								<li>
+									<a href="">
+									<i class="fa fa-bug"></i>
+									@topic.contents</a>
+								</li>
+							}
 						</ul>
 				</ul>
 				<!-- END SIDEBAR MENU -->

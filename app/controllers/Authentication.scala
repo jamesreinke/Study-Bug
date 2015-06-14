@@ -12,8 +12,9 @@ object Authentication extends Controller {
 
 	/* START: Helper Functions */
 
-	private val conKey = "connected"
-	private val adKey = "admin"
+	val conKey = "connected"
+	val adKey = "admin"
+	val idKey = "id"
 
 	def auth(f: Request[AnyContent]): Boolean = {
 		f.session.get(conKey).map {
@@ -50,7 +51,8 @@ object Authentication extends Controller {
 				user => {
 					login(user) match {
 						case Some(User(id, email, password, admin)) => {
-							Ok("Connected as: " + email).withSession(
+							Redirect("/").withSession(
+								idKey -> id.toString,
 								conKey -> email,
 								adKey -> admin.toString)
 						}
@@ -72,13 +74,19 @@ object Authentication extends Controller {
 					register(user) match {
 						case Some(User(id, email, password, admin)) => {
 							Redirect("/").withSession(
-								"id" -> id.toString,
-								"connected" -> email,
-								"admin" -> admin.toString)
+								idKey -> id.toString,
+								conKey -> email,
+								adKey -> admin.toString)
 						}
 						case _ => Redirect(routes.Application.index(msg = "Email already exists"))
 					}
 				})
+		}
+	}
+
+	def logout = Action {
+		implicit request => {
+			Redirect("/").withNewSession
 		}
 	}
 	/* END: Actions */
