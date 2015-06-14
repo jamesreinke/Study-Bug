@@ -145,15 +145,15 @@ class Topics extends WordSpec {
 
 class Authentication extends WordSpec {
 
-  import models.users.{User, Login, Register}
+  import models.users.{User}
   import models.users.Authentication._
 
   "Model" when {
     val a = new User(1, "jamesreinke91@gmail.com", "t00thbrush", true)
     val b = new User(1, "james@rtsystems.io", "t00thbrusht00thbrush", false)
     val c = new User(1, "jamesreinke91@gmail.com", "anotherpassword", false)
-    val d = new Login("jamesreinke91@gmail.com", "t00thbrush")
-    val e = new Login("jamesreinke91@gmail.com", "brusht00th")
+    val d = new User(1, "jamesreinke91@gmail.com", "t00thbrush", false)
+    val e = new User(1, "jamesreinke91@gmail.com", "brusht00th", false)
     "inserting 3 rows (2 distinct)" should {
       "have size 2" in new WithApplication {
         create(a)
