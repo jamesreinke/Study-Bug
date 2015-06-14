@@ -13,5 +13,10 @@ POST 	/forget 					controllers.Authentication.forgetPost
 
 GET		/logout						controllers.Authentication.logout
 
+GET		/database					controllers.Problem.database
+
+GET		/topics/*topic				controllers.Problem.topics(topic)
+
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file: String)

@@ -1,4 +1,4 @@
-@(email: String = "")
+@(email: String = "", pageTitle: String = "", tableTitle: String = "")
 @main("Study Bug") {
 <body>
 	<div class="clearfix">
@@ -38,23 +38,20 @@
 
 					<!-- BEGIN PAGE TITLE -->
 					<div class="page-title">
-						<h1>Problem Database <small>problem database</small></h1>
+						<h1>@pageTitle<small>@pageTitle</small></h1>
 					</div>
 					<!-- END PAGE TITLE -->
 				</div>
 				<!-- END PAGE HEAD -->
 				<!-- BEGIN PAGE BREADCRUMB -->
 				<ul class="page-breadcrumb breadcrumb">
+
 					<li>
-						<a href="index.html">Home</a>
+						<a href="@routes.Application.index()">Home</a>
 						<i class="fa fa-circle"></i>
 					</li>
 					<li>
-						<a href="#">Problem Database</a>
-						<i class="fa fa-circle"></i>
-					</li>
-					<li>
-						<a href="#">Topics</a>
+						<a href="@routes.Problem.database()">Problem Database</a>
 					</li>
 				</ul>
 				<!-- END PAGE BREADCRUMB -->
@@ -66,7 +63,7 @@
 						<div class="portlet box blue-hoki">
 							<div class="portlet-title">
 								<div class="caption">
-									<i class="fa fa-globe"></i>Problems
+									<i class="fa fa-globe"></i>@tableTitle
 								</div>
 								<div class="tools">
 								</div>

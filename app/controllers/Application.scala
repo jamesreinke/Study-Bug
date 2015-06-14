@@ -10,7 +10,10 @@ object Application extends Controller {
   	implicit request => {
 
   		if(!Authentication.auth(request)) Ok(views.html.pages.login(Authentication.userForm, msg = a))
-  		else Ok(views.html.pages.table(email = request.session.get(Authentication.conKey).getOrElse("")))
+  		else Ok(views.html.pages.table(
+  			email = request.session.get(Authentication.conKey).getOrElse(""),
+  			pageTitle = "Generic Database",
+  			tableTitle ="Generic Little me"))
   		
   	}
     
