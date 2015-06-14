@@ -8,7 +8,8 @@ var Login = function() {
             focusInvalid: false, // do not focus the last invalid input
             rules: {
                 "email": {
-                    required: true
+                    required: true,
+                    email: true
                 },
                 "password": {
                     required: true
@@ -17,7 +18,8 @@ var Login = function() {
 
             messages: {
                 "email": {
-                    required: "Username is required."
+                    required: "Username is required.",
+                    email: "Must be a valid email"
                 },
                 "password": {
                     required: "Password is required."
@@ -97,13 +99,27 @@ var Login = function() {
             rules: {
 
                 "email": {
-                    required: true
+                    required: true,
+                    email: true
                 },
                 "password": {
                     required: true
                 },
                 "password-second": {
                     equalTo: "#password-first"
+                }
+            },
+
+            messages: {
+                "email": {
+                    required: "Email is required",
+                    email: "Must be a valid email"
+                },
+                "password": {
+                    required: "Password is required"
+                },
+                "password-second": {
+                    equalTo: "Passwords must match"
                 }
             },
 
