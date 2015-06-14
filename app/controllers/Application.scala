@@ -10,7 +10,7 @@ object Application extends Controller {
   	implicit request => {
 
   		if(!Authentication.auth(request)) Ok(views.html.pages.login(Authentication.userForm, msg = a))
-  		else Ok(views.html.pages.header())
+  		else Ok(views.html.components.sidebar())
   		
   	}
     

@@ -1,9 +1,7 @@
-@(
-email: String = ""
-)
-@main("Study Bug"){
-	<body class="page-header-fixed page-sidebar-closed-hide-logo">
+@(email: String = "")(content: Html)(styles: Html)(javascripts: Html)
 
+@core.main("Study Bug"){
+<body>
 	<!-- BEGIN HEADER -->
 	<div class="page-header navbar navbar-fixed-top">
 
@@ -39,30 +37,9 @@ email: String = ""
 							<ul class="dropdown-menu dropdown-menu-default">
 								<li>
 									<a href="">
-									<i class="icon-user"></i> My Profile </a>
+									<i class="icon-user"></i> Profile </a>
 								</li>
-								<li>
-									<a href="">
-									<i class="icon-calendar"></i> My Calendar </a>
-								</li>
-								<li>
-									<a href="">
-									<i class="icon-envelope-open"></i> My Inbox <span class="badge badge-danger">
-									3 </span>
-									</a>
-								</li>
-								<li>
-									<a href="">
-									<i class="icon-rocket"></i> My Tasks <span class="badge badge-success">
-									7 </span>
-									</a>
-								</li>
-								<li class="divider">
-								</li>
-								<li>
-									<a href="">
-									<i class="icon-lock"></i> Lock Screen </a>
-								</li>
+								<li class="divider"></li>
 								<li>
 									<a href="@routes.Authentication.logout">
 									<i class="icon-key"></i> Log Out </a>
@@ -84,32 +61,21 @@ email: String = ""
 	</div>
 	<!-- END HEADER -->
 
+
 	<div class="clearfix">
 	</div>
 
 	<!-- BEGIN CONTAINER -->
 	<div class="page-container">
 
-		<!-- BEGIN CONTENT -->
-		<div class="page-content-wrapper">
-			<div class="page-content">
+		@content
 
-				<!-- BEGIN PAGE CONTENT-->
-				<div class="row">
-					<div class="col-md-12">
-						 <!-- PAGE CONTENT GOES HERE -->
-					</div>
-				</div>
-				<!-- END PAGE CONTENT-->
-
-			</div>
-		</div>
-		<!-- END CONTENT -->
-		
 	</div>
-	</body>
+</body>
 }{
 	<!-- PAGE SPECIFIC STYLESHEETS -->
+	@styles
 }{
 	<!-- PAGE SPECIFIC JAVASCRIPTS -->
+	@javascripts
 }

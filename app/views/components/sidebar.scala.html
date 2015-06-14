@@ -1,0 +1,42 @@
+@core.header(){
+	<div class="page-sidebar navbar-collapse collapse">
+		<ul class="page-sidebar-menu" data-keep-expanded="false" data-auto-scroll="true" data-slide-speed="200">
+			<li class="start ">
+				<a href="index.html">
+				<i class="icon-home"></i>
+				<span class="title">Dashboard</span>
+				</a>
+			</li>
+			<li class="last ">
+					<a href="javascript:;">
+					<i class="icon-pointer"></i>
+					<span class="title">Maps</span>
+					<span class="arrow "></span>
+				</a>
+				<ul class="sub-menu">
+					<li>
+						<a href="maps_google.html">
+						Google Maps</a>
+					</li>
+					<li>
+						<a href="maps_vector.html">
+						Vector Maps</a>
+					</li>
+				</ul>
+			</li>
+		</ul>
+	</div>
+}{
+	<!-- Custom pages styles go here -->
+}{
+	<script src='@routes.Assets.at("theme/global/scripts/metronic.js")' type='text/javascript'></script>
+	<script src='@routes.Assets.at("theme/admin/layout4/scripts/layout.js")' type='text/javascript'></script>
+	<script src='@routes.Assets.at("theme/admin/layout4/scripts/demo.js")' type='text/javascript'></script>
+	<script>
+		jQuery(document).ready(function() {    
+			Metronic.init(); // init metronic core components
+			Layout.init(); // init current layout
+			Demo.init(); // init demo features
+		});
+	</script>
+}
