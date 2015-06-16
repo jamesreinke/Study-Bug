@@ -65,7 +65,7 @@ object Solution extends AnormModel {
 		case _ => false
 	}
 
-	/* Retrieves solution steps in position by problem id */
+	/* Retrieves solution steps in order of position by problem id */
 	def getByProblemId(pid: Long): List[SolutionStep] = {
 		DB.withConnection {
 			implicit session => {

@@ -69,11 +69,11 @@ object Problem extends AnormModel {
 				for (step <- p.solution) {
 					Solution.create(new SolutionStep(0, step.contents, step.picture, pid, step.position, step.subtopics))
 				}
-				opid // return value
+				opid
 			}
 		}
 	}
-
+	/* Successful delete is premised on all deletes of steps, answers and problem */
 	def delete(p: Problem): Boolean = {
 		DB.withConnection {
 			implicit session => {

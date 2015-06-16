@@ -7,7 +7,6 @@ import play.api.db.DB
 import play.api.Play.current
 import models.AnormModel
 
-
 case class Subtopic(
 	id: Long,
 	contents: String,

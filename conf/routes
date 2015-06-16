@@ -15,7 +15,13 @@ GET		/logout						controllers.Authentication.logout
 
 GET		/database					controllers.Problem.database
 
-GET		/topics/*topic				controllers.Problem.topics(topic)
+GET		/profile					controllers.Profile.index
+
+GET		/stats						controllers.Profile.stats
+
+GET		/topics*id					controllers.Problem.topics(id)
+
+GET		/subtopics*id				controllers.Problem.subtopics(id)
 
 
 # Map static resources from the /public folder to the /assets URL path
