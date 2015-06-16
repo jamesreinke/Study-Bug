@@ -1,28 +1,35 @@
+@import controllers.Node
+@(sidebar: List[Node.Menu] = Node.sidebar)
+
 <div class="page-sidebar md-shadow-z-2-i navbar-collapse collapse">
 	<ul class="page-sidebar-menu" data-keep-expanded="false" data-auto-scroll="true" data-slide-speed="200">
-		<li class="start ">
-			<a href="index.html">
-			<i class="icon-home"></i>
-			<span class="title">Dashboard</span>
-			</a>
-		</li>
-		<li class="last ">
-				<a href="javascript:;">
-				<i class="icon-pointer"></i>
-				<span class="title">Maps</span>
-				<span class="arrow "></span>
-			</a>
-			<ul class="sub-menu">
-				<li>
-					<a href="maps_google.html">
-					Google Maps</a>
-				</li>
-				<li>
-					<a href="maps_vector.html">
-					Vector Maps</a>
-				</li>
-			</ul>
-		</li>
+		@for(item <- sidebar){
+			@item match {
+				case Node.Link(tag, link, image) => {
+					<li class="">
+						<a href="@link">
+						<i class="@image"></i>
+						<span class="title">@tag</span>
+					</li>
+				}
+				case Node.LinkedLinks(tag, image, links) => {
+					<li class="">
+						<a href="javascript:;">
+							<i class="@image"></i>
+							<span class="title">@tag</span>
+							<span class="arrow"></span>
+						</a>
+						<ul class="sub-menu">
+							@for(link <- links){
+								<li>
+									<a href="@link.link">@link.tag</a>
+								</li>
+							}
+						</ul>
+					</li>
+				}
+			}
+		}
 	</ul>
 </div>
 

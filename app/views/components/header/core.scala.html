@@ -1,7 +1,7 @@
 @import controllers.Node._
 @(
 email: String = "", 
-profileNodes: List[Node] = List())
+leaves: List[Link] = profile)
 
 
 <!-- BEGIN HEADER -->
@@ -37,30 +37,11 @@ profileNodes: List[Node] = List())
 						<img alt="" class="img-circle" src='@routes.Assets.at("images/study-bug-2.png")'/> 
 						</a>
 						<ul class="dropdown-menu dropdown-menu-default">
-							@for(node <- profileNodes){
-								@node match {
-									case Leaf(tag, link) => {
-										<p>Leaf</p>
-									}
-									case Tree(tag, nodes) => {
-										<p>Tree</p>
-									}
-								}
+							@for(leaf <- leaves){
+								<li>
+									<a href="@leaf.link"><i class="@leaf.image"></i>@leaf.tag</a>
+								</li>
 							}
-							@{
-								def nodeFactory(node: Node): Unit = {
-									
-								}
-							}
-							<li>
-								<a href="">
-								<i class="icon-user"></i> Profile </a>
-							</li>
-							<li class="divider"></li>
-							<li>
-								<a href="@routes.Authentication.logout">
-								<i class="icon-key"></i> Log Out </a>
-							</li>
 						</ul>
 					</li>
 					<!-- END USER LOGIN DROPDOWN -->
@@ -77,7 +58,6 @@ profileNodes: List[Node] = List())
 
 </div>
 <!-- END HEADER -->
-
-
 <div class="clearfix">
 </div>
+
