@@ -4,19 +4,15 @@ package controllers
 object Node {
 
 	abstract class Menu
-	case class Link(tag: String, link: play.api.mvc.Call, image: String = "") extends Menu
+	case class Link(tag: String, image: String = "", link: play.api.mvc.Call) extends Menu
 	case class LinkedLinks(tag: String, image: String = "", links: List[Link]) extends Menu
 
 	/* An example of a profile navigation */
 	val profile = List(
-		new Link("Profile", routes.Application.index(), "icon-user"),
-		new Link("Logout", routes.Authentication.logout(), "icon-key"))
+		new Link("Profile", "icon-user", routes.Application.index()),
+		new Link("Logout", "icon-key", routes.Authentication.logout()))
 
 	/* An example of a sidebar navigation */
-	val sidebar = List[Menu](
-		new Link("Dashboard", routes.Application.index(), "icon-home"),
-		new LinkedLinks("See More", "icon-pointer", List(
-			new Link("This is more", routes.Application.index(), ""),
-			new Link("This is also more", routes.Application.index(), ""))))
+	val sidebar = List[Menu](Application.iLink)
 
 }

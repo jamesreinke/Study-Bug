@@ -18,4 +18,8 @@ object Problem extends Controller {
 	def topics(t: String) = Action {
 		implicit request => Ok("Topics")
 	}
+
+	def subtopics(s: String) = Action {
+		implicit request => Ok("Subtopics")
+	}
 }

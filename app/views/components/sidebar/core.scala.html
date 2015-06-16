@@ -5,25 +5,25 @@
 	<ul class="page-sidebar-menu" data-keep-expanded="false" data-auto-scroll="true" data-slide-speed="200">
 		@for(item <- sidebar){
 			@item match {
-				case Node.Link(tag, link, image) => {
+				case item: Node.Link => {
 					<li class="">
-						<a href="@link">
-							<i class="@image"></i>
-							<span class="title">@tag</span>
+						<a href="@item.link">
+							<i class="@item.image"></i>
+							<span class="title">@item.tag</span>
 						</a>
 					</li>
 				}
-				case Node.LinkedLinks(tag, image, links) => {
+				case item: Node.LinkedLinks => {
 					<li class="">
 						<a href="javascript:;">
-							<i class="@image"></i>
-							<span class="title">@tag</span>
+							<i class="@item.image"></i>
+							<span class="title">@item.tag</span>
 							<span class="arrow"></span>
 						</a>
 						<ul class="sub-menu">
-							@for(link <- links){
+							@for(link <- item.links){
 								<li>
-									<a href="@link.link"><i class="@image"></i>@link.tag</a>
+									<a href="@link.link"><i class="@link.image"></i>@link.tag</a>
 								</li>
 							}
 						</ul>
