@@ -1,0 +1,26 @@
+@import views.html.components._
+@import views.html.pages._
+
+@(content: Html = new Html(""))
+
+@main("Study Bug"){
+	<body>
+		@header.core()
+		<div class="page-container">
+			@sidebar.core()
+			<div class="page-content-wrapper">
+				<div class="page-content">
+		        	@content
+		        </div>
+	        </div>
+	    </div>
+    </body>
+}{
+	@header.styles()
+	@sidebar.styles()
+	@styles()
+}{
+	@header.javascripts()
+	@sidebar.javascripts()
+	@javascripts()
+}

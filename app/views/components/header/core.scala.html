@@ -1,0 +1,83 @@
+@import controllers.Node._
+@(
+email: String = "", 
+profileNodes: List[Node] = List())
+
+
+<!-- BEGIN HEADER -->
+<div class="page-header navbar navbar-fixed-top md-shadow-z-1-i">
+
+	<!-- BEGIN HEADER INNER -->
+	<div class="page-header-inner">
+
+		<!-- BEGIN PAGE TOP -->
+		<div class="page-top">
+			<li class="separator hide">
+			</li>
+
+			<!-- BEGIN TOP NAVIGATION MENU -->
+			<div class="top-menu">
+				<ul class="nav navbar-nav pull-right">
+					<li class="separator hide"></li>
+
+					<!-- BEGIN PAGE LOGO TEXT-->
+					<li class="separator hide"></li>
+					<li>
+						<h1>Study Bug</h1>
+					</li>
+					<!-- ENG PAGE LOGO TEXT-->
+
+					<!-- BEGIN USER LOGIN DROPDOWN -->
+					<li class="dropdown dropdown-user dropdown-dark">
+						<a href="javascript:;" class="dropdown-toggle" data-toggle="dropdown" data-hover="dropdown" data-close-others="true">
+						<span class="username username-hide-on-mobile">
+							@email
+						</span>
+						<!-- DOC: Do not remove below empty space(&nbsp;) as its purposely used -->
+						<img alt="" class="img-circle" src='@routes.Assets.at("images/study-bug-2.png")'/> 
+						</a>
+						<ul class="dropdown-menu dropdown-menu-default">
+							@for(node <- profileNodes){
+								@node match {
+									case Leaf(tag, link) => {
+										<p>Leaf</p>
+									}
+									case Tree(tag, nodes) => {
+										<p>Tree</p>
+									}
+								}
+							}
+							@{
+								def nodeFactory(node: Node): Unit = {
+									
+								}
+							}
+							<li>
+								<a href="">
+								<i class="icon-user"></i> Profile </a>
+							</li>
+							<li class="divider"></li>
+							<li>
+								<a href="@routes.Authentication.logout">
+								<i class="icon-key"></i> Log Out </a>
+							</li>
+						</ul>
+					</li>
+					<!-- END USER LOGIN DROPDOWN -->
+
+				</ul>
+			</div>
+			<!-- END TOP NAVIGATION MENU -->
+
+		</div>
+		<!-- END PAGE TOP -->
+
+	</div>
+	<!-- END HEADER INNER -->
+
+</div>
+<!-- END HEADER -->
+
+
+<div class="clearfix">
+</div>

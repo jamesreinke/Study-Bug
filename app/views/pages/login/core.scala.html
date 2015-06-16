@@ -2,7 +2,7 @@
 
 @import views.html.forms.Custom._
 
-@core.main("Study Bug") {
+@main("Study Bug") {
 <body class="login">
 	<div id="study-bug-logo"></div>
 
@@ -87,21 +87,7 @@
 	</div>
 </body>
 }{
-	<!-- Page Level Styles -->
-	<link href='@routes.Assets.at("theme/admin/pages/css/login2.css")' rel='stylesheet' type='text/css'/>
+	@views.html.pages.login.styles()
 }{
-	<!-- Page Level Javascripts -->
-	<script src='@routes.Assets.at("theme/global/plugins/jquery-validation/js/jquery.validate.min.js")' type='text/javascript'></script>
-	<script src='@routes.Assets.at("theme/global/scripts/metronic.js")' type='text/javascript'></script>
-	<script src='@routes.Assets.at("theme/admin/layout/scripts/layout.js")' type='text/javascript'></script>
-	<script src='@routes.Assets.at("theme/admin/layout/scripts/demo.js")' type='text/javascript'></script>
-	<script src='@routes.Assets.at("theme/admin/pages/scripts/login.js")' type='text/javascript'></script>
-	<script>
-		jQuery(document).ready(function() {     
-			Metronic.init(); // init metronic core components
-			Layout.init(); // init current layout
-			Login.init();
-			Demo.init();
-		});
-	</script>
+	@views.html.pages.login.javascripts()
 }

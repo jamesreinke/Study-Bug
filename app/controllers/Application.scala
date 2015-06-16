@@ -2,6 +2,7 @@ package controllers
 
 import play.api._
 import play.api.mvc._
+import play.twirl.api.Html
 
 object Application extends Controller {
 
@@ -9,8 +10,8 @@ object Application extends Controller {
 
   	implicit request => {
 
-  		if(!Authentication.auth(request)) Ok(views.html.pages.login(Authentication.userForm, msg = a))
-  		else Ok(views.html.components.sidebar())
+  		if(!Authentication.auth(request)) Ok(views.html.pages.login.core(Authentication.userForm, msg = a))
+  		else Ok(views.html.pages.temp.core(new Html("<h1>This is some mother fucking content</h1>")))
   		
   	}
     

@@ -14,5 +14,6 @@ class Global extends GlobalSettings {
 		Authentication.init
 		Problem.init
 		Authentication.init
+
 	}
 }
