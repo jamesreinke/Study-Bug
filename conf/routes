@@ -19,9 +19,9 @@ GET		/profile					controllers.Profile.index
 
 GET		/stats						controllers.Profile.stats
 
-GET		/topics*id					controllers.Problem.topics(id)
+GET		/topics						controllers.Problem.topics
 
-GET		/subtopics*id				controllers.Problem.subtopics(id)
+GET		/subtopics					controllers.Problem.subtopics
 
 
 # Map static resources from the /public folder to the /assets URL path

@@ -14,16 +14,16 @@ import views.html.defaultpages._
 
 object Problem extends Controller {
 
-	val dLink = new Link("Problems", "", routes.Problem.database())
+	val dLink = new Link("Problems", "fa fa-database", routes.Problem.database())
 	def database = Action {
 		implicit request => Ok(views.html.pages.temp.core(todo.render()))
 	}
-	val tLink = new Link("Topics", "", routes.Problem.topics("0"))
-	def topics(t: String) = Action {
+	val tLink = new Link("Topics", "fa fa-university", routes.Problem.topics())
+	def topics = Action {
 		implicit request => Ok(views.html.pages.temp.core(todo.render()))
 	}
-	val sLink = new Link("Subtopics", "", routes.Problem.subtopics("0"))
-	def subtopics(s: String) = Action {
+	val sLink = new Link("Subtopics", "fa fa-university", routes.Problem.subtopics())
+	def subtopics = Action {
 		implicit request => Ok(views.html.pages.temp.core(todo.render()))
 	}
 }

@@ -8,6 +8,8 @@ import play.api.data.format.Formats._
 import models.users.User
 import models.users.Authentication.{login, register}
 
+import Node._
+
 object Authentication extends Controller {
 
 	/* START: Helper Functions */
@@ -83,7 +85,7 @@ object Authentication extends Controller {
 				})
 		}
 	}
-
+	val lLink = new Link("Logout", "fa fa-key", routes.Authentication.logout)
 	def logout = Action {
 		implicit request => {
 			Redirect("/").withNewSession
