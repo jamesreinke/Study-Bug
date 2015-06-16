@@ -8,8 +8,9 @@
 				case Node.Link(tag, link, image) => {
 					<li class="">
 						<a href="@link">
-						<i class="@image"></i>
-						<span class="title">@tag</span>
+							<i class="@image"></i>
+							<span class="title">@tag</span>
+						</a>
 					</li>
 				}
 				case Node.LinkedLinks(tag, image, links) => {
@@ -22,7 +23,7 @@
 						<ul class="sub-menu">
 							@for(link <- links){
 								<li>
-									<a href="@link.link">@link.tag</a>
+									<a href="@link.link"><i class="@image"></i>@link.tag</a>
 								</li>
 							}
 						</ul>

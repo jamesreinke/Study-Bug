@@ -11,7 +11,7 @@ object Application extends Controller {
   	implicit request => {
 
   		if(!Authentication.auth(request)) Ok(views.html.pages.login.core(Authentication.userForm, msg = a))
-  		else Ok(views.html.pages.temp.core(new Html("<h1>This is some mother fucking content</h1>")))
+  		else Ok(views.html.pages.temp.core())
   		
   	}
     

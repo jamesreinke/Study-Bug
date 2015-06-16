@@ -16,7 +16,7 @@ object Node {
 	val sidebar = List[Menu](
 		new Link("Dashboard", routes.Application.index(), "icon-home"),
 		new LinkedLinks("See More", "icon-pointer", List(
-			new Link("This is more", routes.Application.index(), "icon-home"),
-			new Link("This is also more", routes.Application.index(), "icon-home"))))
+			new Link("This is more", routes.Application.index(), ""),
+			new Link("This is also more", routes.Application.index(), ""))))
 
 }
