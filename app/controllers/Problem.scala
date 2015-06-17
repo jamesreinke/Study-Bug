@@ -18,12 +18,8 @@ object Problem extends Controller {
 	def database = Action {
 		implicit request => Ok(views.html.pages.temp.core(todo.render()))
 	}
-	val tLink = new Link("Topics", "fa fa-university", routes.Problem.topics())
+	val tLink = new Link("Topics/Subtopics", "fa fa-university", routes.Problem.topics())
 	def topics = Action {
-		implicit request => Ok(views.html.pages.temp.core(todo.render()))
-	}
-	val sLink = new Link("Subtopics", "fa fa-university", routes.Problem.subtopics())
-	def subtopics = Action {
 		implicit request => Ok(views.html.pages.temp.core(todo.render()))
 	}
 }

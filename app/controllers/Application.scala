@@ -10,7 +10,7 @@ object Application extends Controller {
 	def index(a: String) = Action {
 		implicit request => {
 			if(!Authentication.auth(request)) Ok(views.html.pages.login.core(Authentication.userForm, msg = a))
-			else Ok(views.html.pages.temp.core())
+			else Ok(views.html.pages.temp.core(views.html.components.form.core()))
 		}
 	}
 }
