@@ -10,7 +10,7 @@
 			@sidebar.core()
 			<div class="page-content-wrapper">
 				<div class="page-content">
-		        	@content
+		        	@form.core()
 		        </div>
 	        </div>
 	    </div>
@@ -18,9 +18,11 @@
 }{
 	@header.styles()
 	@sidebar.styles()
+	@form.styles()
 	@styles()
 }{
 	@header.javascripts()
-	@sidebar.javascripts()
+	<!-- @sidebar.javascripts() Unnecessary; contained in form.javascripts -->
+	@form.javascripts()
 	@javascripts()
 }
