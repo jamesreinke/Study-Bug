@@ -27,8 +27,8 @@
         <link rel='stylesheet' href='@routes.Assets.at("less/styles.css")' type='text/css'>
 
     </head>
-    <!-- BEGIN CONTAINER -->
     
+    <!-- Site contents.  Body tags are included on pages -->
     @content
 
     <! Core plugins >
@@ -42,10 +42,11 @@
 	<script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.js' type='text/javascript'></script>
 	<script src='https://cdnjs.cloudflare.com/ajax/libs/Uniform.js/2.1.2/jquery.uniform.min.js' type='text/javascript'></script>
 	<script src='@routes.Assets.at("theme/global/plugins/bootstrap-switch/js/bootstrap-switch.min.js")' type='text/javascript'></script>
-    <script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <!script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><!/script>
 
 	<! Page level javascripts>
-	@javascripts
+    @javascripts
+
 		
 		
 </html>
