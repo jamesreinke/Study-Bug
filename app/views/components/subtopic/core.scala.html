@@ -1,0 +1,67 @@
+@import models.problems.{Topic, Subtopic}
+@(
+subtopic: Subtopic = new Subtopic(0, "", ""))
+<div class="row">
+	<div class="col-md-12">
+		<div class="tabbable tabbable-custom tabbable-noborder  tabbable-reversed">
+			<div class="portlet box green">
+				<div class="portlet-title">
+					<div class="caption">
+						Database
+					</div>
+					<div class="tools">
+						<a href="javascript:;" class="collapse">
+						</a>
+					</div>
+				</div>
+				<div class="portlet-body form">
+					<!-- BEGIN FORM-->
+					<form action="@routes.Problem.subtopicPost" class="form-horizontal" method="POST">
+						<input type="hidden" name="id" value="@subtopic.id">
+						<div class="form-body">
+							<h3 class="form-section">Subtopics</h3>
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label class="control-label col-md-3">Subtopic Name</label>
+										<div class="col-md-9">
+											<input name="contents" type="text" value="@subtopic.contents" class="form-control" placeholder="Fraction Addition">
+											<span class="help-block">
+											Choose a unique subtopic name </span>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label class="control-label col-md-3">Subtopic Hint</label>
+										<div class="col-md-9">
+											<input name="hint" type="text" value="@subtopic.hint" class="form-control" placeholder="Fractions must have a common denominator.">
+											<span class="help-block">
+											Hint will be displayed to help users solve the next step of a problem</span>
+										</div>
+									</div>
+								</div>
+								<!--/span-->
+							</div>
+						</div>
+						<div class="form-actions">
+							<div class="row">
+								<div class="col-md-6">
+									<div class="row">
+										<div class="col-md-offset-3 col-md-9">
+											<button type="submit" class="btn green">Submit</button>
+											<button type="submit" class="btn red">Delete</button>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6">
+								</div>
+							</div>
+						</div>
+					</form>
+					<!-- END FORM-->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

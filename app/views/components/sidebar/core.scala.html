@@ -1,7 +1,7 @@
 @import controllers.Node
 @(sidebar: List[Node.Menu] = Node.sidebar)
 
-<div class="page-sidebar md-shadow-z-2-i navbar-collapse collapse">
+<div class="page-sidebar md-shadow-z-2-i">
 	<ul class="page-sidebar-menu" data-keep-expanded="false" data-auto-scroll="true" data-slide-speed="200">
 		@for(item <- sidebar){
 			@item match {

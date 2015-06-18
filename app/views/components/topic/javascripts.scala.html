@@ -1,9 +1,12 @@
+<script type='text/javascript' src='@routes.Assets.at("theme/global/plugins/select2/select2.min.js")'></script>
 <script type='text/javascript' src='@routes.Assets.at("theme/global/scripts/metronic.js")'></script>
 <script type='text/javascript' src='@routes.Assets.at("theme/admin/layout4/scripts/layout.js")'></script>
+<script type='text/javascript' src='@routes.Assets.at("theme/admin/pages/scripts/form-samples.js")'></script>
 <script>
 	jQuery(document).ready(function() {    
 	   // initiate layout and plugins
-		Metronic.init(); // init metronic core components
+	   	Metronic.init(); // init metronic core components
 		Layout.init(); // init current layout
+	   	FormSamples.init();
 	});
 </script>

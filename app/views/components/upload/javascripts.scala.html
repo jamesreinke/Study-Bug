@@ -1,0 +1,14 @@
+<script type='text/javascript' src='@routes.Assets.at("javascripts/dropzone.js")'></script>
+
+<script>
+	Dropzone.options.myAwesomeDropzone = {
+	  paramName: "file", // The name that will be used to transfer the file
+	  maxFilesize: 10, // MB
+	  accept: function(file, done) {
+	    if (file.name == "justinbieber.jpg") {
+	      done("Naha, you don't.");
+	    }
+	    else { done(); }
+	  }
+	};
+</script>

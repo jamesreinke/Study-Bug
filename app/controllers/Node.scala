@@ -11,6 +11,6 @@ object Node {
 	val profile = List[Link](Profile.iLink, Profile.sLink)
 
 	/* An example of a sidebar navigation */
-	val sidebar = List[Menu](Application.iLink, Problem.dLink, Problem.tLink)
+	val sidebar = List[Menu](Application.iLink, Problem.dLink, Problem.cLink)
 
 }

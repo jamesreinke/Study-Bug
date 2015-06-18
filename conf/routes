@@ -19,7 +19,11 @@ GET		/profile					controllers.Profile.index
 
 GET		/stats						controllers.Profile.stats
 
-GET		/topics						controllers.Problem.topics
+GET 	/topic 						controllers.Problem.topic
+POST 	/topic						controllers.Problem.topicPost
+
+GET 	/subtopic 					controllers.Problem.subtopic
+POST 	/subtopic 					controllers.Problem.subtopicPost
 
 
 # Map static resources from the /public folder to the /assets URL path

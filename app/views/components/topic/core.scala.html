@@ -1,0 +1,69 @@
+@import models.problems.{Topic, Subtopic}
+@(
+topic: Topic = new Topic(0, "", 0))
+<div class="row">
+	<div class="col-md-12">
+		<div class="tabbable tabbable-custom tabbable-noborder  tabbable-reversed">
+			<div class="portlet box green">
+				<div class="portlet-title">
+					<div class="caption">
+						Database
+					</div>
+					<div class="tools">
+						<a href="javascript:;" class="collapse">
+						</a>
+					</div>
+				</div>
+				<div class="portlet-body form">
+					<!-- BEGIN FORM-->
+					<form action="@routes.Problem.topicPost" class="form-horizontal" method="POST">
+						<input type="hidden" name="id" value="@topic.id">
+						<div class="form-body">
+							<h3 class="form-section">Topics</h3>
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label class="control-label col-md-3">Topic Name</label>
+										<div class="col-md-9">
+											<input name="contents" type="text" class="form-control" placeholder="Linear Algebra" value="@topic.contents">
+											<span class="help-block">
+											Choose a unique topic name </span>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6">
+									<div class="form-group">
+										<label class="control-label col-md-3">Parent Topic</label>
+										<div class="col-md-9">
+											<select name="parent" class="select2_category form-control" data-placeholder="No Topics" tabindex="1">
+												@for(topic <- models.problems.Topic.getAll){
+													<option value="@topic.id">@topic.contents</option>
+												}
+											</select>
+										</div>
+									</div>
+								</div>
+								<!--/span-->
+							</div>
+						</div>
+						<div class="form-actions">
+							<div class="row">
+								<div class="col-md-6">
+									<div class="row">
+										<div class="col-md-offset-3 col-md-9">
+											<button type="submit" class="btn green">Submit</button>
+											<button type="submit" class="btn red">Delete</button>
+										</div>
+									</div>
+								</div>
+								<div class="col-md-6">
+								</div>
+							</div>
+						</div>
+					</form>
+					<!-- END FORM-->
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
