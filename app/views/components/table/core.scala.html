@@ -1,0 +1,61 @@
+@(table: List[List[String]] = List())
+
+<div class="row">
+	<div class="col-md-12">
+		<!-- BEGIN EXAMPLE TABLE PORTLET-->
+		<div class="portlet box grey-cascade">
+			<div class="portlet-title">
+				<div class="caption">
+					<i class="fa fa-database"></i>Database Table
+				</div>
+				<div class="tools">
+					<a href="javascript:;" class="collapse">
+					</a>
+				</div>
+			</div>
+			<div class="portlet-body">
+				<table class="table table-striped table-bordered table-hover" id="modelTable">
+					@table match {
+						case (x::xs) => {
+							<thead>
+								<tr>
+									@for(col <- x){
+										<th>
+											@col
+										</th>
+									}
+									<th>
+										Edit
+									</th>
+									<th>
+										Delete
+									</th>
+								</tr>
+							</thead>
+							<tbody>
+								@for(row <- xs) {
+									<tr>
+										@for(col <- row){
+											<td>
+												@col
+											</td>
+										}
+										<td>
+											<a href="" class="btn default btn-xs black">
+											<i class="fa fa-edit"></i> Edit </a>
+										</td>
+										<td>
+											<a href="" class="btn default btn-xs red">
+											<i class="fa fa-trash-o"></i> Delete </a>
+										</td>
+									</tr>
+								}
+							</tbody>
+						}
+						case _ => {}
+					}
+				</table>
+			</div>
+		</div>
+	</div>
+</div>

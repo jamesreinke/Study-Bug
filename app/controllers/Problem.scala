@@ -43,11 +43,11 @@ object Problem extends Controller {
 	def topicPost = Action {
 		implicit request => {
 			tForm.bindFromRequest.fold(
-				formWithErrors => Ok(views.html.pages.temp.core(views.html.components.topic.core())),
+				formWithErrors => Ok(views.html.pages.temp.core(views.html.components.topic.core(errMsg = "Error"))),
 				topic => {
 					Topic.create(topic) match {
-						case Some(id) => Ok("We created a topic " + id)
-						case _ => Ok("There was a problem creating the topic :(")
+						case Some(id) => Ok(views.html.pages.temp.core(views.html.components.topic.core(topic = topic)))
+						case _ => Ok(views.html.pages.temp.core(views.html.components.topic.core(errMsg = "Topic Already Exists", topic = topic)))
 					}
 				})
 		}
@@ -69,11 +69,11 @@ object Problem extends Controller {
 	def subtopicPost = Action {
 		implicit request => {
 			sForm.bindFromRequest.fold(
-				formWithErrors => Ok(views.html.pages.temp.core(views.html.components.subtopic.core())),
-				topic => {
-					Subtopic.create(topic) match {
-						case Some(id) => Ok(views.html.pages.temp.core(views.html.components.subtopic.core()))
-						case _ => Ok(views.html.pages.temp.core(views.html.components.subtopic.core()))
+				formWithErrors => Ok(views.html.pages.temp.core(views.html.components.subtopic.core(errMsg = "Error"))),
+				subtopic => {
+					Subtopic.create(subtopic) match {
+						case Some(id) => Ok(views.html.pages.temp.core(views.html.components.subtopic.core(subtopic = subtopic)))
+						case _ => Ok(views.html.pages.temp.core(views.html.components.subtopic.core(errMsg = "Subtopic Already Exists", subtopic = subtopic)))
 					}
 				})
 		}

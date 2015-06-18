@@ -151,4 +151,12 @@ object Subtopic extends AnormModel {
 		}
 	}
 
+	/* Formats the model for table presentation */
+	override def toTable: List[List[String]] = {
+		val colNames = List("ID", "Contents", "Hint")
+		val subtopics = getAll
+		val colVals = for(subtopic <- subtopics) yield List(subtopic.id.toString, subtopic.contents, subtopic.hint)
+		colNames +: colVals // append the column names as the first row of the matrix
+	}
+
 }

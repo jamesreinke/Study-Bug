@@ -23,6 +23,9 @@ abstract class AnormModel {
 	/* Removes the database item */
 	def delete(item: T): Boolean
 
+	/* Table formats the database model */
+	def toTable: List[List[String]] = List()
+
 	
 	/* 
 

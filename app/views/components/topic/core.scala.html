@@ -1,6 +1,7 @@
 @import models.problems.{Topic, Subtopic}
 @(
-topic: Topic = new Topic(0, "", 0))
+topic: Topic = new Topic(0, "", 0),
+errMsg: String = "")
 <div class="row">
 	<div class="col-md-12">
 		<div class="tabbable tabbable-custom tabbable-noborder  tabbable-reversed">
@@ -19,7 +20,8 @@ topic: Topic = new Topic(0, "", 0))
 					<form action="@routes.Problem.topicPost" class="form-horizontal" method="POST">
 						<input type="hidden" name="id" value="@topic.id">
 						<div class="form-body">
-							<h3 class="form-section">Topics</h3>
+							<h3 class="form-section">Topics@if(topic.id != 0){ - #@topic.id}</h3>
+							<h3 class="form-section text-danger">@errMsg</h3>
 							<div class="row">
 								<div class="col-md-6">
 									<div class="form-group">
@@ -51,8 +53,9 @@ topic: Topic = new Topic(0, "", 0))
 								<div class="col-md-6">
 									<div class="row">
 										<div class="col-md-offset-3 col-md-9">
-											<button type="submit" class="btn green">Submit</button>
-											<button type="submit" class="btn red">Delete</button>
+											<!-- Value Mappings: action = insert or delete-->
+											<button name="action" type="submit" value="insert" class="btn green">Submit</button>
+											<button name="action" type="submit" value="delete" class="btn red">Delete</button>
 										</div>
 									</div>
 								</div>

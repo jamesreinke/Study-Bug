@@ -1,6 +1,7 @@
-@import models.problems.{Topic, Subtopic}
+@import models.problems.{Subtopic}
 @(
-subtopic: Subtopic = new Subtopic(0, "", ""))
+subtopic: Subtopic = new Subtopic(0, "", ""),
+errMsg: String = "")
 <div class="row">
 	<div class="col-md-12">
 		<div class="tabbable tabbable-custom tabbable-noborder  tabbable-reversed">
@@ -19,7 +20,8 @@ subtopic: Subtopic = new Subtopic(0, "", ""))
 					<form action="@routes.Problem.subtopicPost" class="form-horizontal" method="POST">
 						<input type="hidden" name="id" value="@subtopic.id">
 						<div class="form-body">
-							<h3 class="form-section">Subtopics</h3>
+							<h3 class="form-section">Subtopics@if(subtopic.id != 0){ - #@subtopic.id}</h3>
+							<h3 class="form-section text-danger">@errMsg</h3>
 							<div class="row">
 								<div class="col-md-6">
 									<div class="form-group">
@@ -49,8 +51,8 @@ subtopic: Subtopic = new Subtopic(0, "", ""))
 								<div class="col-md-6">
 									<div class="row">
 										<div class="col-md-offset-3 col-md-9">
-											<button type="submit" class="btn green">Submit</button>
-											<button type="submit" class="btn red">Delete</button>
+											<button name="action" type="submit" class="btn green" value="insert">Submit</button>
+											<button name="action" type="submit" class="btn red" value="delete">Delete</button>
 										</div>
 									</div>
 								</div>

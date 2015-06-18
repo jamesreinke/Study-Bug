@@ -8,7 +8,7 @@ object Node {
 	case class LinkedLinks(tag: String, image: String = "", links: List[Link]) extends Menu
 
 
-	val profile = List[Link](Profile.iLink, Profile.sLink)
+	val profile = List[Link](Profile.iLink, Profile.sLink, Authentication.lLink)
 
 	/* An example of a sidebar navigation */
 	val sidebar = List[Menu](Application.iLink, Problem.dLink, Problem.cLink)

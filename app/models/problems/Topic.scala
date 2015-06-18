@@ -167,4 +167,19 @@ object Topic extends AnormModel {
 			}
 		}
 	}
+
+	/* Formats the model for table presentation */
+	override def toTable: List[List[String]] = {
+		val colNames = List("ID", "Contents", "Parent")
+		val topics = getAll
+		val colVals = for(topic <- topics) yield {
+			val parent = getParent(topic) match {
+				case Some(parent) => parent.contents
+				case _ => "No Parent"
+			}
+			List(topic.id.toString, topic.contents, parent)
+		}
+		colNames +: colVals // append the column names as the first row of the matrix
+	}
+
 }
