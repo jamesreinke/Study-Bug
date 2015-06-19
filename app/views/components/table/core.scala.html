@@ -32,8 +32,8 @@
 								</tr>
 							</thead>
 							<tbody>
-								@for(row <- xs) {
-									<tr id="row-@row.head">
+								@for((row, index) <- xs.zipWithIndex) {
+									<tr id="row-@row.head" @if( index % 2 == 0 ){class="odd"}else{class="even"}>
 										@for(col <- row){
 											<td>
 												@col

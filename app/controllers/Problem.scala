@@ -25,7 +25,7 @@ object Problem extends Controller {
 		implicit request => Ok(views.html.pages.temp.core(todo.render()))
 	}
 	val tLink = new Link("Topics", "", routes.Problem.topic())
-	val sLink = new Link("Subtopics", "", routes.Problem.subtopic())
+	val sLink = new Link("Subtopics", "", routes.Subtopic.getPage())
 	val cLink = new LinkedLinks("Categories", "fa fa-university", List(tLink, sLink))
 
 	/* Topic form and GET/POST handler */
@@ -55,37 +55,6 @@ object Problem extends Controller {
 					Topic.create(topic) match {
 						case Some(id) => Ok(views.html.pages.temp.core(views.html.components.topic.core(topic = topic)))
 						case _ => Ok(views.html.pages.temp.core(views.html.components.topic.core(errMsg = "Topic Already Exists", topic = topic)))
-					}
-				})
-		}
-	}
-	/* Subtopic form and GET/POST handler */
-	val sForm = Form(
-		mapping(
-			"id" -> default(of[Long], 0L),
-			"contents" -> of[String],
-			"hint" -> default(of[String], ""))(SubtopicModel.apply)(SubtopicModel.unapply))
-	def subtopic() = Action {
-		implicit request => {
-			auth(request) match { // TODO change to matching admins not authenticated
-				case false => Redirect("/")
-				case true => {
-					SubtopicModel.getById(0) match {
-						case Some(subtopic) => Ok(views.html.pages.temp.core(views.html.components.subtopic.core()))
-						case _ => Ok(views.html.pages.temp.core(views.html.components.subtopic.core()))
-					}
-				}
-			}
-		}
-	}
-	def subtopicPost = Action {
-		implicit request => {
-			sForm.bindFromRequest.fold(
-				formWithErrors => Ok(views.html.pages.temp.core(views.html.components.subtopic.core(errMsg = "Error"))),
-				subtopic => {
-					SubtopicModel.create(subtopic) match {
-						case Some(id) => Ok(views.html.pages.temp.core(views.html.components.subtopic.core()))
-						case _ => Ok(views.html.pages.temp.core(views.html.components.subtopic.core(errMsg = "Subtopic Already Exists")))
 					}
 				})
 		}

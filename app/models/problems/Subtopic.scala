@@ -53,6 +53,22 @@ object Subtopic extends AnormModel {
 		else None
 	}
 
+	def update(s: Subtopic): Boolean = {
+		DB.withConnection {
+			implicit session => {
+				SQL(
+					s"""
+					update 
+						subtopics s
+					set
+						contents = ${s.contents}, hint = ${s.hint}
+					where
+						s.id = ${s.id}
+					""").execute()
+			}
+		}
+	}
+
 	/* Assign a subtopic to a solution step */
 	def assign(sid: Long, ssid: Long): Option[Long] = {
 		DB.withConnection {
@@ -95,10 +111,12 @@ object Subtopic extends AnormModel {
 					SQL(
 						s"""
 						delete from
-							subtopics s
+							subtopics
 						where
-							s.id = $id
-							""").execute()
+							id = $id
+						or
+							contents = lower('${formatString(contents)}')
+						""").execute()
 				}
 			}
 		}
@@ -159,6 +177,10 @@ object Subtopic extends AnormModel {
 					""").as(parser*)
 			}
 		}
+	}
+
+	def gen(id: Long = 0L, contents: String = "", hint: String = ""): Subtopic = {
+		new Subtopic(id, contents, hint)
 	}
 
 	/* Formats the model for table presentation */

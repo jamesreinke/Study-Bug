@@ -1,54 +1,78 @@
 @views.html.components.table.javascripts()
 <script>
 	$(function(){
-		var edit = $('.edit');
-		var del = $('.del');
-		var cancel = $('.cancel');
-		var submit = $('.submit');
 		var subid = $('#subtopic-id');
 		var subcont = $('#subtopic-contents');
 		var subhint = $('#subtopic-hint');
 		var title = $('.form-title');
-		edit.click(function(){
+		var tbody = $('tbody');
+		var update = $('.update')
+		$(document).on('click', '.edit',function(){
 			var id = $(this).attr("data");
 			$.ajax({
 				type: 'GET',
-				url: '/subtopic/' + id,
-				success: function(data) {
+				url: '/subtopic?id=' + id,
+				success: function(data){
+					console.log(data);
 					subid.val(data.id);
 					subcont.val(data.contents);
 					subhint.val(data.hint);
 					title.text("Subtopic ID: " + data.id);
+					var submit = $('.submit')
 					submit.text("Update");
+					submit.removeClass();
+					submit.addClass('btn green update');
 				}
 			});
 		});
-		cancel.click(function(){
+		$(document).on('click', '.update',function(){
+			var id = $(this).attr("data");
+			$.ajax({
+				type: 'PUT',
+				url: '/subtopic?id=' + subid.val() + '&contents=' + subcont.val() + '&hint=' + subhint.val(),
+				success: function(data){
+					subid.val(data.id);
+					subcont.val(data.contents);
+					subhint.val(data.hint);
+					title.text("Subtopic ID: " + data.id);
+				}
+			});
+		});
+		$(document).on('click', '.cancel',function(){
 			subid.val(0);
 			subcont.val("");
 			subhint.val("");
 			title.text("Subtopic");
-			submit.text("Submit")
+			var update = $('.update')
+			update.text("Submit");
+			update.removeClass();
+			update.addClass('btn green submit');
 		});
-		del.click(function(){
+		$(document).on('click', '.del',function(){
 			var id = $(this).attr("data");
 			$.ajax({
-				type: 'POST',
-				url: '/subtopic/delete/' + id,
+				type: 'DELETE',
+				url: '/subtopic?id=' + id,
 				success: function(data) {
 					$('#row-' + id).remove()
 				}
 			});
 		});
-		submit.click(function(){
-			console.log("We just clicked the submit button !");
+		$(document).on('click', '.submit',function(){
 			var contents = subcont.val();
 			var hint = subhint.val();
 			$.ajax({
 				type: 'POST',
-				url: '/subtopic/' + contents + "/" + hint,
-				success: function(data) {
-					console.log("Fuck yeah");
+				url: '/subtopic?contents=' + contents + '&hint=' + hint,
+				success: function(data){
+					tbody.append('<tr id="row-'+data.id+'">'+
+					'<td>'+data.id+'</td>'+
+					'<td>'+data.contents+'</td>'+
+					'<td>'+data.hint+'</td>'+
+					'<td><button class="edit" data="'+data.id+'" class="btn default btn-xs black">'+
+					'<i class="fa fa-edit"></i> Edit </a></td>'+
+					'<td><button class="del" data="'+data.id+'" class="btn default btn-xs red">'+
+					'<i class="fa fa-trash-o"></i> Delete </a></td></tr>');
 				}
 			});
 		});
