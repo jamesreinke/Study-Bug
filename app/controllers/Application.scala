@@ -12,7 +12,7 @@ object Application extends Controller {
 			val table = List(List("name", "boobs", "butt"), List("Shaniquoa", "C-", "A+"), List("Megan", "B+", "A-"))
 
 			if(!Authentication.auth(request)) Ok(views.html.pages.login.core(Authentication.userForm, msg = a))
-			else Ok(views.html.pages.temp.core(views.html.components.table.core(table)))
+			else Ok(views.html.pages.temp.core())
 		}
 	}
 }

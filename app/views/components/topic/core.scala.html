@@ -38,6 +38,7 @@ errMsg: String = "")
 										<label class="control-label col-md-3">Parent Topic</label>
 										<div class="col-md-9">
 											<select name="parent" class="select2_category form-control" data-placeholder="No Topics" tabindex="1">
+												<option value="0"></option>
 												@for(topic <- models.problems.Topic.getAll){
 													<option value="@topic.id">@topic.contents</option>
 												}
@@ -54,8 +55,7 @@ errMsg: String = "")
 									<div class="row">
 										<div class="col-md-offset-3 col-md-9">
 											<!-- Value Mappings: action = insert or delete-->
-											<button name="action" type="submit" value="insert" class="btn green">Submit</button>
-											<button name="action" type="submit" value="delete" class="btn red">Delete</button>
+											<button type="submit" class="btn green">@if(topic.id != 0){Edit}else{Submit}</button>
 										</div>
 									</div>
 								</div>
@@ -70,3 +70,4 @@ errMsg: String = "")
 		</div>
 	</div>
 </div>
+@views.html.components.table.core(Topic.toTable)
