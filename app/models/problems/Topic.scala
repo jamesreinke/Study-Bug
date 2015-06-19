@@ -167,6 +167,22 @@ object Topic extends AnormModel {
 			}
 		}
 	}
+	
+	def getById(tid: Long): Option[Topic] = {
+		DB.withConnection {
+			implicit session => {
+				SQL(
+					s"""
+					select
+						*
+					from
+						topics t
+					where
+						t.id = $tid
+					""").as(parser*).headOption
+			}
+		}
+	}
 
 	/* Formats the model for table presentation */
 	override def toTable: List[List[String]] = {

@@ -19,10 +19,10 @@ GET		/profile					controllers.Profile.index
 
 GET		/stats						controllers.Profile.stats
 
-GET 	/topic 						controllers.Problem.topic
+GET 	/topics 					controllers.Problem.topic
 POST 	/topic						controllers.Problem.topicPost
 
-GET 	/subtopic 					controllers.Problem.subtopic
+GET 	/subtopics 					controllers.Problem.subtopic
 POST 	/subtopic 					controllers.Problem.subtopicPost
 
 

@@ -32,11 +32,16 @@ object Problem extends Controller {
 			"id" -> default(of[Long], 0L),
 			"contents" -> of[String],
 			"parent" -> default(of[Long], 0L))(Topic.apply)(Topic.unapply))
-	def topic = Action {
+	def topic() = Action {
 		implicit request => {
 			auth(request) match { // TODO change to matching admins not authenticated
 				case false => Redirect("/")
-				case true => Ok(views.html.pages.temp.core(views.html.components.topic.core()))
+				case true => {
+					Topic.getById(0) match {
+						case Some(topic) => Ok(views.html.pages.temp.core(views.html.components.topic.core(topic)))
+						case _ => Ok(views.html.pages.temp.core(views.html.components.topic.core()))
+					}
+				}
 			}
 		}
 	}
@@ -58,11 +63,16 @@ object Problem extends Controller {
 			"id" -> default(of[Long], 0L),
 			"contents" -> of[String],
 			"hint" -> default(of[String], ""))(Subtopic.apply)(Subtopic.unapply))
-	def subtopic = Action {
+	def subtopic() = Action {
 		implicit request => {
 			auth(request) match { // TODO change to matching admins not authenticated
 				case false => Redirect("/")
-				case true => Ok(views.html.pages.temp.core(views.html.components.subtopic.core()))
+				case true => {
+					Subtopic.getById(0) match {
+						case Some(subtopic) => Ok(views.html.pages.temp.core(views.html.components.subtopic.core(subtopic)))
+						case _ => Ok(views.html.pages.temp.core(views.html.components.subtopic.core()))
+					}
+				}
 			}
 		}
 	}
