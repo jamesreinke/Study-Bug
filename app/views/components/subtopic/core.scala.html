@@ -1,7 +1,5 @@
 @import models.problems.{Subtopic}
-@(
-subtopic: Subtopic = new Subtopic(0, "", ""),
-errMsg: String = "")
+@(errMsg: String = "")
 <div class="row">
 	<div class="col-md-12">
 		<div class="tabbable tabbable-custom tabbable-noborder  tabbable-reversed">
@@ -18,16 +16,16 @@ errMsg: String = "")
 				<div class="portlet-body form">
 					<!-- BEGIN FORM-->
 					<form action="@routes.Problem.subtopicPost" class="form-horizontal" method="POST">
-						<input type="hidden" name="id" value="@subtopic.id">
+						<input id="subtopic-id" type="hidden" name="id" value="">
 						<div class="form-body">
-							<h3 class="form-section">Subtopics@if(subtopic.id != 0){ - #@subtopic.id}</h3>
+							<h3 class="form-section form-title">Subtopics</h3>
 							<h3 class="form-section text-danger">@errMsg</h3>
 							<div class="row">
 								<div class="col-md-6">
 									<div class="form-group">
 										<label class="control-label col-md-3">Subtopic Name</label>
 										<div class="col-md-9">
-											<input name="contents" type="text" value="@subtopic.contents" class="form-control" placeholder="Fraction Addition">
+											<input id="subtopic-contents" name="contents" type="text" value="" class="form-control" placeholder="Fraction Addition">
 											<span class="help-block">
 											Choose a unique subtopic name </span>
 										</div>
@@ -37,7 +35,7 @@ errMsg: String = "")
 									<div class="form-group">
 										<label class="control-label col-md-3">Subtopic Hint</label>
 										<div class="col-md-9">
-											<input name="hint" type="text" value="@subtopic.hint" class="form-control" placeholder="Fractions must have a common denominator.">
+											<input id="subtopic-hint" name="hint" type="text" value="" class="form-control" placeholder="Fractions must have a common denominator.">
 											<span class="help-block">
 											Hint will be displayed to help users solve the next step of a problem</span>
 										</div>
@@ -51,7 +49,7 @@ errMsg: String = "")
 								<div class="col-md-6">
 									<div class="row">
 										<div class="col-md-offset-3 col-md-9">
-											<button type="submit" class="btn green">@if(subtopic.id != 0){Edit}else{Submit}</button>
+											<button type="submit" class="btn green">Submit</button>
 										</div>
 									</div>
 								</div>

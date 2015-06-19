@@ -7,12 +7,22 @@ import play.api.db.DB
 import play.api.Play.current
 import models.AnormModel
 
+import play.api.libs.json._
+
 case class Subtopic(
 	id: Long,
 	contents: String,
 	hint: String)
 
 object Subtopic extends AnormModel {
+
+	def toJson(s: Subtopic): JsObject = {
+		Json.obj(
+			"id" -> s.id,
+			"contents" -> s.contents,
+			"hint" -> s.hint
+			)
+	}
 
 	type T = Subtopic
 

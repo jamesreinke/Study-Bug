@@ -14,6 +14,8 @@ import models.problems._
 
 import Authentication.{auth, admin}
 
+import models.problems.{Subtopic => SubtopicModel}
+
 
 
 object Problem extends Controller {
@@ -62,14 +64,14 @@ object Problem extends Controller {
 		mapping(
 			"id" -> default(of[Long], 0L),
 			"contents" -> of[String],
-			"hint" -> default(of[String], ""))(Subtopic.apply)(Subtopic.unapply))
+			"hint" -> default(of[String], ""))(SubtopicModel.apply)(SubtopicModel.unapply))
 	def subtopic() = Action {
 		implicit request => {
 			auth(request) match { // TODO change to matching admins not authenticated
 				case false => Redirect("/")
 				case true => {
-					Subtopic.getById(0) match {
-						case Some(subtopic) => Ok(views.html.pages.temp.core(views.html.components.subtopic.core(subtopic)))
+					SubtopicModel.getById(0) match {
+						case Some(subtopic) => Ok(views.html.pages.temp.core(views.html.components.subtopic.core()))
 						case _ => Ok(views.html.pages.temp.core(views.html.components.subtopic.core()))
 					}
 				}
@@ -81,9 +83,9 @@ object Problem extends Controller {
 			sForm.bindFromRequest.fold(
 				formWithErrors => Ok(views.html.pages.temp.core(views.html.components.subtopic.core(errMsg = "Error"))),
 				subtopic => {
-					Subtopic.create(subtopic) match {
-						case Some(id) => Ok(views.html.pages.temp.core(views.html.components.subtopic.core(subtopic = subtopic)))
-						case _ => Ok(views.html.pages.temp.core(views.html.components.subtopic.core(errMsg = "Subtopic Already Exists", subtopic = subtopic)))
+					SubtopicModel.create(subtopic) match {
+						case Some(id) => Ok(views.html.pages.temp.core(views.html.components.subtopic.core()))
+						case _ => Ok(views.html.pages.temp.core(views.html.components.subtopic.core(errMsg = "Subtopic Already Exists")))
 					}
 				})
 		}

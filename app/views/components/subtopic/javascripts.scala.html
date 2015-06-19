@@ -1,1 +1,24 @@
 @views.html.components.table.javascripts()
+<script>
+	$(function(){
+		var edit = $('.edit');
+		var del = $('.del');
+		var subid = $('#subtopic-id');
+		var subcont = $('#subtopic-contents');
+		var subhint = $('#subtopic-hint');
+		var title = $('.form-title');
+		edit.click(function(){
+			var id = $(this).attr("data")
+			$.ajax({
+				type: 'GET',
+				url: '/subtopic/' + id,
+				success: function(data) {
+					subid.val(data.id + '');
+					subcont.val(data.contents + '');
+					subhint.val(data.hint + '');
+					title.append(" - <strong>" + data.id + "</strong>");
+				}
+			});
+		});
+	});
+</script>
