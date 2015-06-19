@@ -40,5 +40,17 @@
 				}
 			});
 		});
+		submit.click(function(){
+			console.log("We just clicked the submit button !");
+			var contents = subcont.val();
+			var hint = subhint.val();
+			$.ajax({
+				type: 'POST',
+				url: '/subtopic/' + contents + "/" + hint,
+				success: function(data) {
+					console.log("Fuck yeah");
+				}
+			});
+		});
 	});
 </script>

@@ -27,6 +27,7 @@ POST 	/subtopic 					controllers.Problem.subtopicPost
 
 GET 	/subtopic/:id 				controllers.Subtopic.getSubtopic(id: Long)
 POST 	/subtopic/delete/:id 		controllers.Subtopic.delete(id: Long)
+POST 	/subtopic/:contents/:hint	controllers.Subtopic.create(contents: String, hint: String)
 
 
 # Map static resources from the /public folder to the /assets URL path

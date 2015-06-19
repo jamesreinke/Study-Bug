@@ -35,4 +35,13 @@ object Subtopic extends Controller {
 		}
 	}
 
+	def create(contents: String, hint: String) = Action {
+		implicit request => {
+			models.problems.Subtopic.create(new models.problems.Subtopic(0, contents, hint)) match {
+				case Some(long) => Ok("Created the damn thing")
+				case _ => Ok("Didn't create the damn thing")
+			}
+		}
+	}
+
 }
