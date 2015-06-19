@@ -33,7 +33,7 @@
 							</thead>
 							<tbody>
 								@for(row <- xs) {
-									<tr>
+									<tr id="row-@row.head">
 										@for(col <- row){
 											<td>
 												@col

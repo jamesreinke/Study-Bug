@@ -4,12 +4,13 @@
 		var edit = $('.edit');
 		var del = $('.del');
 		var cancel = $('.cancel');
+		var submit = $('.submit');
 		var subid = $('#subtopic-id');
 		var subcont = $('#subtopic-contents');
 		var subhint = $('#subtopic-hint');
 		var title = $('.form-title');
 		edit.click(function(){
-			var id = $(this).attr("data")
+			var id = $(this).attr("data");
 			$.ajax({
 				type: 'GET',
 				url: '/subtopic/' + id,
@@ -18,6 +19,7 @@
 					subcont.val(data.contents);
 					subhint.val(data.hint);
 					title.text("Subtopic ID: " + data.id);
+					submit.text("Update");
 				}
 			});
 		});
@@ -26,6 +28,17 @@
 			subcont.val("");
 			subhint.val("");
 			title.text("Subtopic");
+			submit.text("Submit")
+		});
+		del.click(function(){
+			var id = $(this).attr("data");
+			$.ajax({
+				type: 'POST',
+				url: '/subtopic/delete/' + id,
+				success: function(data) {
+					$('#row-' + id).remove()
+				}
+			});
 		});
 	});
 </script>

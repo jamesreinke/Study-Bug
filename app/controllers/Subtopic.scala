@@ -23,4 +23,16 @@ object Subtopic extends Controller {
 		}
 	}
 
+	def delete(id: Long) = Action {
+		implicit request => {
+			getById(id) match {
+				case Some(subtopic) => {
+					models.problems.Subtopic.delete(subtopic)
+					Ok("Successfully deleted the object")
+				}
+				case _ => Ok("We couldn't retrieve the Json Object")
+			}
+		}
+	}
+
 }
