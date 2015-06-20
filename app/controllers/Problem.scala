@@ -25,7 +25,7 @@ object Problem extends Controller {
 		implicit request => Ok(views.html.pages.temp.core(todo.render()))
 	}
 	val tLink = new Link("Topics", "", routes.Problem.topic())
-	val sLink = new Link("Subtopics", "", routes.Subtopic.getPage())
+	val sLink = new Link("Subtopics", "", routes.Subtopic.get())
 	val cLink = new LinkedLinks("Categories", "fa fa-university", List(tLink, sLink))
 
 	/* Topic form and GET/POST handler */

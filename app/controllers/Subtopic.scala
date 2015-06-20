@@ -13,18 +13,20 @@ object Subtopic extends Controller {
 
 	def get(id: Long) = Action {
 		implicit request => {
-			getById(id) match {
-				case Some(subtopic) => {
-					Ok(toJson(subtopic))
+			id > 0 match {
+				case true => {
+					getById(id) match {
+						case Some(subtopic) => {
+							Ok(toJson(subtopic))
+						}
+						case _ => {
+							println("We got a bad request")
+							BadRequest("Subtopic not found ID: " + id)
+						}
+					}
 				}
-				case _ => BadRequest("Subtopic not found ID: " + id)
+				case false => Ok(views.html.pages.temp.core(views.html.components.subtopic.core()))
 			}
-		}
-	}
-
-	def getPage = Action {
-		implicit request => {
-			Ok(views.html.pages.temp.core(views.html.components.subtopic.core()))
 		}
 	}
 

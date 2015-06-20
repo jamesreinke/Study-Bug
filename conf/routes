@@ -22,7 +22,6 @@ GET		/stats						controllers.Profile.stats
 GET 	/topics 					controllers.Problem.topic
 POST 	/topic						controllers.Problem.topicPost
 
-GET 	/subtopic 					controllers.Subtopic.getPage
 GET 	/subtopic	 				controllers.Subtopic.get(id: Long ?= 0L)
 DELETE 	/subtopic	 				controllers.Subtopic.delete(id: Long ?= 0L)
 POST 	/subtopic					controllers.Subtopic.create(contents: String ?= "", hint: String ?= "")
