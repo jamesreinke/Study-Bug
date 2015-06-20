@@ -1,7 +1,4 @@
-@import models.problems.{Topic, Subtopic}
-@(
-topic: Topic = new Topic(0, "", 0),
-errMsg: String = "")
+@(errMsg: String = "")
 <div class="row">
 	<div class="col-md-12">
 		<div class="tabbable tabbable-custom tabbable-noborder  tabbable-reversed">
@@ -17,17 +14,17 @@ errMsg: String = "")
 				</div>
 				<div class="portlet-body form">
 					<!-- BEGIN FORM-->
-					<form action="@routes.Problem.topicPost" class="form-horizontal" method="POST">
-						<input type="hidden" name="id" value="@topic.id">
+					<form class="form-horizontal">
+						<input id="topic-id" type="hidden" name="id" value="0">
 						<div class="form-body">
-							<h3 class="form-section">Topics@if(topic.id != 0){ - #@topic.id}</h3>
+							<h3 class="form-section"></h3>
 							<h3 class="form-section text-danger">@errMsg</h3>
 							<div class="row">
 								<div class="col-md-6">
 									<div class="form-group">
 										<label class="control-label col-md-3">Topic Name</label>
 										<div class="col-md-9">
-											<input name="contents" type="text" class="form-control" placeholder="Linear Algebra" value="@topic.contents">
+											<input id="topic-contents" name="contents" value="" type="text" class="form-control" placeholder="Linear Algebra">
 											<span class="help-block">
 											Choose a unique topic name </span>
 										</div>
@@ -37,8 +34,8 @@ errMsg: String = "")
 									<div class="form-group">
 										<label class="control-label col-md-3">Parent Topic</label>
 										<div class="col-md-9">
-											<select name="parent" class="select2_category form-control" data-placeholder="No Topics" tabindex="1">
-												<option value="0"></option>
+											<select id="topic-parent" name="parent" class="select2me  select2_category form-control" data-placeholder="No Topics">
+												<option id="default-parent" value="0" selected="selected">No Parent</option>
 												@for(topic <- models.problems.Topic.getAll){
 													<option value="@topic.id">@topic.contents</option>
 												}
@@ -55,7 +52,8 @@ errMsg: String = "")
 									<div class="row">
 										<div class="col-md-offset-3 col-md-9">
 											<!-- Value Mappings: action = insert or delete-->
-											<button type="submit" class="btn green">@if(topic.id != 0){Edit}else{Submit}</button>
+											<button type="button" class="submit btn green">Submit</button>
+											<button type="button" class="cancel btn red">Cancel</button>
 										</div>
 									</div>
 								</div>
@@ -70,4 +68,4 @@ errMsg: String = "")
 		</div>
 	</div>
 </div>
-@views.html.components.table.core(Topic.toTable)
+@views.html.components.table.core(models.problems.Topic.toTable)

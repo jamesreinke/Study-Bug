@@ -1,7 +1,9 @@
 @import views.html.components._
 @import views.html.pages._
 
-@(content: Html = new Html(""))
+@(content: Html = new Html(""), 
+exJavascripts: Html = new Html(""), 
+exStyles: Html = new Html(""))
 
 @main("Study Bug"){
 	<body>
@@ -18,12 +20,10 @@
 }{
 	@header.styles()
 	@sidebar.styles()
-	@table.styles()
+	@exStyles
 	@styles()
 }{
 	@header.javascripts()
-	<!-- @sidebar.javascripts() Unnecessary; contained in form.javascripts -->
-	@table.javascripts()
-	@subtopic.javascripts()
+	@exJavascripts
 	@javascripts()
 }

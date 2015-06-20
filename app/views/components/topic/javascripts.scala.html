@@ -1,1 +1,100 @@
 @views.html.components.table.javascripts()
+<script>
+	$(function(){
+		var tid = $('#topic-id');
+		var contents = $('#topic-contents');
+		var parent = $('#topic-parent');
+		var title = $('.form-title');
+		var tbody = $('tbody');
+		var defParent = $('#default-parent');
+		parent.chosen({disable_search_threshold: 10});
+
+		// sets the form into a submission ready state
+		function cancel() {
+			tid.val(0);
+			contents.val("");
+			defParent.prop('selected', true);
+			title.text("");
+			var update = $('.update')
+			update.text("Submit");
+			update.removeClass();
+			update.addClass('btn green submit');
+		}
+
+
+		$(document).on('click', '.edit',function(){
+			var id = $(this).attr("data");
+			$.ajax({
+				type: 'GET',
+				url: '/topic?id=' + id,
+				success: function(data){
+					tid.val(data.id);
+					contents.val(data.contents);
+					$.ajax({
+						type: 'GET',
+						url: '/topic?id=' + data.parent,
+						success: function(data){
+							parent.text(data.contents);
+							parent.val(data.parent);
+						}
+					});
+					title.text("ID: " + data.id);
+					var submit = $('.submit');
+					submit.text("Update");
+					submit.removeClass();
+					submit.addClass('btn green update');
+				}
+			});
+		});
+		$(document).on('click', '.update',function(){
+			$.ajax({
+				type: 'PUT',
+				url: '/topic?id=' + tid.val() + '&contents=' + contents.val() + '&parent=' + parent.val(),
+				success: function(data){
+					tid.val(data.id);
+					contents.val(data.contents);
+					parent.val(data.parent);
+					title.text("ID: " + data.id);
+				}
+			});
+		});
+		$(document).on('click', '.cancel', cancel);
+
+		$(document).on('click', '.del', function(){
+			var tid = $(this).attr("data");
+			$.ajax({
+				type: 'DELETE',
+				url: '/topic?id=' + tid,
+				success: function(data) {
+					$('#row-' + tid).remove();
+					cancel();
+				}
+			});
+		});
+
+		$(document).on('click', '.submit',function(){
+			var c = contents.val();
+			var p = parent.val();
+			$.ajax({
+				type: 'POST',
+				url: '/topic?contents=' + c + '&parent=' + p,
+				success: function(data){
+					//empty out the table if we are adding the first entry
+					var empty = $('tbody tr td').attr("colspan") == "5";
+					if(empty) $('tbody tr').remove();
+					tbody.append('<tr id="row-'+data.id+'">'+
+					'<td>'+data.id+'</td>'+
+					'<td>'+data.contents+'</td>'+
+					'<td>'+data.parent+'</td>'+
+					'<td><button class="edit" data="'+data.id+'" class="btn default btn-xs black">'+
+					'<i class="fa fa-edit"></i> Edit </a></td>'+
+					'<td><button class="del" data="'+data.id+'" class="btn default btn-xs red">'+
+					'<i class="fa fa-trash-o"></i> Delete </a></td></tr>');
+					cancel();
+					title.text("Success");
+					parent.append('<option value="'+data.id+'">'+data.contents+'</option>');
+				}
+			});
+		});
+	});
+</script>

@@ -7,12 +7,23 @@ import play.api.db.DB
 import play.api.Play.current
 import models.AnormModel
 
+import play.api.libs.json._
+
 case class Topic(
 	id: Long,
 	contents: String,
 	parent: Long)
 
 object Topic extends AnormModel {
+
+
+	def toJson(t: Topic): JsObject = {
+		Json.obj(
+			"id" -> t.id,
+			"contents" -> t.contents,
+			"parent" -> t.parent
+			)
+	}
 
 	type T = Topic
 
@@ -184,16 +195,32 @@ object Topic extends AnormModel {
 		}
 	}
 
+	def update(t: Topic): Boolean = {
+		DB.withConnection {
+			implicit session => {
+				SQL(
+					s"""
+					update 
+						topics t
+					set
+						contents = ${t.contents}, parent = ${t.parent}
+					where
+						t.id = ${t.id}
+					""").execute()
+			}
+		}
+	}
+
+	def gen(id: Long = 0L, contents: String = "", parent: Long = 0L): Topic = {
+		new Topic(id, contents, parent)
+	}
+
 	/* Formats the model for table presentation */
 	override def toTable: List[List[String]] = {
-		val colNames = List("ID", "Contents", "Parent")
+		val colNames = List("ID", "Contents", "Parent ID")
 		val topics = getAll
 		val colVals = for(topic <- topics) yield {
-			val parent = getParent(topic) match {
-				case Some(parent) => parent.contents
-				case _ => "No Parent"
-			}
-			List(topic.id.toString, topic.contents, parent)
+			List(topic.id.toString, topic.contents, topic.parent.toString)
 		}
 		colNames +: colVals // append the column names as the first row of the matrix
 	}

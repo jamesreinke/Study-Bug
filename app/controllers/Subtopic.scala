@@ -9,8 +9,11 @@ import Node._
 import models.problems.Subtopic.{getById, toJson, gen}
 import play.api.libs.json._
 
+import views.html.components.subtopic._
+
 object Subtopic extends Controller {
 
+	val sLink = new Link("Subtopics", "", routes.Subtopic.get())
 	def get(id: Long) = Action {
 		implicit request => {
 			id > 0 match {
@@ -20,12 +23,14 @@ object Subtopic extends Controller {
 							Ok(toJson(subtopic))
 						}
 						case _ => {
-							println("We got a bad request")
 							BadRequest("Subtopic not found ID: " + id)
 						}
 					}
 				}
-				case false => Ok(views.html.pages.temp.core(views.html.components.subtopic.core()))
+				case false => Ok(views.html.pages.temp.core(
+						content = core(),
+						exStyles = styles(),
+						exJavascripts = javascripts()))
 			}
 		}
 	}
