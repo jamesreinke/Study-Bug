@@ -2,7 +2,8 @@ package controllers
 
 import play.api._
 import play.api.mvc._
-import models.problems.Topic.{toJson, getById, gen}
+
+import models.problems.{Topic => db}
 
 import Node._
 import play.api.libs.json._
@@ -13,69 +14,69 @@ import play.api.data._
 import play.api.data.Forms._
 import play.api.data.format.Formats._
 
+import views.html.components.topic._
+
 object Topic extends Controller {
 
-	val tLink = new Link("Topics", "", routes.Topic.get())
+	import models.problems.Topic
 
-	val form = Form(
+	val tForm = Form(
 		tuple(
-			"id" -> of[Long],
-			"contents" -> text,
-			"parent" -> of[Long]))
+			"id" -> default(of[Long], 0L),
+			"contents" -> default(text, ""),
+			"parent" -> default(of[Long],0L)))
 
-
-
-	/* Retrieve a topic by id; returns the topic page if there is no id supplied */
-	def get(id: Long) = Action {
+	def getPage = Action {
 		implicit request => {
-			id > 0 match {
-				/* User is requesting a json object of our topic */
-				case true => {
-					getById(id) match {
-						case Some(topic) => Ok(toJson(topic))
-						case _ => BadRequest("Could not retrieve topic ID: " + id)
-					}
-				}
-				case false => {
-					/* Return the topics page if no id is specified */
-					Ok(views.html.pages.temp.core(
-						content = core(),
-						exStyles = styles(),
-						exJavascripts = javascripts()))
-				}
+			Ok(views.html.pages.temp.core(
+				content = core(),
+				exStyles = styles(),
+				exJavascripts = javascripts()))
+		}
+	}
+
+
+	/* POST - retrieves topic by id */
+	def get = Action {
+		implicit request => {
+			val (id, contents, parent) = tForm.bindFromRequest.get
+			db.get(id) match {
+				case Some(topic) => Ok(db.toJson(topic))
+				case _ => BadRequest("Unable able to retrieve topic ID: " + id)
 			}
 		}
 	}
 
-	def delete(id: Long) = Action {
+	/* POST - deletes a topic by id */
+	def delete = Action {
 		implicit request => {
-			models.problems.Topic.delete(gen(id = id)) match {
-				case false => Ok("Topic deleted ID: " + id)
-				case true => BadRequest("Unable to delete topic with ID: " + id)
+			val (id, contents, parent) = tForm.bindFromRequest.get
+			db.delete(id) match {
+				case true => Ok("Topic deleted ID: " + id)
+				case false => BadRequest("Unable to delete topic with ID: " + id)
 			}
 		}
 	}
 
-	def create(contents: String, parent: Long) = Action {
+	/* POST - generates a topic */
+	def create = Action {
 		implicit request => {
-			models.problems.Topic.create(gen(contents = contents, parent = parent)) match {
-				case Some(long) => {
-					val obj = Json.obj(
-						"id" -> long,
-						"contents" -> contents,
-						"parent" -> parent
-						)
-				 	Ok(obj)
-				}
+			val (id, contents, parent) = tForm.bindFromRequest.get
+			val item = new Topic(0, contents, parent)
+			db.create(item) match {
+				case Some(long) => Ok(db.toJson(new Topic(long, contents, parent)))
 				case _ => BadRequest("Unable to create topic Contents: " + contents)
 			}
 		}
 	}
 
-	def update(id: Long, contents: String, parent: Long) = Action {
+	/* POST - updates a topic */
+	def update = Action {
 		implicit request => {
-			models.problems.Topic.update(gen(id = id, contents = contents, parent = parent)) match {
-				case true => Ok("Successfully updated the topic ID: " + id)
+			val (id, contents, parent) = tForm.bindFromRequest.get
+			val item = new Topic(id, contents, parent)
+			db.update(item) match {
+				case true => Ok(db.toJson(item))
 				case false => BadRequest("Unable to update topic ID: " + id)
 			}
 		}

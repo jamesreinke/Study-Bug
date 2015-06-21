@@ -20,28 +20,14 @@ object Subtopic extends Controller {
 
 import models.problems.Subtopic
 
-	val sform = Form(
+	val sForm = Form(
 		tuple(
 			"id" -> default(of[Long],0L),
 			"contents" -> default(text, ""),
 			"hint" -> default(text,"")))
 
-	val sLink = new Link("Subtopics", "", routes.Subtopic.get())
-	def get = Action {
-		implicit request => {
-			val (id: Long, contents: String, hint: String) = sform.bindFromRequest.get
-			db.get(id) match {
-				case Some(subtopic) => {
-					Ok(db.toJson(subtopic))
-				}
-				case _ => {
-					BadRequest("Subtopic not found ID: " + id)
-				}
-			}
-		}
-	}
-
-	def getpage = Action {
+	/* GET - Loads subtopic database page */
+	def getPage = Action {
 		implicit request => {
 			Ok(views.html.pages.temp.core(
 						content = core(),
@@ -49,34 +35,43 @@ import models.problems.Subtopic
 						exJavascripts = javascripts()))
 		}
 	}
-	
-
-	def delete = Action {
+	/* POST - Retrieves a subtopic item by id*/
+	def get = Action {
 		implicit request => {
-			val (id: Long, contents: String, hint: String) = sform.bindFromRequest.get
-			db.delete(id) match {
-				case false => Ok("Successfully deleted the object")
-				case _ => BadRequest("Failed deleting subtopic ID: " + id)
+			val (id: Long, contents: String, hint: String) = sForm.bindFromRequest.get
+			db.get(id) match {
+				case Some(subtopic) => Ok(db.toJson(subtopic))
+				case _ => BadRequest("Subtopic not found ID: " + id)
 			}
 		}
 	}
-
+	/* POST - deletes an item by ID */
+	def delete = Action {
+		implicit request => {
+			val (id: Long, contents: String, hint: String) = sForm.bindFromRequest.get
+			db.delete(id) match {
+				case true => Ok("Successfully deleted subtopic ID: " + id)
+				case false => BadRequest("Failed deleting subtopic ID: " + id)
+			}
+		}
+	}
+	/* POST - Generates a new subtopic */
 	def create = Action {
 		implicit request => {
-			val (id: Long, contents: String, hint: String) = sform.bindFromRequest.get
+			val (id: Long, contents: String, hint: String) = sForm.bindFromRequest.get
 			val item = new Subtopic(0, contents, hint)
 			db.create(item) match {
 				case Some(long) => {
-				 	Ok(db.toJson(item))
+				 	Ok(db.toJson(new Subtopic(long, contents, hint)))
 				}
 				case _ => BadRequest("Could not create the subtopic")
 			}
 		}
 	}
-
+	/* POST - Updates a subtopic */
 	def update = Action {
 		implicit request => {
-			val (id: Long, contents: String, hint: String) = sform.bindFromRequest.get
+			val (id: Long, contents: String, hint: String) = sForm.bindFromRequest.get
 			val item = new Subtopic(id, contents, hint)
 			db.update(item) match {
 				case true =>{

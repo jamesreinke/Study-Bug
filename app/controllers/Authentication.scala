@@ -85,7 +85,7 @@ object Authentication extends Controller {
 				})
 		}
 	}
-	val lLink = new Link("Logout", "fa fa-key", routes.Authentication.logout)
+	
 	def logout = Action {
 		implicit request => {
 			Redirect("/").withNewSession

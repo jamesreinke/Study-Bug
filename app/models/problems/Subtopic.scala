@@ -72,23 +72,20 @@ object Subtopic extends JNorm[Subtopic] {
 	}
 
 	/* Checks whether a subtopic already exists */
-	def exists(s: Subtopic): Boolean = s match {
-		case Subtopic(id, contents, hint) => {
-			DB.withConnection {
-				implicit session => {
-					SQL(
-						"""
-						select
-							count(*)
-						from
-							subtopics s
-						where
-							lower(s.contents) = lower({contents})
-						""").on("contents" -> s.contents).as(scalar[Long].single) > 0
-				}
+	def exists(s: Subtopic): Boolean = {
+		DB.withConnection {
+			implicit session => {
+				SQL(
+					"""
+					select
+						count(*)
+					from
+						subtopics s
+					where
+						lower(s.contents) = lower({contents})
+					""").on("contents" -> s.contents).as(scalar[Long].single) > 0
 			}
 		}
-		case _ => false
 	}
 
 	/* Formats the model for table presentation */

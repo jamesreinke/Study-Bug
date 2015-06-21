@@ -8,9 +8,19 @@ object Node {
 	case class LinkedLinks(tag: String, image: String = "", links: List[Link]) extends Menu
 
 
-	val profile = List[Link](Profile.iLink, Profile.sLink, Authentication.lLink)
 
-	/* An example of a sidebar navigation */
-	val sidebar = List[Menu](Application.iLink, Problem.dLink, Problem.cLink)
+	/* Sidebar navigation */
+	val index = new Node.Link("Home", "fa fa-home", routes.Application.index())
+	val database = new Link("Problems", "fa fa-database", routes.Problem.database())
+	val topics = new Link("Topics", "", routes.Topic.getPage())
+	val subtopics = new Link("Subtopics", "", routes.Subtopic.getPage())
+	val categories = new LinkedLinks("Categories", "fa fa-university", List(topics, subtopics))
+	val sidebar = List[Menu](index, database, categories)
+
+	/* Profile navigation */
+	val stats = new Link("Statistics", "fa fa-calculator", routes.Profile.stats())
+	val prof = new Link("Profile", "fa fa-user", routes.Profile.index())
+	val logout = new Link("Logout", "fa fa-key", routes.Authentication.logout)
+	val profile = List[Link](prof, stats, logout)
 
 }

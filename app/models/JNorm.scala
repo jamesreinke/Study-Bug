@@ -1,7 +1,11 @@
 package models
+
 import play.api.Play.current
+
 import anorm._
+
 import play.api.db.DB
+
 import scala.util.Random
 
 import play.api.libs.json._
@@ -34,13 +38,13 @@ abstract class JNorm [T]{
 	def delete(id: Long): Boolean = {
 		DB.withConnection {
 			implicit session => {
-				SQL(
-					"""
+				! SQL(
+					s"""
 					delete from 
-						{table}
+						$table
 					where
 						id = {id}
-					""").on("table" -> table, "id" -> id).execute()
+					""").on("id" -> id).execute()
 			}
 		}
 	}
@@ -49,14 +53,14 @@ abstract class JNorm [T]{
 		DB.withConnection {
 			implicit session => {
 				SQL(
-					"""
+					s"""
 					select
 						*
 					from
-						{table}
+						$table
 					where
 						id = {id}
-					""").on("table" -> table, "id" -> id).as(parser*).headOption
+					""").on("id" -> id).as(parser*).headOption
 			}
 		}
 	}
@@ -65,12 +69,12 @@ abstract class JNorm [T]{
 		DB.withConnection {
 			implicit session => {
 				SQL(
-					"""
+					s"""
 					select
 						*
 					from
-						{table}
-					""").on("table" -> table).as(parser*)
+						$table
+					""").as(parser*)
 			}
 		}
 	}
@@ -90,16 +94,16 @@ abstract class JNorm [T]{
 	}
 
 	/* Allows for many to one relation */
-	def assign(sid: Long, ssid: Long): Option[Long] = {
+	def assign(one: Long, two: Long): Option[Long] = {
 		DB.withConnection {
 			implicit session => {
 				SQL(
-					"""
+					s"""
 					insert into 
-						{table}
+						$aTable
 					values
-						({sid}, {ssid})
-					""").on("table" -> aTable, "sid" -> sid, "ssid" -> ssid).executeInsert()
+						({one}, {two})
+					""").on("one" -> one, "two" -> two).executeInsert()
 			}
 		}
 	}

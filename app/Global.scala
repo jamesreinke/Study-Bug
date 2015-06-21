@@ -6,13 +6,10 @@ class Global extends GlobalSettings {
 
 	/* Initialize our databases */
 	override def onStart(app: Application) {
-
+		println("Initializing databases")
 		Topic.init
 		Subtopic.init
-		Solution.init
 		Answer.init
-		Authentication.init
-		Problem.init
 		Authentication.init
 
 	}

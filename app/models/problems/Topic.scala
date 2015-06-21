@@ -2,10 +2,16 @@ package models.problems
 
 
 import anorm._
+
 import anorm.SqlParser._
+
 import play.api.db.DB
+
 import play.api.Play.current
+
 import models.AnormModel
+
+import models.JNorm
 
 import play.api.libs.json._
 
@@ -14,8 +20,19 @@ case class Topic(
 	contents: String,
 	parent: Long)
 
-object Topic extends AnormModel {
+object Topic extends JNorm[Topic] {
 
+	val table = "topics"
+
+	val aTable = "DOES NOT EXIST"
+
+	val statements = List(
+		"create table if not exists topics (id bigserial primary key, contents text, parent bigint);",
+		"create index topics_i on topics using gin(to_tsvector('english', contents));")
+
+	val parser = long("id") ~ str("contents") ~ long("parent") map {
+		case id ~ contents ~ parent => Topic(id, contents, parent)
+	}
 
 	def toJson(t: Topic): JsObject = {
 		Json.obj(
@@ -25,203 +42,61 @@ object Topic extends AnormModel {
 			)
 	}
 
-	type T = Topic
-
-	val tableStatements = List(
-		"create table if not exists topics (id bigserial primary key, contents text, parent bigint);",
-		"create index topics_i on topics using gin(to_tsvector('english', contents));")
-
-
-	val parser = long("id") ~ str("contents") ~ long("parent") map {
-		case id ~ contents ~ parent => Topic(id, contents, parent)
-	}
-
-	def create(t: Topic): Option[Long] = t match {
-		case Topic(id, contents, parent) => {
-			if( !exists(t) ) {
-				DB.withConnection {
-					implicit session => {
-						SQL(
-						s"""
+	def create(t: Topic): Option[Long] = {
+		if( !exists(t) ) {
+			DB.withConnection { 
+				implicit session => {
+					SQL(
+						"""
 						insert into topics
 							(contents, parent)
 						values
-							('${formatString(contents)}', $parent)
-						""").executeInsert()
-					}
-				}
-			}
-			else None
-		}
-		case _ => None
-	}
-
-	def exists(t: Topic): Boolean = t match {
-		case Topic(id, contents, parent) => {
-			DB.withConnection {
-				implicit session => {
-					SQL(
-						s"""
-						select 
-							count(*)
-						from
-							topics t
-						where
-							lower(t.contents) = lower('${formatString(contents)}')
-						""").as(scalar[Long].single) > 0
+							({contents}, {parent})
+						""").on("contents" -> t.contents, "parent" -> t.parent).executeInsert()
 				}
 			}
 		}
-	}
-
-	def delete(t: Topic): Boolean = t match {
-		case Topic(id, contents, parent) => {
-			DB.withConnection {
-				implicit session => {
-					SQL(
-						s"""
-						delete from
-							topics t
-						where
-							t.id = $id
-						""").execute()
-				}
-			}
-		}
-		case _ => false
-	}
-
-	def getAll: List[Topic] = {
-		DB.withConnection {
-			implicit session => {
-				SQL(
-					s"""
-					select
-						*
-					from
-						topics t
-					""").as(parser*)
-			}
-		}
-	}
-
-	def matrix: List[List[String]] = {
-		getAll map {
-			case Topic(id, contents, parent) => {
-				List(id.toString, contents, parent.toString)
-			}
-		}
-	}
-
-	/* Returns the parent topic if there is one */
-	private def getParent(t: Topic): Option[Topic] = t match {
-		case Topic(id, contents, parent) => {
-			DB.withConnection {
-				implicit session => {
-					SQL(
-						s"""
-						select
-							*
-						from
-							topics t
-						where
-							t.id = $parent
-						""").as(parser*).headOption
-				}
-			}
-		}
-		case _ => None
-	}
-
-	/* Returns a list in order from leaf to root of all parents of a given topic */
-	def getParents(t: Topic, list: List[Topic] = List()): List[Topic] = {
-		getParent(t) match {
-			case Some(Topic(id, contents, parent)) => {
-				val t = Topic(id, contents, parent)
-				getParents(t, list :+ t)
-			}
-			case _ => list
-		}
-	}
-
-	def getChildren(t: Topic, list: List[Topic] = List()): List[Topic] = {
-		DB.withConnection {
-			implicit session => {
-				SQL(
-					s"""
-					select
-						*
-					from
-						topics t
-					where
-						t.parent = ${t.id}
-					""").as(parser*)
-			}
-		}
-	}
-
-	/* Returns all topics assigned to a problem id */
-	def getByProblemId(pid: Long): List[Topic] = {
-		DB.withConnection {
-			implicit session => {
-				SQL(
-					s"""
-					select
-						t.id, t.contents, t.parent
-					from
-						topics t, topics_a ta
-					where
-						ta.problem = $pid
-					and
-						t.id = ta.topic
-					""").as(parser*)
-			}
-		}
-	}
-	
-	def getById(tid: Long): Option[Topic] = {
-		DB.withConnection {
-			implicit session => {
-				SQL(
-					s"""
-					select
-						*
-					from
-						topics t
-					where
-						t.id = $tid
-					""").as(parser*).headOption
-			}
-		}
+		else None
 	}
 
 	def update(t: Topic): Boolean = {
 		DB.withConnection {
 			implicit session => {
 				SQL(
-					s"""
+					"""
 					update 
 						topics t
 					set
-						contents = ${t.contents}, parent = ${t.parent}
+						contents = {contents}, parent = {parent}
 					where
-						t.id = ${t.id}
-					""").execute()
+						s.id = {tid}
+					""").on("tid" -> t.id, "contents" -> t.contents, "parent" -> t.parent).execute()
 			}
 		}
 	}
 
-	def gen(id: Long = 0L, contents: String = "", parent: Long = 0L): Topic = {
-		new Topic(id, contents, parent)
+	/* Checks whether a topic already exists by contents */
+	def exists(t: Topic): Boolean = {
+		DB.withConnection {
+			implicit session => {
+				SQL(
+					"""
+					select
+						count(*)
+					from
+						topics t
+					where
+						lower(t.contents) = lower({contents})
+					""").on("contents" -> t.contents).as(scalar[Long].single) > 0
+			}
+		}
 	}
 
 	/* Formats the model for table presentation */
-	override def toTable: List[List[String]] = {
-		val colNames = List("ID", "Contents", "Parent ID")
+	def toTable: List[List[String]] = {
+		val colNames = List("ID", "Contents", "Parent")
 		val topics = getAll
-		val colVals = for(topic <- topics) yield {
-			List(topic.id.toString, topic.contents, topic.parent.toString)
-		}
+		val colVals = for(topic <- topics) yield List(topic.id.toString, topic.contents, topic.parent.toString)
 		colNames +: colVals // append the column names as the first row of the matrix
 	}
 
