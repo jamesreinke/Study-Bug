@@ -37,16 +37,19 @@ object Subtopic extends AnormModel {
 	}
 
 	def create(s: Subtopic): Option[Long] = {
+		println("creating new subtopic")
+		println(s)
 		if( !exists(s) ) {
+			println("The subtopic does not exist")
 			DB.withConnection { 
 				implicit session => {
 					SQL(
-						s"""
+						"""
 						insert into subtopics
 							(contents, hint)
 						values
-							('${formatString(s.contents)}', '${formatString(s.hint)}')
-						""").executeInsert()
+							({contents}, {hint})
+						""").on("contents" -> s.contents, "hint" -> s.hint).executeInsert()
 				}
 			}
 		}
@@ -57,14 +60,14 @@ object Subtopic extends AnormModel {
 		DB.withConnection {
 			implicit session => {
 				SQL(
-					s"""
+					"""
 					update 
 						subtopics s
 					set
-						contents = ${s.contents}, hint = ${s.hint}
+						contents = {contents}, hint = {hint}
 					where
-						s.id = ${s.id}
-					""").execute()
+						s.id = {sid}
+					""").on("sid" -> s.id, "contents" -> s.contents, "hint" -> s.hint).execute()
 			}
 		}
 	}
@@ -74,12 +77,12 @@ object Subtopic extends AnormModel {
 		DB.withConnection {
 			implicit session => {
 				SQL(
-					s"""
+					"""
 					insert into subtopics_a
 						(subtopic_id, step_id)
 					values
-						(${sid}, ${ssid})
-					""").executeInsert()
+						({sid}, {ssid})
+					""").on("sid" -> sid, "ssid" -> ssid).executeInsert()
 			}
 		}
 	}
@@ -90,14 +93,14 @@ object Subtopic extends AnormModel {
 			DB.withConnection {
 				implicit session => {
 					SQL(
-						s"""
+						"""
 						select
 							count(*)
 						from
 							subtopics s
 						where
-							lower(s.contents) = lower('${formatString(contents)}')
-						""").as(scalar[Long].single) > 0
+							lower(s.contents) = lower({contents})
+						""").on("contents" -> s.contents).as(scalar[Long].single) > 0
 				}
 			}
 		}
@@ -109,14 +112,12 @@ object Subtopic extends AnormModel {
 			DB.withConnection {
 				implicit session => {
 					SQL(
-						s"""
+						"""
 						delete from
 							subtopics
 						where
-							id = $id
-						or
-							contents = lower('${formatString(contents)}')
-						""").execute()
+							id = {id}
+						""").on("id" -> s.id).execute()
 				}
 			}
 		}
@@ -127,7 +128,7 @@ object Subtopic extends AnormModel {
 		DB.withConnection {
 			implicit session => {
 				SQL(
-					s"""
+					"""
 					select
 						*
 					from
@@ -149,14 +150,14 @@ object Subtopic extends AnormModel {
 		DB.withConnection {
 			implicit session => {
 				SQL(
-					s"""
+					"""
 					select
 						*
 					from
 						subtopics s
 					where
-						s.id = $sid
-					""").as(parser*).headOption
+						s.id = {sid}
+					""").on("sid" -> sid).as(parser*).headOption
 			}
 		}
 	}
@@ -165,7 +166,7 @@ object Subtopic extends AnormModel {
 		DB.withConnection {
 			implicit session => {
 				SQL(
-					s"""
+					"""
 					select
 						s.id, s.contents, s.hint
 					from
@@ -173,8 +174,8 @@ object Subtopic extends AnormModel {
 					where
 						sa.subtopic_id = s.id
 					and
-						sa.step_id = $ssid
-					""").as(parser*)
+						sa.step_id = {ssid}
+					""").on("ssid" -> ssid).as(parser*)
 			}
 		}
 	}

@@ -34,7 +34,7 @@
 									<div class="form-group">
 										<label class="control-label col-md-3">Parent Topic</label>
 										<div class="col-md-9">
-											<select id="topic-parent" name="parent" class="select2me  select2_category form-control" data-placeholder="No Topics">
+											<select id="topic-parent" name="parent" class="select2me select2_category form-control" data-placeholder="No Topics">
 												<option id="default-parent" value="0" selected="selected">No Parent</option>
 												@for(topic <- models.problems.Topic.getAll){
 													<option value="@topic.id">@topic.contents</option>

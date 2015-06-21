@@ -24,8 +24,9 @@
 		$(document).on('click', '.edit',function(){
 			var id = $(this).attr("data");
 			$.ajax({
-				type: 'GET',
-				url: '/subtopic?id=' + id,
+				type: 'POST',
+				url: '/subtopic/get',
+				data: {id: id},
 				success: function(data){
 					subid.val(data.id);
 					subcont.val(data.contents);
@@ -41,8 +42,9 @@
 		$(document).on('click', '.update',function(){
 			var id = $(this).attr("data");
 			$.ajax({
-				type: 'PUT',
-				url: '/subtopic?id=' + subid.val() + '&contents=' + subcont.val() + '&hint=' + subhint.val(),
+				type: 'POST',
+				url: '@routes.Subtopic.update',
+				data: {id: subid.val(), contents: subcont.val(), hint: subhint.val()},
 				success: function(data){
 					subid.val(data.id);
 					subcont.val(data.contents);
@@ -56,8 +58,9 @@
 		$(document).on('click', '.del',function(){
 			var id = $(this).attr("data");
 			$.ajax({
-				type: 'DELETE',
-				url: '/subtopic?id=' + id,
+				type: 'POST',
+				url: '/subtopic/delete',
+				data: {id: id},
 				success: function(data) {
 					$('#row-' + id).remove()
 					cancel();
@@ -68,9 +71,11 @@
 		$(document).on('click', '.submit',function(){
 			var contents = subcont.val();
 			var hint = subhint.val();
+			console.log("trying to create a subtopic");
 			$.ajax({
 				type: 'POST',
-				url: '/subtopic?contents=' + contents + '&hint=' + hint,
+				url: '@routes.Subtopic.create',
+				data: {contents: contents, hint: hint},
 				success: function(data){
 					//empty out the table if we are adding the first entry
 					var empty = $('tbody tr td').attr("colspan") == "5";

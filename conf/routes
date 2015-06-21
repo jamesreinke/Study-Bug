@@ -24,10 +24,11 @@ DELETE 	/topic 						controllers.Topic.delete(id: Long ?= 0L)
 POST 	/topic 						controllers.Topic.create(contents: String ?= "", parent: Long ?= 0L)
 PUT 	/topic 						controllers.Topic.update(id: Long ?= 0L, contents: String ?= "", parent: Long ?= 0L)
 
-GET 	/subtopic	 				controllers.Subtopic.get(id: Long ?= 0L)
-DELETE 	/subtopic	 				controllers.Subtopic.delete(id: Long ?= 0L)
-POST 	/subtopic					controllers.Subtopic.create(contents: String ?= "", hint: String ?= "")
-PUT 	/subtopic					controllers.Subtopic.update(id: Long ?= 0L, contents: String ?= "", hint: String ?= "")
+GET 	/subtopic 					controllers.Subtopic.getpage
+POST 	/subtopic/get	 			controllers.Subtopic.get
+POST 	/subtopic/delete	 		controllers.Subtopic.delete
+POST 	/subtopic/create			controllers.Subtopic.create
+POST 	/subtopic/update			controllers.Subtopic.update
 
 
 # Map static resources from the /public folder to the /assets URL path

@@ -9,7 +9,21 @@ import play.api.libs.json._
 import views.html.defaultpages._
 import views.html.components.topic._
 
+import play.api.data._
+import play.api.data.Forms._
+import play.api.data.format.Formats._
+
 object Topic extends Controller {
+
+	val tLink = new Link("Topics", "", routes.Topic.get())
+
+	val form = Form(
+		tuple(
+			"id" -> of[Long],
+			"contents" -> text,
+			"parent" -> of[Long]))
+
+
 
 	/* Retrieve a topic by id; returns the topic page if there is no id supplied */
 	def get(id: Long) = Action {

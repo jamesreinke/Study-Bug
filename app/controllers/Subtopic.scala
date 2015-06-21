@@ -11,43 +11,59 @@ import play.api.libs.json._
 
 import views.html.components.subtopic._
 
+import play.api.data._
+import play.api.data.Forms._
+import play.api.data.format.Formats._
+
+
 object Subtopic extends Controller {
 
+
+	val sform = Form(
+		tuple(
+			"id" -> default(of[Long],0L),
+			"contents" -> default(text, ""),
+			"hint" -> default(text,"")))
+
 	val sLink = new Link("Subtopics", "", routes.Subtopic.get())
-	def get(id: Long) = Action {
+	def get = Action {
 		implicit request => {
-			id > 0 match {
-				case true => {
-					getById(id) match {
-						case Some(subtopic) => {
-							Ok(toJson(subtopic))
-						}
-						case _ => {
-							BadRequest("Subtopic not found ID: " + id)
-						}
-					}
+			val (id: Long, contents: String, hint: String) = sform.bindFromRequest.get
+			getById(id) match {
+				case Some(subtopic) => {
+					Ok(toJson(subtopic))
 				}
-				case false => Ok(views.html.pages.temp.core(
-						content = core(),
-						exStyles = styles(),
-						exJavascripts = javascripts()))
+				case _ => {
+					BadRequest("Subtopic not found ID: " + id)
+				}
 			}
 		}
 	}
 
-	def delete(id: Long) = Action {
+	def getpage = Action {
 		implicit request => {
-			val failure = models.problems.Subtopic.delete(gen(id = id))
-			failure match {
+			Ok(views.html.pages.temp.core(
+						content = core(),
+						exStyles = styles(),
+						exJavascripts = javascripts()))
+		}
+	}
+	
+
+	def delete = Action {
+		implicit request => {
+			val (id: Long, contents: String, hint: String) = sform.bindFromRequest.get
+			models.problems.Subtopic.delete(gen(id = id)) match {
 				case false => Ok("Successfully deleted the object")
 				case _ => BadRequest("Failed deleting subtopic ID: " + id)
 			}
 		}
 	}
 
-	def create(contents: String, hint: String) = Action {
+	def create = Action {
 		implicit request => {
-			models.problems.Subtopic.create(gen(0, contents, hint)) match {
+			val (id: Long, contents: String, hint: String) = sform.bindFromRequest.get
+			models.problems.Subtopic.create(gen(id, contents, hint)) match {
 				case Some(long) => {
 					val obj = Json.obj(
 						"id" -> long,
@@ -61,8 +77,9 @@ object Subtopic extends Controller {
 		}
 	}
 
-	def update(id: Long, contents: String, hint: String) = Action {
+	def update = Action {
 		implicit request => {
+			val (id: Long, contents: String, hint: String) = sform.bindFromRequest.get
 			models.problems.Subtopic.update(gen(id, contents, hint)) match {
 				case true =>{
 					val obj = Json.obj(
