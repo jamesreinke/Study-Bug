@@ -11,24 +11,25 @@
 		var pics = $('#pic-list');
 		var numpics = 1;
 		var files = [];
+		$('.pictures').hide();
+
 	});
 </script>
 
 
 <script>
 
-	$(document).ready(function(){
-		Dropzone.options.myDropzone = {
-			url: '@routes.Problem.pictures',
+	$(document).on('click', '.submit', function(){
+
+		var pid = 0;
+		var myDropzone = new Dropzone("#my-dropzone", {
+			url: '/problem/pictures/' + pid,
 			parallelUploads: true,
 			paramName: 'pic',
-			thumbnailHeight: 80,
-			autoProcessQueue: false
-		}
-	});
-
-	$(document).on('click', '.submit', function(){
-		myDropzone.processQueue();
+			createImageThumbnails: true,
+			thumbnailHeight: 80
+		});
+		$('.pictures').show();
 	});
 	
 </script>

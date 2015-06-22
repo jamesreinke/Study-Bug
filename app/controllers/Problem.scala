@@ -32,7 +32,7 @@ import models.problems.Problem
 		}
 	}
 	/* POST - upload problem related pictures */
-	def pictures = Action {
+	def pictures(id: Long) = Action {
 		implicit request => {
 			Ok("Pictures!")
 		}
