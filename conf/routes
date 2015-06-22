@@ -13,7 +13,7 @@ POST 	/forget 					controllers.Authentication.forgetPost
 
 GET		/logout						controllers.Authentication.logout
 
-GET		/database					controllers.Problem.database
+GET		/database					controllers.Problem.getPage
 
 GET		/profile					controllers.Profile.index
 
@@ -30,6 +30,8 @@ POST 	/subtopic/get	 			controllers.Subtopic.get
 POST 	/subtopic/delete	 		controllers.Subtopic.delete
 POST 	/subtopic/create			controllers.Subtopic.create
 POST 	/subtopic/update			controllers.Subtopic.update
+
+POST 	/problem/pictures 			controllers.Problem.pictures
 
 
 # Map static resources from the /public folder to the /assets URL path

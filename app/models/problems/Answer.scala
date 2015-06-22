@@ -5,73 +5,83 @@ import anorm.SqlParser._
 import play.api.db.DB
 import play.api.Play.current
 import models.AnormModel
+import models.JNorm
+import play.api.libs.json._
 
 case class Answer(
 	id: Long,
 	contents: String,
 	picture: String,
-	problemId: Long,
+	pid: Long,
 	correct: Boolean
 	)
 
-object Answer extends AnormModel {
+object Answer extends JNorm[Answer] {
 
-	type T = Answer
+	val table = "answers"
 
-	val tableStatements = List(
-		"create table if not exists answers (id bigserial primary key, contents text, picture varchar, problem_id bigint, correct boolean);",
-		"create index answers_i on answers (problem_id);")
+	val aTable = "answers_a"
 
-	val parser = long("id") ~ str("contents") ~ str("picture") ~ long("problem_id") ~ bool("correct") map {
-		case id ~ contents ~ picture ~ problemId ~ bool => Answer(id, contents, picture, problemId, bool)
+	val statements = List(
+		"create table if not exists answers (id bigserial primary key, contents text, picture varchar, pid bigint, correct boolean);",
+		"create index answers_i on answers (pid);")
+
+	val parser = long("id") ~ str("contents") ~ str("picture") ~ long("pid") ~ bool("correct") map {
+		case id ~ contents ~ picture ~ pid ~ correct => Answer(id, contents, picture, pid, correct)
 	}
 
-	def create(a: Answer): Option[Long] = a match {
-		case Answer(id, contents, picture, problemId, correct) => {
-				DB.withConnection {
-					implicit session => {
-						SQL(
-							s"""
-							insert into answers
-								(contents, picture, problem_id, correct)
-							values
-								('${formatString(contents)}', '$picture', $problemId, $correct)
-							""").executeInsert()
-					}
-				}
-		}
-		case _ => None
+	def toJson(a: Answer): JsObject = {
+		Json.obj(
+			"id" -> a.id,
+			"contents" -> a.contents,
+			"picture" -> a.picture,
+			"pid" -> a.pid,
+			"correct" -> a.correct)
 	}
 
-	def delete(a: Answer): Boolean = a match {
-		case Answer(id, contents, picture, problemId, correct) => {
-			DB.withConnection {
-				implicit session => {
-					SQL(
-						s"""
-						delete from
-							answers a
-						where
-							a.id = $id
-						""").execute()
-				}
-			}
-		}
-		case _ => false
-	}
-
-	def getByProblemId(pid: Long): List[Answer] = {
+	def create(a: Answer): Option[Long] = {
 		DB.withConnection {
 			implicit session => {
 				SQL(
-					s"""
-					select 
+					"""
+					insert into answers
+						(id, contents, picture, pid, correct)
+					values
+						({id}, {contents}, {picture}, {pid}, {correct})
+					""").on("id" -> a.id, "contents" -> a.contents, "picture" -> a.picture, "pid" -> a.pid, "correct" -> a.correct).executeInsert()
+			}
+		}
+	}
+
+	def update(a: Answer): Int = {
+		DB.withConnection {
+			implicit session => {
+				SQL(
+					"""
+					update 
+						answers a
+					set
+						contents = {contents}, picture = {picture}, pid = {pid}, correct = {correct}
+					where
+						s.id = {sid}
+					""").on("id" -> a.id, "contents" -> a.contents, "picture" -> a.picture, "pid" -> a.pid, "correct" -> a.correct).executeUpdate()
+			}
+		}
+	}
+
+	def getByProblemId(id: Long): List[Answer] = {
+		DB.withConnection {
+			implicit session => {
+				SQL(
+
+					"""
+					select
 						*
 					from
 						answers a
 					where
-						a.problem_id = $pid
-					""").as(parser*)
+						a.pid = {id}
+					""").on("id" -> id).as(parser*)
 			}
 		}
 	}

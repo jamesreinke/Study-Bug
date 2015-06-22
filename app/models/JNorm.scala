@@ -32,19 +32,19 @@ abstract class JNorm [T]{
 	def create(item: T): Option[Long]
 
 	/* Updates object of type T */
-	def update(s: T): Boolean
+	def update(s: T): Int
 
 	/* Removes the database item */
-	def delete(id: Long): Boolean = {
+	def delete(id: Long): Int = {
 		DB.withConnection {
 			implicit session => {
-				! SQL(
+				SQL(
 					s"""
 					delete from 
 						$table
 					where
 						id = {id}
-					""").on("id" -> id).execute()
+					""").on("id" -> id).executeUpdate()
 			}
 		}
 	}

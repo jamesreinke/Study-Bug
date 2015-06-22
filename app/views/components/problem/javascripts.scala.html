@@ -1,0 +1,34 @@
+@views.html.components.table.javascripts()
+<script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/dropzone.js'></script>
+<script>
+	$(function(){
+		var pid = $('#problem-id');
+		var subcont = $('#problem-contents');
+		var subhint = $('#problem-topic');
+		var title = $('.form-title');
+		var tbody = $('tbody');
+		var update = $('.update');
+		var pics = $('#pic-list');
+		var numpics = 1;
+		var files = [];
+	});
+</script>
+
+
+<script>
+
+	$(document).ready(function(){
+		Dropzone.options.myDropzone = {
+			url: '@routes.Problem.pictures',
+			parallelUploads: true,
+			paramName: 'pic',
+			thumbnailHeight: 80,
+			autoProcessQueue: false
+		}
+	});
+
+	$(document).on('click', '.submit', function(){
+		myDropzone.processQueue();
+	});
+	
+</script>

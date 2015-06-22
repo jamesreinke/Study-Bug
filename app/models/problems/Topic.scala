@@ -38,8 +38,7 @@ object Topic extends JNorm[Topic] {
 		Json.obj(
 			"id" -> t.id,
 			"contents" -> t.contents,
-			"parent" -> t.parent
-			)
+			"parent" -> t.parent)
 	}
 
 	def create(t: Topic): Option[Long] = {
@@ -59,7 +58,7 @@ object Topic extends JNorm[Topic] {
 		else None
 	}
 
-	def update(t: Topic): Boolean = {
+	def update(t: Topic): Int = {
 		DB.withConnection {
 			implicit session => {
 				SQL(
@@ -69,8 +68,8 @@ object Topic extends JNorm[Topic] {
 					set
 						contents = {contents}, parent = {parent}
 					where
-						s.id = {tid}
-					""").on("tid" -> t.id, "contents" -> t.contents, "parent" -> t.parent).execute()
+						t.id = {tid}
+					""").on("tid" -> t.id, "contents" -> t.contents, "parent" -> t.parent).executeUpdate()
 			}
 		}
 	}

@@ -50,8 +50,8 @@ import models.problems.Subtopic
 		implicit request => {
 			val (id: Long, contents: String, hint: String) = sForm.bindFromRequest.get
 			db.delete(id) match {
-				case true => Ok("Successfully deleted subtopic ID: " + id)
-				case false => BadRequest("Failed deleting subtopic ID: " + id)
+				case 1 => Ok("Successfully deleted subtopic ID: " + id)
+				case _ => BadRequest("Failed deleting subtopic ID: " + id)
 			}
 		}
 	}
@@ -61,9 +61,7 @@ import models.problems.Subtopic
 			val (id: Long, contents: String, hint: String) = sForm.bindFromRequest.get
 			val item = new Subtopic(0, contents, hint)
 			db.create(item) match {
-				case Some(long) => {
-				 	Ok(db.toJson(new Subtopic(long, contents, hint)))
-				}
+				case Some(long) => Ok(db.toJson(new Subtopic(long, contents, hint)))
 				case _ => BadRequest("Could not create the subtopic")
 			}
 		}
@@ -74,9 +72,7 @@ import models.problems.Subtopic
 			val (id: Long, contents: String, hint: String) = sForm.bindFromRequest.get
 			val item = new Subtopic(id, contents, hint)
 			db.update(item) match {
-				case true =>{
-					Ok(db.toJson(item))
-				}
+				case 1 => Ok(db.toJson(item))
 				case _ => BadRequest("Could not update subtopic ID: " + id)
 			}
 		}

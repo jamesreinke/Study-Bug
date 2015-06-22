@@ -71,7 +71,6 @@
 		$(document).on('click', '.submit',function(){
 			var contents = subcont.val();
 			var hint = subhint.val();
-			console.log("trying to create a subtopic");
 			$.ajax({
 				type: 'POST',
 				url: '@routes.Subtopic.create',

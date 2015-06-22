@@ -1,6 +1,5 @@
 package models.problems
 
-
 import anorm._
 import anorm.SqlParser._
 import play.api.db.DB
@@ -34,8 +33,7 @@ object Subtopic extends JNorm[Subtopic] {
 		Json.obj(
 			"id" -> s.id,
 			"contents" -> s.contents,
-			"hint" -> s.hint
-			)
+			"hint" -> s.hint)
 	}
 
 	def create(s: Subtopic): Option[Long] = {
@@ -55,7 +53,7 @@ object Subtopic extends JNorm[Subtopic] {
 		else None
 	}
 
-	def update(s: Subtopic): Boolean = {
+	def update(s: Subtopic): Int = {
 		DB.withConnection {
 			implicit session => {
 				SQL(
@@ -66,7 +64,7 @@ object Subtopic extends JNorm[Subtopic] {
 						contents = {contents}, hint = {hint}
 					where
 						s.id = {sid}
-					""").on("sid" -> s.id, "contents" -> s.contents, "hint" -> s.hint).execute()
+					""").on("sid" -> s.id, "contents" -> s.contents, "hint" -> s.hint).executeUpdate()
 			}
 		}
 	}

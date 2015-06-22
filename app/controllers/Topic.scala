@@ -26,6 +26,7 @@ object Topic extends Controller {
 			"contents" -> default(text, ""),
 			"parent" -> default(of[Long],0L)))
 
+	/* GET - Loads the topic database page */
 	def getPage = Action {
 		implicit request => {
 			Ok(views.html.pages.temp.core(
@@ -52,8 +53,8 @@ object Topic extends Controller {
 		implicit request => {
 			val (id, contents, parent) = tForm.bindFromRequest.get
 			db.delete(id) match {
-				case true => Ok("Topic deleted ID: " + id)
-				case false => BadRequest("Unable to delete topic with ID: " + id)
+				case 1 => Ok("Topic deleted ID: " + id)
+				case _ => BadRequest("Unable to delete topic with ID: " + id)
 			}
 		}
 	}
@@ -76,8 +77,8 @@ object Topic extends Controller {
 			val (id, contents, parent) = tForm.bindFromRequest.get
 			val item = new Topic(id, contents, parent)
 			db.update(item) match {
-				case true => Ok(db.toJson(item))
-				case false => BadRequest("Unable to update topic ID: " + id)
+				case 1 => Ok(db.toJson(item))
+				case _ => BadRequest("Unable to update topic ID: " + id)
 			}
 		}
 	}

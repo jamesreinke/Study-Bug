@@ -1,3 +1,4 @@
+@import models.problems.{Subtopic}
 @(errMsg: String = "")
 <div class="row">
 	<div class="col-md-12">
@@ -15,27 +16,27 @@
 				<div class="portlet-body form">
 					<!-- BEGIN FORM-->
 					<form class="form-horizontal">
-						<input id="topic-id" type="hidden" name="id" value="0">
+						<input id="problem-id" type="hidden" name="id" value="0">
 						<div class="form-body">
-							<h3 class="form-section form-title">Topics</h3>
+							<h3 class="form-section form-title">Problems</h3>
 							<h3 class="form-section text-danger">@errMsg</h3>
 							<div class="row">
 								<div class="col-md-6">
 									<div class="form-group">
-										<label class="control-label col-md-3">Topic Name</label>
+										<label class="control-label col-md-3">Problem Statement</label>
 										<div class="col-md-9">
-											<input id="topic-contents" name="contents" value="" type="text" class="form-control" placeholder="Linear Algebra">
+											<textarea id="problem-contents" name="contents" type="text" value="" class="form-control" placeholder=""></textarea>
 											<span class="help-block">
-											Choose a unique topic name </span>
+											This includes text, equations and the problem description.  Pictures will be loaded next to this text.</span>
 										</div>
 									</div>
 								</div>
 								<div class="col-md-6">
 									<div class="form-group">
-										<label class="control-label col-md-3">Parent Topic</label>
+										<label class="control-label col-md-3">Topic</label>
 										<div class="col-md-9">
-											<select id="topic-parent" name="parent" class="select2me select2_category form-control" data-placeholder="No Topics">
-												<option id="default-parent" value="0" selected="selected">No Parent</option>
+											<select id="problem-topic" name="parent" class="select2me select2_category form-control" data-placeholder="No Topics">
+												<option id="default-parent" value="0" selected="selected">Topic</option>
 												@for(topic <- models.problems.Topic.getAll){
 													<option value="@topic.id">@topic.contents</option>
 												}
@@ -43,17 +44,27 @@
 										</div>
 									</div>
 								</div>
-								<!--/span-->
+							</div>
+							<!--END ROW #1 -->
+							<div class="row">
+								<div class="col-md-6">
+									<div class="form-group">
+										<label class="control-label col-md-3">Pictures</label>
+										<div class="col-md-9">
+											<div action="" class="dropzone" id="my-dropzone"></div>
+										</div>
+									</div>
+								</div>
 							</div>
 						</div>
+						<!-- END FORM BODY -->
 						<div class="form-actions">
 							<div class="row">
 								<div class="col-md-6">
 									<div class="row">
 										<div class="col-md-offset-3 col-md-9">
-											<!-- Value Mappings: action = insert or delete-->
-											<button type="button" class="submit btn green">Submit</button>
-											<button type="button" class="cancel btn red">Cancel</button>
+											<button type="button" class="btn green submit">Submit</button>
+											<button type="button" class="btn red cancel">Cancel</button>
 										</div>
 									</div>
 								</div>
@@ -68,4 +79,4 @@
 		</div>
 	</div>
 </div>
-@views.html.components.table.core(models.problems.Topic.toTable)
+@views.html.components.table.core(Subtopic.toTable)

@@ -7,7 +7,6 @@
 		var title = $('.form-title');
 		var tbody = $('tbody');
 		var defParent = $('#default-parent');
-		parent.chosen({disable_search_threshold: 10});
 
 		// sets the form into a submission ready state
 		function cancel() {
@@ -25,19 +24,13 @@
 		$(document).on('click', '.edit',function(){
 			var id = $(this).attr("data");
 			$.ajax({
-				type: 'GET',
-				url: '/topic?id=' + id,
+				type: 'POST',
+				url: '@routes.Topic.get',
+				data: {id: id},
 				success: function(data){
 					tid.val(data.id);
 					contents.val(data.contents);
-					$.ajax({
-						type: 'GET',
-						url: '/topic?id=' + data.parent,
-						success: function(data){
-							parent.text(data.contents);
-							parent.val(data.parent);
-						}
-					});
+					parent.val(data.parent);
 					title.text("ID: " + data.id);
 					var submit = $('.submit');
 					submit.text("Update");
@@ -48,8 +41,9 @@
 		});
 		$(document).on('click', '.update',function(){
 			$.ajax({
-				type: 'PUT',
-				url: '/topic?id=' + tid.val() + '&contents=' + contents.val() + '&parent=' + parent.val(),
+				type: 'POST',
+				url: '@routes.Topic.update',
+				data: {id: tid.val(), contents: contents.val(), parent: parent.val()},
 				success: function(data){
 					tid.val(data.id);
 					contents.val(data.contents);
@@ -63,8 +57,9 @@
 		$(document).on('click', '.del', function(){
 			var tid = $(this).attr("data");
 			$.ajax({
-				type: 'DELETE',
-				url: '/topic?id=' + tid,
+				type: 'POST',
+				url: '@routes.Topic.delete',
+				data: {id: id},
 				success: function(data) {
 					$('#row-' + tid).remove();
 					cancel();
@@ -77,7 +72,8 @@
 			var p = parent.val();
 			$.ajax({
 				type: 'POST',
-				url: '/topic?contents=' + c + '&parent=' + p,
+				url: '@routes.Topic.create',
+				data: {contents: c, parent: p},
 				success: function(data){
 					//empty out the table if we are adding the first entry
 					var empty = $('tbody tr td').attr("colspan") == "5";

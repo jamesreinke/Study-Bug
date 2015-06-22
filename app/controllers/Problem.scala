@@ -10,22 +10,32 @@ import Node._
 
 import views.html.defaultpages._
 
-import models.problems._
-
 import Authentication.{auth, admin}
 
-import models.problems.{Subtopic => SubtopicModel}
-
-
+import views.html.components.problem._
 
 object Problem extends Controller {
 
-	val dLink = new Link("Problems", "fa fa-database", routes.Problem.database())
+import models.problems.Problem
+
 	def database = Action {
 		implicit request => Ok(views.html.pages.temp.core(todo.render()))
 	}
-	val tLink = new Link("Topics", "", routes.Topic.get())
-	val sLink = new Link("Subtopics", "", routes.Subtopic.get())
-	val cLink = new LinkedLinks("Categories", "fa fa-university", List(tLink, sLink))
+
+	/* GET - Loads subtopic database page */
+	def getPage = Action {
+		implicit request => {
+			Ok(views.html.pages.temp.core(
+						content = core(),
+						exStyles = styles(),
+						exJavascripts = javascripts()))
+		}
+	}
+	/* POST - upload problem related pictures */
+	def pictures = Action {
+		implicit request => {
+			Ok("Pictures!")
+		}
+	}
 
 }
