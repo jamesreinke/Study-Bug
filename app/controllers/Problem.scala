@@ -32,9 +32,23 @@ import models.problems.Problem
 		}
 	}
 	/* POST - upload problem related pictures */
-	def pictures(id: Long) = Action {
+	def pictures(id: Long) = Action(parse.multipartFormData) {
+		import java.io.File
+		val rand = scala.util.Random
 		implicit request => {
-			Ok("Pictures!")
+			request.body.file("pic").map {
+				pic => {
+					val seed = rand.nextInt()
+					val filename = seed + "-" + pic.filename
+					val filepath = "public/images/problem-pics/" + filename
+					val f = new File(filepath)
+					if( !f.exists ) pic.ref.moveTo(f)
+					println("uploaded file: " + filename)
+					Ok("File Uploaded")
+				}
+				}.getOrElse {
+					BadRequest("Could not upload file")
+			}
 		}
 	}
 
