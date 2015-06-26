@@ -12,9 +12,7 @@ import play.api.libs.json._
 case class Problem(
 	id: Long,
 	contents: String,
-	topic: String,
-	pictures: List[String],
-	answers: List[Answer]
+	topic: String
 	)
 
 
@@ -31,39 +29,27 @@ object Problem extends JNorm[Problem] {
 		"create index if problems_pictures_i on problems_pictures (pid);")
 
 	val parser = long("id") ~ str("contents") ~ str("topic") map {
-		case id ~ contents ~ topic => Problem(id, contents, topic, List(), List())
+		case id ~ contents ~ topic => Problem(id, contents, topic)
 	}
 
 	def toJson(p: Problem): JsObject = {
 		Json.obj(
 			"id" -> p.id,
 			"contents" -> p.contents,
-			"topic" -> p.topic,
-			"pictures" -> Json.toJson(p.pictures),
-			"answers" -> Json.toJson(p.answers.map(x => Answer.toJson(x))))
+			"topic" -> p.topic
+			)
 	}
 
 	def create(p: Problem): Option[Long] = {
 		DB.withConnection {
 			implicit session => {
-				val pid = SQL(
+				SQL(
 					"""
 					insert into problems
 						(id, contents, topic)
 					values
 						({contents}, {topic})
 					""").on("id" -> p.id, "topic" -> p.topic).executeInsert()
-				for(pic <- p.pictures){
-					SQL(
-						"""
-						insert into problems_pictures
-							(contents, pid)
-						values
-							({contents}, {pid})
-						""").on("contents" -> pic, "pid" -> pid).executeInsert()
-				}
-				for(answer <- p.answers) Answer.create(answer)
-				pid
 			}
 		}
 	}
@@ -71,7 +57,7 @@ object Problem extends JNorm[Problem] {
 	def update(p: Problem): Int = {
 		DB.withConnection {
 			implicit session => {
-				val updates = SQL(
+				SQL(
 					"""
 					update 
 						problems p
@@ -80,17 +66,6 @@ object Problem extends JNorm[Problem] {
 					where
 						p.id = {pid}
 					""").on("contents" -> p.contents, "topic" -> p.topic, "pid" -> p.id).executeUpdate()
-				for(pic <- p.pictures){
-					SQL(
-						"""
-						update
-							problems_pictures
-						set
-							contents = {contents}, pid = {pid}
-						""").on("contents" -> pic, "pid" -> p.id).executeUpdate()
-				}
-				for(answer <- p.answers) Answer.update(answer)
-				updates // # of modified rows
 			}
 		}
 	}
