@@ -27,7 +27,10 @@
 			parallelUploads: true,
 			paramName: 'pic',
 			createImageThumbnails: true,
-			thumbnailHeight: 80
+			thumbnailHeight: 80,
+			success: function(file, response){
+				$("#pic-list").append("<li>" + response + "  <i class='fa fa-trash-o fa-3x'></i></li>")
+			}
 		});
 		$('.pictures').show();
 	});

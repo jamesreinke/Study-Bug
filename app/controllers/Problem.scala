@@ -40,11 +40,10 @@ import models.problems.Problem
 				pic => {
 					val seed = rand.nextInt()
 					val filename = seed + "-" + pic.filename
-					val filepath = "public/images/problem-pics/" + filename
+					val filepath = "public/images/" + filename
 					val f = new File(filepath)
 					if( !f.exists ) pic.ref.moveTo(f)
-					println("uploaded file: " + filename)
-					Ok("File Uploaded")
+					Ok(pic.filename)
 				}
 				}.getOrElse {
 					BadRequest("Could not upload file")
