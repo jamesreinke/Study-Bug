@@ -16,7 +16,7 @@
 		load.hide();
 
 		<!-- Generate the dropzone section after creating a problem and inserting the id -->
-		$(document).on('click', '.submit', function(){
+		function dropzone() {
 
 			var pid = 0;
 			var myDropzone = new Dropzone("#my-dropzone", {
@@ -30,7 +30,7 @@
 				}
 			});
 			$('.pictures').show();
-		});
+		}
 
 		$(document).on('click', '.pic-delete', function(){
 			var item = $(this);
@@ -71,6 +71,22 @@
 					'<td><button class="del" data="'+data.id+'" class="btn default btn-xs red">'+
 					'<i class="fa fa-trash-o"></i> Delete </a></td></tr>');
 					// cancel();
+				}
+			});
+		});
+
+		$(document).on('click', '.edit', function(){
+			var id = $(this).attr("data")
+			$.ajax({
+				type: 'POST',
+				url: '@routes.Problem.get',
+				data: {id: id},
+				success: function(data) {
+					pid.val(data.id);
+					title.text("Problem ID: " + data.id);
+					contents.val(data.contents);
+					topic.val(data.topic);
+					dropzone();
 				}
 			});
 		});

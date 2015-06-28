@@ -39,9 +39,9 @@
 										<label class="control-label col-md-3">Topic</label>
 										<div class="col-md-9">
 											<select id="problem-topic" name="parent" class="select2me select2_category form-control" data-placeholder="No Topics">
-												<option id="default-parent" value="0" selected="selected">Topic</option>
+												<option id="default-parent" value="no topic" selected="selected">No Topic</option>
 												@for(topic <- models.problems.Topic.getAll){
-													<option value="@topic.id">@topic.contents</option>
+													<option value="@topic.contents">@topic.contents</option>
 												}
 											</select>
 										</div>

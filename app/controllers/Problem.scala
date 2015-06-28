@@ -93,6 +93,16 @@ import java.io.File
 			"contents" -> default(text, ""),
 			"topic" -> default(text, "")))
 
+	def get = Action {
+		implicit request => {
+			val (id, contents, topic) = pForm.bindFromRequest.get
+			models.problems.Problem.get(id) match {
+				case Some(problem) => Ok(models.problems.Problem.toJson(problem))
+				case _ => BadRequest("Error retrieving problem ID: " + id)
+			}
+		}
+	}
+
 	def create = Action {
 		implicit request => {
 			val (id, contents, topic) = pForm.bindFromRequest.get
