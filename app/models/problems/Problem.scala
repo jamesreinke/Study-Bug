@@ -20,13 +20,11 @@ object Problem extends JNorm[Problem] {
 
 	val table = "problems"
 
-	val aTable = "problems_a"
-
 	val statements = List(
-		"create table if not exists problems (id bigserial primary key, contents text, topic bigint);",
-		"create index if problems_a on probelms gin(to_tsvector('english', contents));",
-		"create table if not exists problems_pictures (id bigserial primary key, contents varchar, pid bigint);",
-		"create index if problems_pictures_i on problems_pictures (pid);")
+		"create table if not exists problems (id bigserial primary key, contents text, topic text);",
+		"create index problems_i on problems using gin(to_tsvector('english', contents));",
+		"create table if not exists problems_p (id bigserial primary key, pid bigint, pic_id bigint);",
+		"create index problems_a_i on problems_p (pid, pic_id);")
 
 	val parser = long("id") ~ str("contents") ~ str("topic") map {
 		case id ~ contents ~ topic => Problem(id, contents, topic)
@@ -46,10 +44,10 @@ object Problem extends JNorm[Problem] {
 				SQL(
 					"""
 					insert into problems
-						(id, contents, topic)
+						(contents, topic)
 					values
 						({contents}, {topic})
-					""").on("id" -> p.id, "topic" -> p.topic).executeInsert()
+					""").on("contents" -> p.contents, "topic" -> p.topic).executeInsert()
 			}
 		}
 	}
@@ -68,5 +66,43 @@ object Problem extends JNorm[Problem] {
 					""").on("contents" -> p.contents, "topic" -> p.topic, "pid" -> p.id).executeUpdate()
 			}
 		}
+	}
+
+	def assign(pid: Long, pic: Long): Option[Long] = {
+		DB.withConnection {
+			implicit session => {
+				SQL(
+					"""
+					insert into problems_p
+						(pid, pic_id)
+					values
+						({pid}, {pic})
+					""").on("pid" -> pid, "pic" -> pic).executeInsert()
+			}
+		}
+	}
+
+	def unassign(pid: Long, pic: Long): Int = {
+		DB.withConnection {
+			implicit session => {
+				SQL(
+					"""
+					delete from
+						problems_p p
+					where
+						pid = {pid}
+					and
+						pic_id = {pic}
+					""").on("pid" -> pid, "pic" -> pic).executeUpdate()
+			}
+		}
+	}
+
+	/* Formats the model for table presentation */
+	def toTable: List[List[String]] = {
+		val colNames = List("ID", "Contents", "Topic")
+		val problems = getAll
+		val colVals = for(problem <- problems) yield List(problem.id.toString, problem.contents, problem.topic)
+		colNames +: colVals // append the column names as the first row of the matrix
 	}
 }

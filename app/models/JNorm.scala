@@ -16,9 +16,6 @@ abstract class JNorm [T]{
 	/* Table name identifier */
 	val table: String
 
-	/* Assignment table for many to one relationships */
-	val aTable: String
-
 	/* SQL create statements */
 	val statements: List[String]
 
@@ -89,21 +86,6 @@ abstract class JNorm [T]{
 						SQL(order).execute()
 					}
 				}
-			}
-		}
-	}
-
-	/* Allows for many to one relation */
-	def assign(one: Long, two: Long): Option[Long] = {
-		DB.withConnection {
-			implicit session => {
-				SQL(
-					s"""
-					insert into 
-						$aTable
-					values
-						({one}, {two})
-					""").on("one" -> one, "two" -> two).executeInsert()
 			}
 		}
 	}

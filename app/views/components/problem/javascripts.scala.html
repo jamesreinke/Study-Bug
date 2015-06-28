@@ -2,9 +2,10 @@
 <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/dropzone.js'></script>
 <script>
 	$(function(){
+		var load = $('#ajax-load');
 		var pid = $('#problem-id');
-		var subcont = $('#problem-contents');
-		var subhint = $('#problem-topic');
+		var contents = $('#problem-contents');
+		var topic = $('#problem-topic');
 		var title = $('.form-title');
 		var tbody = $('tbody');
 		var update = $('.update');
@@ -12,27 +13,67 @@
 		var numpics = 1;
 		var files = [];
 		$('.pictures').hide();
+		load.hide();
 
-	});
-</script>
+		<!-- Generate the dropzone section after creating a problem and inserting the id -->
+		$(document).on('click', '.submit', function(){
 
-
-<script>
-
-	$(document).on('click', '.submit', function(){
-
-		var pid = 0;
-		var myDropzone = new Dropzone("#my-dropzone", {
-			url: '/problem/pictures/' + pid,
-			parallelUploads: true,
-			paramName: 'pic',
-			createImageThumbnails: true,
-			thumbnailHeight: 80,
-			success: function(file, response){
-				$("#pic-list").append("<li>" + response + "  <i class='fa fa-trash-o fa-3x'></i></li>")
-			}
+			var pid = 0;
+			var myDropzone = new Dropzone("#my-dropzone", {
+				url: '/problem/pictures/' + pid,
+				parallelUploads: true,
+				paramName: 'pic',
+				createImageThumbnails: true,
+				thumbnailHeight: 80,
+				success: function(file, response){
+					$("#pic-list").append("<li><button data='"+response.id+"' class='pic-delete' type='button'><i class='fa fa-trash-o fa-3x'></i></button>  " + response.name + "</li>")
+				}
+			});
+			$('.pictures').show();
 		});
-		$('.pictures').show();
+
+		$(document).on('click', '.pic-delete', function(){
+			var item = $(this);
+			var picid = $(this).attr("data");
+			var probid = pid.val();
+			load.show();
+			$.ajax({
+					type: 'POST',
+					url: '@routes.Problem.picDelete',
+					data: {pid: probid, pic: picid},
+					success: function(data){
+						item.parent().remove(); // remove the picture from the list
+						$('.pic-option'+pic).remove();  // remove all selection options that included this picture
+					},
+					complete: function(data){
+						load.hide();
+					}
+				});
+		});
+
+		$(document).on('click', '.submit',function(){
+			var c = contents.val();
+			var t = topic.val();
+			$.ajax({
+				type: 'POST',
+				url: '@routes.Problem.create',
+				data: {contents: c, topic: t},
+				success: function(data){
+					//empty out the table if we are adding the first entry
+					var empty = $('tbody tr td').attr("colspan") == "5";
+					if(empty) $('tbody tr').remove();
+					tbody.append('<tr id="row-'+data.id+'">'+
+					'<td>'+data.id+'</td>'+
+					'<td>'+data.contents+'</td>'+
+					'<td>'+data.topic+'</td>'+
+					'<td><button class="edit" data="'+data.id+'" class="btn default btn-xs black">'+
+					'<i class="fa fa-edit"></i> Edit </a></td>'+
+					'<td><button class="del" data="'+data.id+'" class="btn default btn-xs red">'+
+					'<i class="fa fa-trash-o"></i> Delete </a></td></tr>');
+					// cancel();
+				}
+			});
+		});
+
 	});
-	
 </script>

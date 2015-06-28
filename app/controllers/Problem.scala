@@ -17,6 +17,8 @@ import views.html.components.problem._
 object Problem extends Controller {
 
 import models.problems.Problem
+import models.Picture
+import java.io.File
 
 	def database = Action {
 		implicit request => Ok(views.html.pages.temp.core(todo.render()))
@@ -31,22 +33,74 @@ import models.problems.Problem
 						exJavascripts = javascripts()))
 		}
 	}
-	/* POST - upload problem related pictures */
+	/* Recursively find a unique filename with an integer prefix tag */
+	private def unique(filename: String, n: Int  = 0): String = {
+		val filepath = "public/images/" + n + "-" + filename
+		val f = new File(filepath)
+		if( !f.exists ) filepath
+		else unique(filename, n + 1)
+	}
+
+	/* POST - upload problem related pictures 
+		We use a path variable to accomidate the dropbox module functionality
+	*/
 	def pictures(id: Long) = Action(parse.multipartFormData) {
-		import java.io.File
-		val rand = scala.util.Random
 		implicit request => {
 			request.body.file("pic").map {
 				pic => {
-					val seed = rand.nextInt()
-					val filename = seed + "-" + pic.filename
-					val filepath = "public/images/" + filename
+					val filepath = unique(pic.filename) // generate a unique filename for the picture
 					val f = new File(filepath)
-					if( !f.exists ) pic.ref.moveTo(f)
-					Ok(pic.filename)
+					pic.ref.moveTo(f)
+					Picture.create(new Picture(0, pic.filename, filepath)) match {
+						case Some(long) => {
+							models.problems.Problem.assign(id, long) match {
+								case Some(long) => Ok(Picture.toJson(new Picture(long, pic.filename, filepath)))
+								case _ => BadRequest("Error while assigning picture to problem")
+							}
+						}
+						case _ => BadRequest("Error while adding picture to the database")
+					}
 				}
 				}.getOrElse {
 					BadRequest("Could not upload file")
+			}
+		}
+	}
+
+	val pictureDeleteForm = Form(
+		tuple(
+			"pid" -> default(of[Long], 0L),
+			"pic" -> default(of[Long],0L)))
+
+	def picDelete =  Action {
+		implicit request => {
+			val (pid, pic) = pictureDeleteForm.bindFromRequest.get
+			Picture.get(pic) match {
+				case Some(Picture(id, name, path)) => {
+					new File(path).delete()
+					models.problems.Problem.unassign(pid, pic)
+					Picture.delete(id)
+					Ok("Sucessfully deleted picture name: " + name)
+				}
+				case _ => BadRequest("Error while retrieving filepath from picture id")
+			}	
+		}
+	}
+
+	val pForm = Form(
+		tuple(
+			"id" -> default(of[Long], 0L),
+			"contents" -> default(text, ""),
+			"topic" -> default(text, "")))
+
+	def create = Action {
+		implicit request => {
+			val (id, contents, topic) = pForm.bindFromRequest.get
+			models.problems.Problem.create(new Problem(id, contents, topic)) match {
+				case Some(long) => {
+					Ok(models.problems.Problem.toJson(new Problem(long, contents, topic)))
+				}
+				case _ => BadRequest("Error while inserting new problem into database")
 			}
 		}
 	}
