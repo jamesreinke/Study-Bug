@@ -28,7 +28,7 @@
 									<div class="form-group">
 										<label class="control-label col-md-3">Problem Statement</label>
 										<div class="col-md-9">
-											<textarea id="problem-contents" name="contents" type="text" value="" class="form-control" placeholder=""></textarea>
+											<textarea id="problem-contents" name="contents" type="text" value="" class="form-control problem-contents" placeholder=""></textarea>
 											<span class="help-block">
 											This includes text, equations and the problem description.  Pictures will be loaded next to this text.</span>
 										</div>
@@ -38,7 +38,7 @@
 									<div class="form-group">
 										<label class="control-label col-md-3">Topic</label>
 										<div class="col-md-9">
-											<select id="problem-topic" name="parent" class="select2me select2_category form-control" data-placeholder="No Topics">
+											<select id="problem-topic" name="parent" class="problem-topic select2me select2_category form-control" data-placeholder="No Topics">
 												<option id="default-parent" value="no topic" selected="selected">No Topic</option>
 												@for(topic <- models.problems.Topic.getAll){
 													<option value="@topic.contents">@topic.contents</option>
@@ -49,35 +49,36 @@
 								</div>
 							</div>
 							<h3 class="form-section">Answers</h3>
-							<div class="answers">
-								<div class="form-group">
-									<div class="row">
-										<div class="col-md-6">
-											<label class="control-label col-md-3">Contents</label>
+							<div class="answer-section">
+								<div class="answer-group">
+									<div class="form-group">
+										<div class="row">
 											<div class="col-md-6">
-												<input type="text" name="solution-contents[0]" value="" class="form-control" placeholder=""></input>
-											</div>
-											<div class="col-md-3">
-												<div class="checkbox" name="solution-correct[0]">
-													<label>
-														<input type="checkbox"> Correct?
-													</label>
+												<label class="control-label col-md-3">Contents</label>
+												<div class="col-md-6">
+													<input type="text" value="" class="problem-answer-contents form-control" placeholder=""></input>
+												</div>
+												<div class="col-md-3">
+													<div class="checkbox">
+														<button value="0" class="btn red problem-answer-correct" type="button">Wrong</button>
+													</div>
 												</div>
 											</div>
 										</div>
-									</div>
-									<div class="row">
-										<div class="col-md-6">
-											<label class="control-label col-md-3">Picture</label>
+										<div class="row">
 											<div class="col-md-6">
-												<select name="solution-picture[0]" class="picture-selection select2me select2_category form-control" data-placeholder="No Picture">
-													<option value="no picture" selected="selected">No Picture</option>
-												</select>
+												<label class="control-label col-md-3">Picture</label>
+												<div class="col-md-6">
+													<select name="answer-picture" class="picture-selection select2me select2_category form-control" data-placeholder="No Picture">
+														<option value="no picture" selected="selected">No Picture</option>
+													</select>
+												</div>
 											</div>
 										</div>
 									</div>
 								</div>
 							</div>
+							<button type='button' class='btn blue add-answer'>Add Answer</button>
 							<h3 class="form-section">Solution Steps</h3>
 							<div class="row solution">
 								<div class="col-md-6">
@@ -115,16 +116,6 @@
 						<div class="form-actions">
 							<div class="row">
 								<div class="col-md-6">
-									<div class="row">
-										<div class="col-md-offset-3 col-md-9" style="margin-bottom:20px;">
-											<button type="button" class="btn blue answer">Add Answer</button>
-										</div>
-									</div>
-									<div class="row">
-										<div class="col-md-offset-3 col-md-9" style="margin-bottom:20px;">
-											<button type="button" class="btn purple step">Add Solution Step</button>
-										</div>
-									</div>
 									<div class="row">
 										<div class="col-md-offset-3 col-md-9">
 											<button type="button" class="btn green submit">Submit</button>

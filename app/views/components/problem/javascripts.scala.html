@@ -13,6 +13,8 @@
 		var picselect = $('.picture-selection');
 		var numpics = 1;
 		var files = [];
+		var answergroup = $('.answer-group');
+		var answersection = $('.answer-section');
 		$('.pictures').hide();
 		load.hide();
 		var loading = 0;
@@ -69,6 +71,10 @@
 				}
 			});
 		}
+
+		$(document).on('click', '.add-answer', function(){
+			answersection.append(answergroup.clone());
+		});
 
 		$(document).on('click', '.pic-delete', function(){
 			var item = $(this);
@@ -135,6 +141,23 @@
 					dropzone();
 				}
 			});
+		});
+
+		$(document).on('click', '.problem-answer-correct', function(){
+			var butt = $(this);
+			var value = butt.val();  // string representation of the value, use double == and not triple ===
+			if(value == 1) {
+				butt.text("Wrong");
+				butt.removeClass("green");
+				butt.addClass("red");
+				butt.val(0);
+			}
+			else {
+				butt.text("Correct");
+				butt.removeClass("red");
+				butt.addClass("green");
+				butt.val(1);
+			}
 		});
 
 	});
