@@ -97,6 +97,24 @@ object Problem extends JNorm[Problem] {
 			}
 		}
 	}
+	/* Retrieves all pictures related to the problem */
+	def getAllPictures(pid: Long): List[models.Picture] = {
+		DB.withConnection {
+			implicit session => {
+				SQL(
+					"""
+					select
+						p.id, p.name, p.contents
+					from
+						pictures p, problems_p pp
+					where
+						p.id = pp.pic_id
+					and
+						pp.pid = {pid}
+					""").on("pid" -> pid).as(models.Picture.parser*)
+			}
+		}
+	}
 
 	/* Formats the model for table presentation */
 	def toTable: List[List[String]] = {

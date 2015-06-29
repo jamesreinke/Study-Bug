@@ -14,6 +14,8 @@ import Authentication.{auth, admin}
 
 import views.html.components.problem._
 
+import play.api.libs.json._
+
 object Problem extends Controller {
 
 import models.problems.Problem
@@ -112,6 +114,15 @@ import java.io.File
 				}
 				case _ => BadRequest("Error while inserting new problem into database")
 			}
+		}
+	}
+
+	def getPictures = Action {
+		implicit request => {
+			val (id, contents, topic) = pForm.bindFromRequest.get
+			val pics = models.problems.Problem.getAllPictures(id) // list of Pictures
+			val jsonArray = Json.obj("pictures" -> pics.map(x => models.Picture.toJson(x)))
+			Ok(jsonArray)
 		}
 	}
 

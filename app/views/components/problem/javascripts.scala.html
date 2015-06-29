@@ -10,15 +10,19 @@
 		var tbody = $('tbody');
 		var update = $('.update');
 		var pics = $('#pic-list');
+		var picselect = $('.picture-selection');
 		var numpics = 1;
 		var files = [];
 		$('.pictures').hide();
 		load.hide();
+		var loading = 0;
 
 		<!-- Generate the dropzone section after creating a problem and inserting the id -->
 		function dropzone() {
 
 			var pid = 0;
+			$("#my-dropzone").remove();
+			$("#dropzone-wrapper").append("<div class='' id='my-dropzone'></div>");
 			var myDropzone = new Dropzone("#my-dropzone", {
 				url: '/problem/pictures/' + pid,
 				parallelUploads: true,
@@ -26,17 +30,51 @@
 				createImageThumbnails: true,
 				thumbnailHeight: 80,
 				success: function(file, response){
-					$("#pic-list").append("<li><button data='"+response.id+"' class='pic-delete' type='button'><i class='fa fa-trash-o fa-3x'></i></button>  " + response.name + "</li>")
+					$("#pic-list").append("<li><button data='"+response.id+"' class='pic-delete' type='button'><i class='fa fa-trash-o fa-3x'></i></button>  " + response.name + "</li>");
 				}
 			});
 			$('.pictures').show();
+		}
+
+		function sLoad() {
+			loading += 1;
+			load.show();
+		}
+
+		function eLoad() {
+			loading -= 1;
+			if(loading <= 0) load.hide();
+		}
+
+		function cancel() {
+			title.text("Probelms");
+			pid.val(0);
+			contents.val("");
+			topic.val("No Topic");
+			$('.pictures').hide();
+			picselect.empty();
+		}
+
+		function picrefresh(pid) {
+			picselect.empty();
+			$.ajax({
+				type: 'POST',
+				url: '@routes.Problem.getPictures',
+				data: {pid: pid},
+				success: function(data){
+					var length = data.pictures.length
+					for(i = 0; i < length; i += 1){
+						picselect.append('<option value="'+data.pictures[i].id+'">'+data.pictures[i].name+'</option>')
+					}
+				}
+			});
 		}
 
 		$(document).on('click', '.pic-delete', function(){
 			var item = $(this);
 			var picid = $(this).attr("data");
 			var probid = pid.val();
-			load.show();
+			sLoad();
 			$.ajax({
 					type: 'POST',
 					url: '@routes.Problem.picDelete',
@@ -46,19 +84,21 @@
 						$('.pic-option'+pic).remove();  // remove all selection options that included this picture
 					},
 					complete: function(data){
-						load.hide();
+						eLoad();
 					}
 				});
 		});
 
-		$(document).on('click', '.submit',function(){
+		$(document).on('click', '.submit', function(){
 			var c = contents.val();
 			var t = topic.val();
+			sLoad();
 			$.ajax({
 				type: 'POST',
 				url: '@routes.Problem.create',
 				data: {contents: c, topic: t},
 				success: function(data){
+					eLoad();
 					//empty out the table if we are adding the first entry
 					var empty = $('tbody tr td').attr("colspan") == "5";
 					if(empty) $('tbody tr').remove();
@@ -70,18 +110,24 @@
 					'<i class="fa fa-edit"></i> Edit </a></td>'+
 					'<td><button class="del" data="'+data.id+'" class="btn default btn-xs red">'+
 					'<i class="fa fa-trash-o"></i> Delete </a></td></tr>');
-					// cancel();
+					cancel();
 				}
 			});
 		});
 
+		$(document).on('click', '.cancel', function(){
+			cancel();
+		});
+
 		$(document).on('click', '.edit', function(){
 			var id = $(this).attr("data")
+			sLoad();
 			$.ajax({
 				type: 'POST',
 				url: '@routes.Problem.get',
 				data: {id: id},
 				success: function(data) {
+					eLoad();
 					pid.val(data.id);
 					title.text("Problem ID: " + data.id);
 					contents.val(data.contents);
