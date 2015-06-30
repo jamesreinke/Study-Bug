@@ -48,84 +48,86 @@
 									</div>
 								</div>
 							</div>
-							<h3 class="form-section">Answers</h3>
-							<div id="add-answer-toggle">
-								<button type='button' class='btn blue add-answer'>Add Answer</button>
-								<span value='1' class='page-toggle answers on'>1</span>
-							</div>
-							<div class="answer-section">
-								<div class="answer-group">
-									<div class="form-group">
-											<div class="col-md-6">
-												<label class="control-label col-md-3">Contents</label>
+							<div id="problem-specific">
+								<h3 class="form-section">Answers</h3>
+								<div id="add-answer-toggle">
+									<button type='button' class='btn blue add-answer'>Add Answer</button>
+									<span value='1' class='page-toggle answers on'>1</span>
+								</div>
+								<div class="answer-section">
+									<div class="answer-group">
+										<div class="form-group">
 												<div class="col-md-6">
-													<textarea type="text" value="" class="problem-answer-contents form-control" placeholder=""></textarea>
+													<label class="control-label col-md-3">Contents</label>
+													<div class="col-md-6">
+														<textarea type="text" value="" class="problem-answer-contents form-control" placeholder=""></textarea>
+													</div>
+													<div class="col-md-3">
+														<div class="checkbox">
+															<button value="0" class="btn btn-danger problem-answer-correct" type="button">Incorrect</button>
+														</div>
+													</div>
 												</div>
-												<div class="col-md-3">
-													<div class="checkbox">
-														<button value="0" class="btn btn-danger problem-answer-correct" type="button">Incorrect</button>
+												<div class="col-md-6">
+													<label class="control-label col-md-3">Picture</label>
+													<div class="col-md-6">
+														<select name="picture-select" class="answer picture-selection select2me select2_category form-control" data-placeholder="No Picture">
+															<option value="no picture" selected="selected">No Picture</option>
+														</select>
+													</div>
+												</div>
+										</div>
+									</div>
+								</div>
+								<h3 class="form-section">Solution Steps</h3>
+								<div id="add-solution-step-toggle">
+									<button type='button' class='btn blue add-solution-step'>Add Solution Step</button>
+									<span value='1' class='page-toggle solution-steps on'>1</span>
+								</div>
+								<div class="solution-section">
+									<div class="solution-group">
+										<div class="row solution">
+											<div class="col-md-6">
+												<div class="form-group">
+													<label class="control-label col-md-3">Contents</label>
+													<div class="col-md-9">
+														<textarea type='text' class='form-control problem-solution-contents' placeholder=""></textarea>
 													</div>
 												</div>
 											</div>
 											<div class="col-md-6">
-												<label class="control-label col-md-3">Picture</label>
-												<div class="col-md-6">
-													<select name="picture-select" class="answer picture-selection select2me select2_category form-control" data-placeholder="No Picture">
-														<option value="no picture" selected="selected">No Picture</option>
-													</select>
-												</div>
-											</div>
-									</div>
-								</div>
-							</div>
-							<h3 class="form-section">Solution Steps</h3>
-							<div id="add-solution-step-toggle">
-								<button type='button' class='btn blue add-solution-step'>Add Solution Step</button>
-								<span value='1' class='page-toggle solution-steps on'>1</span>
-							</div>
-							<div class="solution-section">
-								<div class="solution-group">
-									<div class="row solution">
-										<div class="col-md-6">
-											<div class="form-group">
-												<label class="control-label col-md-3">Contents</label>
-												<div class="col-md-9">
-													<textarea type='text' class='form-control problem-solution-contents' placeholder=""></textarea>
-												</div>
-											</div>
-										</div>
-										<div class="col-md-6">
-											<div class="form-group">
-												<label class="control-label col-md-3">Picture</label>
-												<div class="col-md-9">
-														<select name="picture-select" class="solution picture-selection select2me select2_category form-control" data-placeholder="No Picture">
-															<option value="no picture" selected="selected">No Picture</option>
-														</select>
+												<div class="form-group">
+													<label class="control-label col-md-3">Picture</label>
+													<div class="col-md-9">
+															<select name="picture-select" class="solution picture-selection select2me select2_category form-control" data-placeholder="No Picture">
+																<option value="no picture" selected="selected">No Picture</option>
+															</select>
+													</div>
 												</div>
 											</div>
 										</div>
 									</div>
 								</div>
-							</div>
-							<!--END SOLUTION SECTION -->
-							<h3 class="form-section">File Upload</h3>
-							<div class="row pictures">
-								<div class="col-md-8">
-									<div class="form-group">
-										<label class="control-label col-md-3">File Dropbox</label>
-										<div class="col-md-9">
-											<div class="" id="dropzone-wrapper">
-												<div class="" id="my-dropzone"></div>
+								<!--END SOLUTION SECTION -->
+								<h3 class="form-section">File Upload</h3>
+								<div class="row">
+									<div class="col-md-8">
+										<div class="form-group">
+											<label class="control-label col-md-3">File Dropbox</label>
+											<div class="col-md-9">
+												<div class="" id="dropzone-wrapper">
+													<div class="" id="my-dropzone"></div>
+												</div>
 											</div>
 										</div>
 									</div>
-								</div>
-								<div class="col-md-4">
-									<div class="form-group pic-list">
-										<label class="control-label col-md-3">Associated Pictures</label>
-										<div class="col-md-9">
-											<ul id="pic-list">
-											</ul>
+									<div class="col-md-4">
+										<div class="form-group pic-list">
+											<label class="control-label col-md-3">Associated Pictures</label>
+											<div class="col-md-9">
+												<ul id="pic-list">
+												</ul>
+											</div>
 										</div>
 									</div>
 								</div>

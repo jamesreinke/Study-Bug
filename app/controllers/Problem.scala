@@ -121,6 +121,7 @@ import java.io.File
 		implicit request => {
 			val (id, contents, topic) = pForm.bindFromRequest.get
 			val pics = models.problems.Problem.getAllPictures(id) // list of Pictures
+			println("This is how many pictures were returned from get pictures", pics.length)
 			val jsonArray = Json.obj("pictures" -> pics.map(x => models.Picture.toJson(x)))
 			Ok(jsonArray)
 		}

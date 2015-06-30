@@ -17,30 +17,45 @@
 		var answersection = $('.answer-section');
 		var solutiongroup = $('.solution-group');
 		var solutionsection = $('.solution-section');
-		$('.pictures').hide();
+		$('#problem-specific').hide();
 		load.hide();
 		var loading = 0;
 		var numanswers = 1;
 		var numsolutionsteps = 1;
 
 
+
+		function picrefresh() {
+			picselect.empty();
+			$.ajax({
+				type: 'POST',
+				url: '@routes.Problem.getPictures',
+				data: {id: pid.val()},
+				success: function(data){
+					var length = data.pictures.length
+					for(i = 0; i < length; i += 1){
+						picselect.append('<option value="'+data.pictures[i].id+'">'+data.pictures[i].name+'</option>')
+					}
+				}
+			});
+		}
+
+
 		<!-- Generate the dropzone section after creating a problem and inserting the id -->
 		function dropzone() {
-
-			var pid = 0;
 			$("#my-dropzone").remove();
 			$("#dropzone-wrapper").append("<div class='' id='my-dropzone'></div>");
 			var myDropzone = new Dropzone("#my-dropzone", {
-				url: '/problem/pictures/' + pid,
+				url: '/problem/pictures/' + pid.val(),
 				parallelUploads: true,
 				paramName: 'pic',
 				createImageThumbnails: true,
 				thumbnailHeight: 80,
 				success: function(file, response){
 					$("#pic-list").append("<li><button data='"+response.id+"' class='pic-delete' type='button'><i class='fa fa-trash-o fa-3x'></i></button>  " + response.name + "</li>");
+					picrefresh();
 				}
 			});
-			$('.pictures').show();
 		}
 
 		function sLoad() {
@@ -60,21 +75,6 @@
 			topic.val("No Topic");
 			$('.pictures').hide();
 			picselect.empty();
-		}
-
-		function picrefresh(pid) {
-			picselect.empty();
-			$.ajax({
-				type: 'POST',
-				url: '@routes.Problem.getPictures',
-				data: {pid: pid},
-				success: function(data){
-					var length = data.pictures.length
-					for(i = 0; i < length; i += 1){
-						picselect.append('<option value="'+data.pictures[i].id+'">'+data.pictures[i].name+'</option>')
-					}
-				}
-			});
 		}
 
 		$(document).on('click', '.add-answer', function(){
@@ -139,7 +139,7 @@
 					data: {pid: probid, pic: picid},
 					success: function(data){
 						item.parent().remove(); // remove the picture from the list
-						$('.pic-option'+pic).remove();  // remove all selection options that included this picture
+						picrefresh();
 					},
 					complete: function(data){
 						eLoad();
@@ -173,6 +173,10 @@
 			});
 		});
 
+		$(document).on('click', '.submit', function(){
+			var problemcontents = $('.problem-contents');
+		});
+
 		$(document).on('click', '.cancel', function(){
 			cancel();
 		});
@@ -191,6 +195,7 @@
 					contents.val(data.contents);
 					topic.val(data.topic);
 					dropzone();
+					$('#problem-specific').show();
 				}
 			});
 		});

@@ -104,7 +104,7 @@ object Problem extends JNorm[Problem] {
 				SQL(
 					"""
 					select
-						p.id, p.name, p.contents
+						p.id, p.name, p.path
 					from
 						pictures p, problems_p pp
 					where
