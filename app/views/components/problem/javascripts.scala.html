@@ -15,9 +15,14 @@
 		var files = [];
 		var answergroup = $('.answer-group');
 		var answersection = $('.answer-section');
+		var solutiongroup = $('.solution-group');
+		var solutionsection = $('.solution-section');
 		$('.pictures').hide();
 		load.hide();
 		var loading = 0;
+		var numanswers = 1;
+		var numsolutionsteps = 1;
+
 
 		<!-- Generate the dropzone section after creating a problem and inserting the id -->
 		function dropzone() {
@@ -73,7 +78,54 @@
 		}
 
 		$(document).on('click', '.add-answer', function(){
-			answersection.append(answergroup.clone());
+			$('.answer-group').slideUp({duration: 1000});
+			var toggles = $('.page-toggle.answers');
+			toggles.removeClass('on');
+			toggles.addClass('off');
+			var newgroup = answergroup.clone();
+			answersection.append(newgroup);
+			newgroup.slideDown({duration: 1000});
+			answergroup = newgroup;
+			numanswers += 1;
+			$('#add-answer-toggle').append("<span value='"+numanswers+"' class='page-toggle answers on'>"+numanswers+"</span>")
+		});
+
+		$(document).on('click', '.page-toggle.answers.off', function(){
+			var number = parseInt($(this).text(), 10);
+			$('.answer-group').eq(number-1).slideDown({duration: 1000});
+			$(this).addClass('on');
+			$(this).removeClass('off');
+		});
+		$(document).on('click', '.page-toggle.answers.on', function(){
+			var number = parseInt($(this).text(), 10);
+			$('.answer-group').eq(number-1).slideUp({duration: 1000});
+			$(this).addClass('off');
+			$(this).removeClass('on');
+		});
+		$(document).on('click', '.add-solution-step', function(){
+			$('.solution-group').slideUp({duration: 1000});
+			var toggles = $('.page-toggle.solution-steps');
+			toggles.removeClass('on');
+			toggles.addClass('off');
+			var newgroup = solutiongroup.clone();
+			solutionsection.append(newgroup);
+			newgroup.slideDown({duration: 1000});
+			solutiongroup = newgroup;
+			numsolutionsteps += 1;
+			$('#add-solution-step-toggle').append("<span value='"+numsolutionsteps+"' class='page-toggle solution-steps on'>"+numsolutionsteps+"</span>")
+		});
+
+		$(document).on('click', '.page-toggle.solution-steps.off', function(){
+			var number = parseInt($(this).text(), 10);
+			$('.solution-group').eq(number-1).slideDown({duration: 1000});
+			$(this).addClass('on');
+			$(this).removeClass('off');
+		});
+		$(document).on('click', '.page-toggle.solution-steps.on', function(){
+			var number = parseInt($(this).text(), 10);
+			$('.solution-group').eq(number-1).slideUp({duration: 1000});
+			$(this).addClass('off');
+			$(this).removeClass('on');
 		});
 
 		$(document).on('click', '.pic-delete', function(){
@@ -147,15 +199,15 @@
 			var butt = $(this);
 			var value = butt.val();  // string representation of the value, use double == and not triple ===
 			if(value == 1) {
-				butt.text("Wrong");
-				butt.removeClass("green");
-				butt.addClass("red");
+				butt.text("Incorrect");
+				butt.removeClass("btn-success");
+				butt.addClass("btn-danger");
 				butt.val(0);
 			}
 			else {
 				butt.text("Correct");
-				butt.removeClass("red");
-				butt.addClass("green");
+				butt.removeClass("btn-danger");
+				butt.addClass("btn-success");
 				butt.val(1);
 			}
 		});
