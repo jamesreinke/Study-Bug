@@ -22,6 +22,7 @@
 		var loading = 0;
 		var numanswers = 1;
 		var numsolutionsteps = 1;
+		var intransition = false;
 
 
 
@@ -78,16 +79,17 @@
 		}
 
 		$(document).on('click', '.add-answer', function(){
-			$('.answer-group').slideUp({duration: 1000});
-			var toggles = $('.page-toggle.answers');
-			toggles.removeClass('on');
-			toggles.addClass('off');
-			var newgroup = answergroup.clone();
-			answersection.append(newgroup);
-			newgroup.slideDown({duration: 1000});
-			answergroup = newgroup;
-			numanswers += 1;
-			$('#add-answer-toggle').append("<span value='"+numanswers+"' class='page-toggle answers on'>"+numanswers+"</span>")
+				$('.answer-group').slideUp({duration: 1000});
+				var toggles = $('.page-toggle.answers');
+				toggles.removeClass('on');
+				toggles.addClass('off');
+				var newgroup = answergroup.clone();
+				newgroup.css("height", "100%");
+				answersection.append(newgroup);
+				newgroup.slideDown({duration: 1000});
+				answergroup = newgroup;
+				numanswers += 1;
+				$('#add-answer-toggle').append("<span value='"+numanswers+"' class='page-toggle answers on'>"+numanswers+"</span>");
 		});
 
 		$(document).on('click', '.page-toggle.answers.off', function(){
@@ -108,6 +110,7 @@
 			toggles.removeClass('on');
 			toggles.addClass('off');
 			var newgroup = solutiongroup.clone();
+			newgroup.css("height", "100%");
 			solutionsection.append(newgroup);
 			newgroup.slideDown({duration: 1000});
 			solutiongroup = newgroup;
@@ -173,8 +176,31 @@
 			});
 		});
 
-		$(document).on('click', '.submit', function(){
-			var problemcontents = $('.problem-contents');
+		$(document).on('click', '.update', function(){
+			// single elements
+			var content = $('.problem-contents');
+			var topic = $('.problem-topic');
+			var picture = $('.problem-picture');
+			// arrays of elements
+			var answercontents = $('.problem-answer-contents');
+			var answerpictures = $('.problem-answer-picture');
+			var answercorrects = $('.problem-answer-correct');
+			var solutioncontents = $('.problem-solution-contents');
+			var solutionpictures = $('.problem-solution-picture');
+			var solutionsubtopics = $('.problem-solution-subtopic');
+
+			sLoad();
+			$.ajax({
+				type: 'POST',
+				url: '@routes.Problem.update',
+				data: {contents: content, topic: topic},
+				success: function(data){
+					eLoad();
+				}
+			});
+			/*
+				TODO: add problem controller functions to handle solution steps and answers
+			*/
 		});
 
 		$(document).on('click', '.cancel', function(){

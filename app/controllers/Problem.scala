@@ -127,4 +127,15 @@ import java.io.File
 		}
 	}
 
+	/* POST - Updates a subtopic */
+	def update = Action {
+		implicit request => {
+			val (id, contents, topic) = pForm.bindFromRequest.get
+			models.problems.Problem.update(new Problem(id, contents, topic)) match {
+				case 1 => Ok("Success")
+				case _ => BadRequest("Could not update problem ID: " + id)
+			}
+		}
+	}
+
 }
