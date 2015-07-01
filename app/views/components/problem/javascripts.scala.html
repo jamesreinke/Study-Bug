@@ -8,7 +8,6 @@
 		var topic = $('#problem-topic');
 		var title = $('.form-title');
 		var tbody = $('tbody');
-		var update = $('.update');
 		var pics = $('#pic-list');
 		var picselect = $('.picture-selection');
 		var numpics = 1;
@@ -178,9 +177,11 @@
 
 		$(document).on('click', '.update', function(){
 			// single elements
+			var pid = $('#problem-id').val();
 			var content = $('.problem-contents');
 			var topic = $('.problem-topic');
 			var picture = $('.problem-picture');
+			console.log("retrieved all of the singular values " + pid + " " + content.val() + " " + topic.val() + " " + picture.val());
 			// arrays of elements
 			var answercontents = $('.problem-answer-contents');
 			var answerpictures = $('.problem-answer-picture');
@@ -189,18 +190,45 @@
 			var solutionpictures = $('.problem-solution-picture');
 			var solutionsubtopics = $('.problem-solution-subtopic');
 
+			/* Update the problem contents */
+			console.log("retrieved all of the array values");
+			console.log("answer contents has a size of " + answercontents.length);
+			console.log("answer pictures has a size of " + answerpictures.length);
 			sLoad();
+			console.log("making the first ajax call");
 			$.ajax({
 				type: 'POST',
 				url: '@routes.Problem.update',
-				data: {contents: content, topic: topic},
+				data: {id: pid, contents: content.val(), topic: topic.val()},
 				success: function(data){
-					eLoad();
+					console.log("problem update");
 				}
 			});
-			/*
-				TODO: add problem controller functions to handle solution steps and answers
-			*/
+			/* Create/Update the problem answers one by one */
+			for(i = 0; i < answercontents.length; i += 1){
+				console.log("making answer call " + i);
+				$.ajax({
+					type: 'POST',
+					url: '@routes.Problem.postAnswer',
+					data: {contents: answercontents.eq(i).val(), picture: answerpictures.eq(i).val(), pid: pid, correct: answercorrects.eq(i).val()},
+					success: function(data){
+						console.log("answer update " + i);
+					}
+				});
+			}
+			/* Create/Update the problem solutions steps one by one */
+			for(i = 0; i < solutioncontents.length; i += 1){
+				$.ajax({
+					type: 'POST',
+					url: '@routes.Problem.postStep',
+					data: {id: 0, contents: solutioncontents.eq(i).val(), subtopic: solutionsubtopics.eq(i).val(), picture: solutionpictures.eq(i).val(), pid: pid, stepNum: i},
+					success: function(data){
+						console.log("solution step update " + i);
+					}
+				});
+			}
+			eLoad();
+			
 		});
 
 		$(document).on('click', '.cancel', function(){
@@ -208,7 +236,7 @@
 		});
 
 		$(document).on('click', '.edit', function(){
-			var id = $(this).attr("data")
+			var id = $(this).attr("data");
 			sLoad();
 			$.ajax({
 				type: 'POST',
@@ -222,6 +250,10 @@
 					topic.val(data.topic);
 					dropzone();
 					$('#problem-specific').show();
+					var button = $('.submit');
+					button.removeClass('submit');
+					button.addClass('update');
+					button.text("Update");
 				}
 			});
 		});

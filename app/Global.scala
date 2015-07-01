@@ -7,7 +7,7 @@ class Global extends GlobalSettings {
 
 	/* Initialize our databases */
 	override def onStart(app: Application) {
-		/*
+			/*
 			println("Initializing databases")
 			Topic.init
 			Subtopic.init
@@ -15,6 +15,7 @@ class Global extends GlobalSettings {
 			Authentication.init
 			Picture.init
 			Problem.init
-		*/
+			Solution.init
+			*/
 	}
 }

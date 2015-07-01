@@ -31,6 +31,10 @@ POST 	/subtopic/delete	 		controllers.Subtopic.delete
 POST 	/subtopic/create			controllers.Subtopic.create
 POST 	/subtopic/update			controllers.Subtopic.update
 
+
+POST 	/problem/answer 			controllers.Problem.postAnswer
+POST 	/problem/solution 			controllers.Problem.postStep
+
 POST 	/problem/get 				controllers.Problem.get
 POST 	/problem/create 			controllers.Problem.create
 POST 	/problem/update 			controllers.Problem.update

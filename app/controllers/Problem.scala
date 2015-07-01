@@ -137,5 +137,83 @@ import java.io.File
 			}
 		}
 	}
+	val aForm = Form(
+		tuple(
+			"id" -> default(of[Long], 0L),
+			"contents" -> default(text, ""),
+			"picture" -> default(of[Long], 0L),
+			"pid" -> default(of[Long], 0L),
+			"correct" -> default(of[Int], 1)))
+
+	/* POST - Creates/Updates an answer for a given problem identified by ID */
+	def postAnswer = Action {
+		implicit request => {
+			import models.problems.Answer
+			val (id, contents, picture, pid, correctVal) = aForm.bindFromRequest.get
+			val correct = correctVal == 1
+			id match {
+				// create new answer
+				case 0L => {
+					Answer.create(new Answer(id, contents, picture, pid, correct)) match {
+						case Some(long) => {
+							Ok(long.toString)
+						}
+						case _ => BadRequest("Unable to create answer Contents: " + contents)
+					}
+				}
+				// edit an existing answer
+				case _ => {
+					Answer.update(new Answer(id, contents, picture, pid, correct)) match {
+						case 0 => BadRequest("Unable to update answer ID: " + id)
+						case _ => Ok("Successfully updated answer ID: " + id)
+					}
+				}
+			}
+		}
+	}
+	def getAnswers = Action {
+		implicit request => {
+			val id = aForm.bindFromRequest.get._1
+			models.problems.Answer.getByProblemId(id) match {
+				case List() => BadRequest("No answer matching ID: " + id)
+				case answers => {
+					val jsonArray = Json.obj("answers" -> answers.map(x => models.problems.Answer.toJson(x)))
+					Ok(jsonArray)
+				}
+			}
+		}
+	}
+
+	val sForm = Form(
+		tuple(
+			"id" -> default(of[Long], 0L),
+			"contents" -> default(text, ""),
+			"subtopic" -> default(of[Long], 0L),
+			"picture" -> default(of[Long], 0L),
+			"pid" -> default(of[Long], 0L),
+			"stepNum" -> default(of[Int], -1)))
+	/* POST - Creates/Updates solution steps for a given probelm identified by ID */
+	def postStep = Action {
+		implicit request => {
+			import models.problems.Solution
+			import models.problems.Step
+			val (id, contents, subtopic, picture, pid, stepNum) = sForm.bindFromRequest.get
+			println("Solution values", id, contents, subtopic, picture, pid, stepNum)
+			id match {
+				case 1 => {
+					Solution.create(new Step(id, contents, subtopic, picture, pid, stepNum)) match {
+						case Some(long) => Ok(long.toString)
+						case _ => BadRequest("Unable to create solution step Contents: " + contents)
+					}
+				}
+				case _ => {
+					Solution.update(new Step(id, contents, subtopic, picture, pid, stepNum)) match {
+						case 0 => BadRequest("Unable to update solution step ID: " + id)
+						case _ => Ok("successfully updated solution step ID: " + id)
+					}
+				}
+			}
+		}
+	}
 
 }

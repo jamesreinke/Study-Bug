@@ -53,7 +53,7 @@
 									<label class="control-label col-md-3">Problem Picture</label>
 									<div class="form-group col-md-9">
 										<select name="picture-select" class="answer picture-selection select2me select2_category form-control" data-placeholder="No Picture">
-											<option value="no picture" selected="selected">No Picture</option>
+											<option value="0" selected="selected">No Picture</option>
 										</select>
 									</div>
 								</div>
@@ -80,8 +80,8 @@
 												<div class="col-md-6">
 													<label class="control-label col-md-3">Picture</label>
 													<div class="col-md-6">
-														<select name="picture-select" class="answer picture-selection select2me select2_category form-control" data-placeholder="No Picture">
-															<option value="no picture" selected="selected">No Picture</option>
+														<select name="picture-select" class="answer problem-answer-picture picture-selection select2me select2_category form-control" data-placeholder="No Picture" value="">
+															<option value="0" selected="selected">No Picture</option>
 														</select>
 													</div>
 												</div>
@@ -104,7 +104,7 @@
 													</div>
 													<div class="col-md-3">
 														<select name="picture-select" class="problem-solution-subtopic select2me select2_category form-control" data-placeholder="No Subtopic">
-															<option value="no picture" selected="selected">No Subtopic</option>
+															<option value="0" selected="selected">No Subtopic</option>
 															@for(subtopic <- models.problems.Subtopic.getAll){
 																<option value="@subtopic.id">@subtopic.contents</option>
 															}
@@ -116,8 +116,8 @@
 												<div class="form-group">
 													<label class="control-label col-md-3">Picture</label>
 													<div class="col-md-6">
-															<select name="picture-select" class="solution picture-selection select2me select2_category form-control" data-placeholder="No Picture">
-																<option value="no picture" selected="selected">No Picture</option>
+															<select name="picture-select" class="solution problem-solution-picture picture-selection select2me select2_category form-control" data-placeholder="No Picture">
+																<option value="0" selected="selected">No Picture</option>
 															</select>
 													</div>
 												</div>

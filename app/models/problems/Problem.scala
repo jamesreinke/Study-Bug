@@ -53,16 +53,17 @@ object Problem extends JNorm[Problem] {
 	}
 
 	def update(p: Problem): Int = {
+		println("calling problem update function")
 		DB.withConnection {
 			implicit session => {
 				SQL(
 					"""
 					update 
-						problems p
+						problems
 					set
 						contents = {contents}, topic = {topic}
 					where
-						p.id = {pid}
+						id = {pid}
 					""").on("contents" -> p.contents, "topic" -> p.topic, "pid" -> p.id).executeUpdate()
 			}
 		}
@@ -99,6 +100,7 @@ object Problem extends JNorm[Problem] {
 	}
 	/* Retrieves all pictures related to the problem */
 	def getAllPictures(pid: Long): List[models.Picture] = {
+		println("retrieving all pictures")
 		DB.withConnection {
 			implicit session => {
 				SQL(

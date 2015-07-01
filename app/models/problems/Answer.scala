@@ -11,7 +11,7 @@ import play.api.libs.json._
 case class Answer(
 	id: Long,
 	contents: String,
-	picture: String,
+	picture: Long,
 	pid: Long,
 	correct: Boolean
 	)
@@ -23,10 +23,10 @@ object Answer extends JNorm[Answer] {
 	val aTable = "answers_a"
 
 	val statements = List(
-		"create table if not exists answers (id bigserial primary key, contents text, picture varchar, pid bigint, correct boolean);",
+		"create table if not exists answers (id bigserial primary key, contents text, picture bigint, pid bigint, correct boolean);",
 		"create index answers_i on answers (pid);")
 
-	val parser = long("id") ~ str("contents") ~ str("picture") ~ long("pid") ~ bool("correct") map {
+	val parser = long("id") ~ str("contents") ~ long("picture") ~ long("pid") ~ bool("correct") map {
 		case id ~ contents ~ picture ~ pid ~ correct => Answer(id, contents, picture, pid, correct)
 	}
 
@@ -45,10 +45,10 @@ object Answer extends JNorm[Answer] {
 				SQL(
 					"""
 					insert into answers
-						(id, contents, picture, pid, correct)
+						(contents, picture, pid, correct)
 					values
-						({id}, {contents}, {picture}, {pid}, {correct})
-					""").on("id" -> a.id, "contents" -> a.contents, "picture" -> a.picture, "pid" -> a.pid, "correct" -> a.correct).executeInsert()
+						({contents}, {picture}, {pid}, {correct})
+					""").on("contents" -> a.contents, "picture" -> a.picture, "pid" -> a.pid, "correct" -> a.correct).executeInsert()
 			}
 		}
 	}
