@@ -151,9 +151,9 @@ import java.io.File
 			import models.problems.Answer
 			val (id, contents, picture, pid, correctVal) = aForm.bindFromRequest.get
 			val correct = correctVal == 1
-			id match {
+			id > 0 match {
 				// create new answer
-				case 0L => {
+				case false => {
 					Answer.create(new Answer(id, contents, picture, pid, correct)) match {
 						case Some(long) => {
 							Ok(long.toString)
@@ -162,10 +162,10 @@ import java.io.File
 					}
 				}
 				// edit an existing answer
-				case _ => {
-					Answer.update(new Answer(id, contents, picture, pid, correct)) match {
-						case 0 => BadRequest("Unable to update answer ID: " + id)
-						case _ => Ok("Successfully updated answer ID: " + id)
+				case true => {
+					Answer.update(new Answer(id, contents, picture, pid, correct)) > 0 match {
+						case false => BadRequest("Unable to update answer ID: " + id)
+						case true => Ok("Successfully updated answer ID: " + id)
 					}
 				}
 			}
@@ -199,20 +199,41 @@ import java.io.File
 			import models.problems.Step
 			val (id, contents, subtopic, picture, pid, stepNum) = sForm.bindFromRequest.get
 			println("Solution values", id, contents, subtopic, picture, pid, stepNum)
-			id match {
-				case 1 => {
+			id > 0 match {
+				case false => {
 					Solution.create(new Step(id, contents, subtopic, picture, pid, stepNum)) match {
 						case Some(long) => Ok(long.toString)
 						case _ => BadRequest("Unable to create solution step Contents: " + contents)
 					}
 				}
-				case _ => {
-					Solution.update(new Step(id, contents, subtopic, picture, pid, stepNum)) match {
-						case 0 => BadRequest("Unable to update solution step ID: " + id)
-						case _ => Ok("successfully updated solution step ID: " + id)
+				case true => {
+					Solution.update(new Step(id, contents, subtopic, picture, pid, stepNum)) > 0 match {
+						case false => BadRequest("Unable to update solution step ID: " + id)
+						case true => Ok("successfully updated solution step ID: " + id)
 					}
 				}
 			}
+		}
+	}
+	/* Returns a list of all problems in their full contents... JSON format */
+	def getProblem = Action {
+		implicit request => {
+			val problems = models.problems.Problem.getAll // returns a List[Problem]
+			var problemList: JsArray = new JsArray()
+			for(p <- problems) {
+				val answers = models.problems.Answer.getByProblemId(p.id) // returns a List[Answer]
+				val solution = models.problems.Solution.getByProblemId(p.id) // returns List[Step]
+				val jsonAnswers = JsArray(answers.map(x => models.problems.Answer.toJson(x)))
+				val jsonSteps = JsArray(solution.map(x => models.problems.Solution.toJson(x)))
+				val json = Json.obj(
+					"id" -> p.id,
+					"contents" -> p.contents,
+					"topic" -> p.topic,
+					"answers" -> jsonAnswers,
+					"solution" -> jsonSteps)
+				problemList = problemList.+:(json)  // TODO: A better solution, but i can't believe this one works....
+			}
+			Ok(problemList)
 		}
 	}
 

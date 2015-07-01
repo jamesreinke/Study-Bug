@@ -64,11 +64,11 @@ object Solution extends JNorm[Step] {
 				SQL(
 					"""
 					update
-						solutions s
+						solutions
 					set
 						contents = {contents}, subtopic = {subtopic}, picture = {picture}, pid = {pid}, step_num = {stepNum}
 					where
-						s.id = {id}
+						id = {id}
 					""").on(
 					"id" -> s.id,
 					"contents" -> s.contents,
@@ -80,7 +80,7 @@ object Solution extends JNorm[Step] {
 		}
 	}
 	/* Returns the entire solution in order by step number */
-	def getSolutionByProblemId(pid: Long): List[Step] = {
+	def getByProblemId(pid: Long): List[Step] = {
 		DB.withConnection {
 			implicit session => {
 				SQL(

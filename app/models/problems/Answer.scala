@@ -59,17 +59,17 @@ object Answer extends JNorm[Answer] {
 				SQL(
 					"""
 					update 
-						answers a
+						answers
 					set
 						contents = {contents}, picture = {picture}, pid = {pid}, correct = {correct}
 					where
-						s.id = {sid}
+						id = {id}
 					""").on("id" -> a.id, "contents" -> a.contents, "picture" -> a.picture, "pid" -> a.pid, "correct" -> a.correct).executeUpdate()
 			}
 		}
 	}
 
-	def getByProblemId(id: Long): List[Answer] = {
+	def getByProblemId(pid: Long): List[Answer] = {
 		DB.withConnection {
 			implicit session => {
 				SQL(
@@ -80,8 +80,8 @@ object Answer extends JNorm[Answer] {
 					from
 						answers a
 					where
-						a.pid = {id}
-					""").on("id" -> id).as(parser*)
+						a.pid = {pid}
+					""").on("pid" -> pid).as(parser*)
 			}
 		}
 	}
