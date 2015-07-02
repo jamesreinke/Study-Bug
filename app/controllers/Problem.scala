@@ -215,26 +215,39 @@ import java.io.File
 			}
 		}
 	}
-	/* Returns a list of all problems in their full contents... JSON format */
-	def getProblem = Action {
-		implicit request => {
-			val problems = models.problems.Problem.getAll // returns a List[Problem]
-			var problemList: JsArray = new JsArray()
-			for(p <- problems) {
+	/* Transforms a list of problems into a JSON Array */
+	private def problemsToJson(probs: List[Problem]): JsArray = {
+		var problemList: JsArray = new JsArray()
+		for(p <- probs) {
 				val answers = models.problems.Answer.getByProblemId(p.id) // returns a List[Answer]
 				val solution = models.problems.Solution.getByProblemId(p.id) // returns List[Step]
+				val pictures = models.problems.Problem.getAllPictures(p.id) // returns List[Picture]
 				val jsonAnswers = JsArray(answers.map(x => models.problems.Answer.toJson(x)))
 				val jsonSteps = JsArray(solution.map(x => models.problems.Solution.toJson(x)))
+				val jsonPictures = JsArray(pictures.map(x => models.Picture.toJson(x))) // we can instantiate implicit json conversions
 				val json = Json.obj(
 					"id" -> p.id,
 					"contents" -> p.contents,
 					"topic" -> p.topic,
+					"pictures" -> jsonPictures,
 					"answers" -> jsonAnswers,
 					"solution" -> jsonSteps)
 				problemList = problemList.+:(json)  // TODO: A better solution, but i can't believe this one works....
 			}
-			Ok(problemList)
+		problemList
+	}
+	/* TODO: Answer question why form tuples have to have more than one parameter */
+	val topicForm = Form(
+		tuple(
+			"id" -> default(of[Long], 0L),
+			"topic" -> default(of[String], "")))
+	def problemsByTopic = Action {
+		implicit request => {
+			val (id, topic) = topicForm.bindFromRequest.get
+			models.problems.Problem.getByTopic(topic) match {
+				case List() => BadRequest("Unable to retrieve any problems for Topic: " + topic)
+				case problems => Ok(problemsToJson(problems))
+			}
 		}
 	}
-
 }

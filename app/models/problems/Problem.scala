@@ -53,7 +53,6 @@ object Problem extends JNorm[Problem] {
 	}
 
 	def update(p: Problem): Int = {
-		println("calling problem update function")
 		DB.withConnection {
 			implicit session => {
 				SQL(
@@ -65,6 +64,22 @@ object Problem extends JNorm[Problem] {
 					where
 						id = {pid}
 					""").on("contents" -> p.contents, "topic" -> p.topic, "pid" -> p.id).executeUpdate()
+			}
+		}
+	}
+
+	def getByTopic(t: String): List[Problem] = {
+		DB.withConnection {
+			implicit session => {
+				SQL(
+					"""
+					select
+						*
+					from
+						problems
+					where
+						topic = {topic}
+					""").on("topic" -> t).as(parser*)
 			}
 		}
 	}

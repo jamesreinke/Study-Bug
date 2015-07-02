@@ -36,6 +36,7 @@
 					submit.text("Update");
 					submit.removeClass();
 					submit.addClass('btn green update');
+
 				}
 			});
 		});
@@ -49,6 +50,7 @@
 					contents.val(data.contents);
 					parent.val(data.parent);
 					title.text("ID: " + data.id);
+					MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 				}
 			});
 		});
@@ -89,6 +91,7 @@
 					cancel();
 					title.text("Success");
 					parent.append('<option value="'+data.id+'">'+data.contents+'</option>');
+					MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
 				}
 			});
 		});

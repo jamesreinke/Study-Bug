@@ -40,6 +40,7 @@ POST 	/problem/solution 			controllers.Problem.postStep
 POST 	/problem/get 				controllers.Problem.get
 POST 	/problem/create 			controllers.Problem.create
 POST 	/problem/update 			controllers.Problem.update
+POST 	/problem/bytopic 			controllers.Problem.problemsByTopic
 POST 	/problem/pictures/delete	controllers.Problem.picDelete
 POST 	/problem/pictures/get 		controllers.Problem.getPictures
 POST 	/problem/pictures/:pid	 	controllers.Problem.pictures(pid: Long)

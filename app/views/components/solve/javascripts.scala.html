@@ -1,8 +1,9 @@
 <script>
 	$(function(){
+		var id = $("#problem-id");
 		var contents = $("#problem-contents");
 		var pictures = $("#problem-pictures");
-		var answer = $("#problem-answers");
+		var answers = $("#problem-answers");
 		var solution = $("#problem-solution");
 		var topicbuttons = $('#topic-buttons');
 		var backbutton = $('#back-button');
@@ -10,7 +11,8 @@
 		backbutton.val(0);
 		getChildren(backbutton.val());
 		var title = $('#problem-title');
-
+		var choices = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+		var showstep = 0;
 
 		function getChildren(id) {
 			$.ajax({
@@ -32,6 +34,19 @@
 			});
 		}
 
+		function clear() {
+			contents.empty();
+			id.val(0);
+			pictures.empty();
+			answers.empty();
+			solution.empty();
+		}
+
+		$(document).on('click', '#show-step', function(){
+			$('.problem-solution-step').eq(showstep).fadeIn({duration: 1000});
+			showstep += 1;
+		});
+
 		$(document).on('click', '#back-button', function(){
 			var childid = backbutton.val();
 			$.ajax({
@@ -49,12 +64,51 @@
 
 		$(document).on('click', '#solve-button', function(){
 			var topicid = backbutton.val();
+			$.ajax({
+				type: 'POST',
+				url: '@routes.Topic.get',
+				data: {id: topicid},
+				success: function(data) {
+					clear();
+					$.ajax({
+						type: 'POST',
+						url: '@routes.Problem.problemsByTopic',
+						data: {topic: data.contents},
+						success: function(data) {
+							solstep = 0; // retstart sol step count
+							// iterate over each problem
+							for(i = 0; i < data.length; i += 1){
+								id.val(data[i].id);
+								contents.text(data[i].contents); // problem contents
+								// iterate over the problem's pictures
+								for(p = 0; p < data[i].pictures.length; p += 1){
+									pictures.append('<img src="'+data[i].pictures[p].path+'"></img>');
+								}
+								// iterate over the problem answers
+								for(a = 0; a < data[i].answers.length; a += 1){
+									answers.append('<span class="answer-choice"><button class="btn green answer" type="button">'+choices[a]+'</button><span class="answer-choice-contents"><img src="'+data[i].answers[a].picture+'"></img><span>'+data[i].answers[a].contents+'</span></span></span>');
+								}
+								// iterate over the problem solution
+								for(s = 0; s < data[i].solution.length; s += 1){
+									solution.append('<span class="problem-solution-step">'+data[i].solution[s].contents+'<img src="'+data[i].solution[s].picture+'"></img></span>');
+								}
+								$('.problem-solution-step').fadeOut({duration: 1});
+								if(data[i].solution.length > 0) solution.append('<button id="show-step" class="btn btn-primary" type="button">Solution Step</button>');
+							}
+							MathJax.Hub.Queue(["Typeset",MathJax.Hub]);
+							$("img").error(function(){$(this).hide();});
+
+						}
+					});
+				}
+			});
 		});
+
 
 		$(document).on('click', '.topic-button', function(){
 			var topicid = $(this).val();
 			getChildren(topicid);
-			title.text($(this).text());
+			title.text($(this).text().toUpperCase());
 		});
 
 
