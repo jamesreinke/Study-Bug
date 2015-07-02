@@ -1,0 +1,63 @@
+<script>
+	$(function(){
+		var contents = $("#problem-contents");
+		var pictures = $("#problem-pictures");
+		var answer = $("#problem-answers");
+		var solution = $("#problem-solution");
+		var topicbuttons = $('#topic-buttons');
+		var backbutton = $('#back-button');
+		var solvebutton = $('#solve-button');
+		backbutton.val(0);
+		getChildren(backbutton.val());
+		var title = $('#problem-title');
+
+
+		function getChildren(id) {
+			$.ajax({
+				type: 'POST',
+				url: '@routes.Topic.children',
+				data: {id: id},
+				success: function(data){
+					topicbuttons.empty(); // clear previous children
+					var length = data.length
+					backbutton.val(id);
+					for(i = 0; i< length; i += 1){
+						topicbuttons.append("<button value='"+data[i].id+"' type='button' class='btn topic-button'>"+data[i].contents+"</button>");
+					}
+				},
+				failure: function(data){
+					topicbuttons.empty();
+					backbutton.val(id);
+				}
+			});
+		}
+
+		$(document).on('click', '#back-button', function(){
+			var childid = backbutton.val();
+			$.ajax({
+				type: 'POST',
+				url: '@routes.Topic.parent',
+				data: {id: childid},
+				success: function(data){
+					getChildren(data.parent);
+				},
+				failure: function(data){
+					getChildren(0);
+				}
+			});
+		});
+
+		$(document).on('click', '#solve-button', function(){
+			var topicid = backbutton.val();
+		});
+
+		$(document).on('click', '.topic-button', function(){
+			var topicid = $(this).val();
+			getChildren(topicid);
+			title.text($(this).text());
+		});
+
+
+
+	});
+</script>

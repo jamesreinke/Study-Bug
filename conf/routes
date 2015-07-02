@@ -24,6 +24,8 @@ POST 	/topic/get 					controllers.Topic.get
 POST 	/topic/delete 				controllers.Topic.delete
 POST 	/topic/create 				controllers.Topic.create
 POST 	/topic/update 				controllers.Topic.update
+POST 	/topic/children 			controllers.Topic.children
+POST 	/topic/parent 				controllers.Topic.parent
 
 GET 	/subtopic 					controllers.Subtopic.getPage
 POST 	/subtopic/get	 			controllers.Subtopic.get

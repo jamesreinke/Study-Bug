@@ -82,4 +82,24 @@ object Topic extends Controller {
 			}
 		}
 	}
+
+	def children = Action {
+		implicit request => {
+			val (id, contents, parent) = tForm.bindFromRequest.get
+			db.getChildren(id) match {
+				case List() => BadRequest("Did not retrieve any children")
+				case children => Ok(JsArray(children.map(x => db.toJson(x))))
+			}
+		}
+	}
+
+	def parent = Action {
+		implicit request => {
+			val (id, contents, parent) = tForm.bindFromRequest.get
+			db.getParent(id) match {
+				case Some(parent) => Ok(db.toJson(parent))
+				case _ => BadRequest("Could not retrieve parent by ID: " + id)
+			}
+		}
+	}
 }

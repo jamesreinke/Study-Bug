@@ -91,6 +91,39 @@ object Topic extends JNorm[Topic] {
 		}
 	}
 
+	/* Retrieves all of the children topics given the parent id */
+	def getChildren(id: Long): List[Topic] = {
+		DB.withConnection {
+			implicit session => {
+				SQL(
+					"""
+					select
+						*
+					from
+						topics
+					where
+						parent = {id}
+					""").on("id" -> id).as(parser*)
+			}
+		}
+	}
+
+	def getParent(id: Long): Option[Topic] = {
+		DB.withConnection {
+			implicit session => {
+				SQL(
+					"""
+					select
+						*
+					from
+						topics
+					where
+						id = {parent}
+					""").on("parent" -> id).as(parser*).headOption
+			}
+		}
+	}
+
 	/* Formats the model for table presentation */
 	def toTable: List[List[String]] = {
 		val colNames = List("ID", "Contents", "Parent")
