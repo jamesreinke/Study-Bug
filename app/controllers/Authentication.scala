@@ -34,6 +34,14 @@ object Authentication extends Controller {
 		}
 	}
 
+	def getUserID(f: Request[AnyContent]): Option[Long] = {
+		f.session.get(idKey).map {
+			id => Some(id.toLong)
+		}.getOrElse{
+			None
+		}
+	}
+
 	val userForm = Form(
 		mapping(
 			"id" -> default(of[Long], 0L),
