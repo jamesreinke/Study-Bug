@@ -15,6 +15,7 @@
 		var showstep = 0;
 		var currentproblem = 0;
 		var problems;
+		var priortopictext = "";
 
 		function getChildren(id) {
 			$.ajax({
@@ -29,9 +30,11 @@
 						topicbuttons.append("<button value='"+data[i].id+"' type='button' class='btn topic-button'>"+data[i].contents+"</button>");
 					}
 				},
-				failure: function(data){
+				error: function(data){
 					topicbuttons.empty();
 					backbutton.val(id);
+					topicbuttons.empty();
+					topicbuttons.append("<button type='button' class='btn'>No Subtopics</button>");
 				}
 			});
 		}
@@ -57,9 +60,13 @@
 				data: {id: childid},
 				success: function(data){
 					getChildren(data.parent);
+					title.text(priortopictext);
+					clear();
 				},
-				failure: function(data){
+				error: function(data){
 					getChildren(0);
+					title.text("");
+					clear();
 				}
 			});
 		});
@@ -102,6 +109,7 @@
 		}
 
 		$(document).on('click', '#solve-button', function(){
+			currentproblem = 0;
 			var topicid = backbutton.val();
 			$.ajax({
 				type: 'POST',
@@ -115,7 +123,8 @@
 						data: {topic: data.contents},
 						success: function(data) {
 							problems = data;
-							loadproblem();
+							if(problems.length > currentproblem) loadproblem();
+							else clear();
 						}
 					});
 				}
@@ -130,7 +139,8 @@
 				data: {id: answerid},
 				success: function(data) {
 					currentproblem += 1;
-					loadproblem();
+					if(problems.length > currentproblem) loadproblem();
+					else clear();
 				}
 			});
 		});
@@ -139,6 +149,7 @@
 		$(document).on('click', '.topic-button', function(){
 			var topicid = $(this).val();
 			getChildren(topicid);
+			priortopictext = title.text();
 			title.text($(this).text().toUpperCase());
 		});
 
