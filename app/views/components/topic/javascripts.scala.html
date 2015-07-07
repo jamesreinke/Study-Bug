@@ -61,7 +61,7 @@
 			$.ajax({
 				type: 'POST',
 				url: '@routes.Topic.delete',
-				data: {id: id},
+				data: {id: tid},
 				success: function(data) {
 					$('#row-' + tid).remove();
 					cancel();

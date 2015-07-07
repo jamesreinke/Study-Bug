@@ -38,6 +38,7 @@ POST 	/problem/answer 			controllers.Problem.postAnswer
 POST 	/problem/solution 			controllers.Problem.postStep
 
 POST 	/problem/get 				controllers.Problem.get
+POST 	/problem/delete 			controllers.Problem.delete
 POST 	/problem/create 			controllers.Problem.create
 POST 	/problem/update 			controllers.Problem.update
 POST 	/problem/bytopic 			controllers.Problem.problemsByTopic

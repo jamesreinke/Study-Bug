@@ -52,9 +52,9 @@ object Topic extends Controller {
 	def delete = Action {
 		implicit request => {
 			val (id, contents, parent) = tForm.bindFromRequest.get
-			db.delete(id) match {
-				case 1 => Ok("Topic deleted ID: " + id)
-				case _ => BadRequest("Unable to delete topic with ID: " + id)
+			db.delete(id) > 0 match {
+				case true => Ok("Topic deleted ID: " + id)
+				case false => BadRequest("Unable to delete topic with ID: " + id)
 			}
 		}
 	}

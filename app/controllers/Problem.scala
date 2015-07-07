@@ -95,11 +95,21 @@ import java.io.File
 			"contents" -> default(text, ""),
 			"topic" -> default(text, "")))
 
+	def delete = Action {
+		implicit request => {
+			val (id, contents, topic) = pForm.bindFromRequest.get
+			models.problems.Problem.delete(id) > 0 match {
+				case true => Ok("Deleted problem ID: " + id)
+				case false => BadRequest("Unable to delete from ID: " + id)
+			}
+		}
+	}
+
 	def get = Action {
 		implicit request => {
 			val (id, contents, topic) = pForm.bindFromRequest.get
 			models.problems.Problem.get(id) match {
-				case Some(problem) => Ok(models.problems.Problem.toJson(problem))
+				case Some(problem) => Ok(problemsToJson(List(problem))) // transform problem to a list and grab aux information to form the problem statement
 				case _ => BadRequest("Error retrieving problem ID: " + id)
 			}
 		}

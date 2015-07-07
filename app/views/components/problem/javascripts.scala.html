@@ -2,39 +2,35 @@
 <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/dropzone.js'></script>
 <script>
 	$(function(){
-		var load = $('#ajax-load');
-		var pid = $('#problem-id');
-		var contents = $('#problem-contents');
-		var topic = $('#problem-topic');
-		var title = $('.form-title');
-		var tbody = $('tbody');
-		var pics = $('#pic-list');
-		var picselect = $('.picture-selection');
 		var numpics = 1;
 		var files = [];
-		var answergroup = $('.answer-group');
-		var answersection = $('.answer-section');
-		var solutiongroup = $('.solution-group');
-		var solutionsection = $('.solution-section');
+		var answersectionhtml = $(".answer-section").html();
+		var solutionsectionhtml =$('.solution-section').html();
 		$('#problem-specific').hide();
-		load.hide();
+		$('#ajax-load').hide();
 		var loading = 0;
 		var numanswers = 1;
 		var numsolutionsteps = 1;
 		var intransition = false;
+		var formbodyhtml = $("#problem-area").html();
+		var answergrouphtml = $(".answer-group").html();
+		var solutiongrouphtml = $(".solution-group").html();
 
 
 
 		function picrefresh() {
-			picselect.empty();
+			$(".picture-selection").empty();
 			$.ajax({
 				type: 'POST',
 				url: '@routes.Problem.getPictures',
-				data: {id: pid.val()},
+				data: {id: $('#problem-id').val()},
 				success: function(data){
+					console.log("refreshing pictures");
 					var length = data.pictures.length
+					console.log(length);
 					for(i = 0; i < length; i += 1){
-						picselect.append('<option value="'+data.pictures[i].id+'">'+data.pictures[i].name+'</option>')
+						console.log("refreshing picture: " + i);
+						$(".picture-selection").append('<option value="'+data.pictures[i].id+'">'+data.pictures[i].name+'</option>');
 					}
 				}
 			});
@@ -46,7 +42,7 @@
 			$("#my-dropzone").remove();
 			$("#dropzone-wrapper").append("<div class='' id='my-dropzone'></div>");
 			var myDropzone = new Dropzone("#my-dropzone", {
-				url: '/problem/pictures/' + pid.val(),
+				url: '/problem/pictures/' + $('#problem-id').val(),
 				parallelUploads: true,
 				paramName: 'pic',
 				createImageThumbnails: true,
@@ -60,35 +56,85 @@
 
 		function sLoad() {
 			loading += 1;
-			load.show();
+			$('#ajax-load').show();
 		}
 
 		function eLoad() {
 			loading -= 1;
-			if(loading <= 0) load.hide();
+			if(loading <= 0) $('#ajax-load').hide();
 		}
 
 		function cancel() {
-			title.text("Probelms");
-			pid.val(0);
-			contents.val("");
-			topic.val("No Topic");
-			$('.pictures').hide();
-			picselect.empty();
+			$("#problem-area").html(formbodyhtml);
+			numanswers = 1;
+			numsolutionsteps = 1;
 		}
+
+		function loadproblem(data) {
+			console.log(data[0]);
+			console.log(data[0].answers);
+			console.log(data[0].solution);
+			$('#problem-id').val(data[0].id);
+			$("#problem-contents").val(data[0].contents);
+			$("#problem-topic").val(data[0].topic);
+			picrefresh();
+			$("#form-title").text("Problem ID: " + $('#problem-id').val());
+			console.log("Set basic data");
+			// iterate over the problem answers
+			for(a = 0; a < data[0].answers.length; a += 1){
+				console.log("Adding Asnwers: " + a);
+				if(a != 0) $(".add-answer").trigger("click");
+				$(".problem-answer-contents:last").val(data[0].answers[a].contents);
+				console.log("data[0] answers contents : " + data[0].answers[a].contents);
+				var correct = $(".problem-answer-correct:last");
+				correct.removeClass("btn-danger btn-success");
+				var correctVal = data[0].answers[a].correct;
+				if(correctVal == 1) correct.addClass("btn-success");
+				else correct.addClass("btn-danger");
+				correct.val(correctVal);
+				$(".problem-answer-picture:last").val(data[0].answers[a].picture);
+			}
+			// iterate over the problem solution
+			for(s = 0; s < data[0].solution.length; s += 1) {
+				console.log("Adding Solution: " + s);
+				if(s != 0) $(".add-solution-step").trigger("click"); // add a solution step for each additional step
+				$(".problem-solution-contents:last").val(data[0].solution[s].contents);
+				$(".problem-solution-subtopic:last").val(data[0].solution[s].subtopic); // TODO change val to subtopic id and name to real name
+				$(".problem-solution-picture:last").val(data[0].solution[s].picture); // TODO change to real picture
+			}
+			var submit = $('.submit')
+			submit.text("Update");
+			submit.removeClass();
+			submit.addClass('btn green update');
+			$('#problem-specific').show();
+		}
+
+		$(document).on('click', '.del', function(){
+			var id = $(this).attr("data");
+			$.ajax({
+				type: 'POST',
+				url: '@routes.Problem.delete',
+				data: {id: id},
+				success: function(data) {
+					$('#row-' + id).remove()
+					cancel();
+				}
+			});
+		});
 
 		$(document).on('click', '.add-answer', function(){
 				$('.answer-group').slideUp({duration: 1000});
 				var toggles = $('.page-toggle.answers');
 				toggles.removeClass('on');
 				toggles.addClass('off');
-				var newgroup = answergroup.clone();
+				var newgroup = $(".answer-group:last").clone();
+				newgroup.html(answergrouphtml);
 				newgroup.css("height", "100%");
-				answersection.append(newgroup);
+				$(".answer-section").append(newgroup);
 				newgroup.slideDown({duration: 1000});
-				answergroup = newgroup;
 				numanswers += 1;
 				$('#add-answer-toggle').append("<span value='"+numanswers+"' class='page-toggle answers on'>"+numanswers+"</span>");
+				picrefresh();
 		});
 
 		$(document).on('click', '.page-toggle.answers.off', function(){
@@ -108,13 +154,14 @@
 			var toggles = $('.page-toggle.solution-steps');
 			toggles.removeClass('on');
 			toggles.addClass('off');
-			var newgroup = solutiongroup.clone();
+			var newgroup =$('.solution-group:last').clone();
 			newgroup.css("height", "100%");
-			solutionsection.append(newgroup);
+			newgroup.html(solutiongrouphtml);
+			$(".solution-section:last").append(newgroup);
 			newgroup.slideDown({duration: 1000});
-			solutiongroup = newgroup;
 			numsolutionsteps += 1;
-			$('#add-solution-step-toggle').append("<span value='"+numsolutionsteps+"' class='page-toggle solution-steps on'>"+numsolutionsteps+"</span>")
+			$('#add-solution-step-toggle').append("<span value='"+numsolutionsteps+"' class='page-toggle solution-steps on'>"+numsolutionsteps+"</span>");
+			picrefresh();
 		});
 
 		$(document).on('click', '.page-toggle.solution-steps.off', function(){
@@ -133,7 +180,7 @@
 		$(document).on('click', '.pic-delete', function(){
 			var item = $(this);
 			var picid = $(this).attr("data");
-			var probid = pid.val();
+			var probid = $('#problem-id').val();
 			sLoad();
 			$.ajax({
 					type: 'POST',
@@ -150,8 +197,8 @@
 		});
 
 		$(document).on('click', '.submit', function(){
-			var c = contents.val();
-			var t = topic.val();
+			var c =$('#problem-contents').val();
+			var t =$('#problem-topic').val();
 			sLoad();
 			$.ajax({
 				type: 'POST',
@@ -181,7 +228,7 @@
 			var content = $('.problem-contents');
 			var topic = $('.problem-topic');
 			var picture = $('.problem-picture');
-			console.log("retrieved all of the singular values " + pid + " " + content.val() + " " + topic.val() + " " + picture.val());
+			console.log("retrieved all of the singular values " + pid + " " + content.val() + " " +$('#problem-topic').val() + " " + picture.val());
 			// arrays of elements
 			var answercontents = $('.problem-answer-contents');
 			var answerpictures = $('.problem-answer-picture');
@@ -199,7 +246,7 @@
 			$.ajax({
 				type: 'POST',
 				url: '@routes.Problem.update',
-				data: {id: pid, contents: content.val(), topic: topic.val()},
+				data: {id: pid, contents: content.val(), topic:$('#problem-topic').val()},
 				success: function(data){
 					console.log("problem update");
 				}
@@ -228,7 +275,7 @@
 				});
 			}
 			eLoad();
-			
+			cancel();
 		});
 
 		$(document).on('click', '.cancel', function(){
@@ -236,6 +283,7 @@
 		});
 
 		$(document).on('click', '.edit', function(){
+			cancel();
 			var id = $(this).attr("data");
 			sLoad();
 			$.ajax({
@@ -244,16 +292,7 @@
 				data: {id: id},
 				success: function(data) {
 					eLoad();
-					pid.val(data.id);
-					title.text("Problem ID: " + data.id);
-					contents.val(data.contents);
-					topic.val(data.topic);
-					dropzone();
-					$('#problem-specific').show();
-					var button = $('.submit');
-					button.removeClass('submit');
-					button.addClass('update');
-					button.text("Update");
+					loadproblem(data);
 				}
 			});
 		});
@@ -274,6 +313,8 @@
 				butt.val(1);
 			}
 		});
+
+
 
 	});
 </script>
