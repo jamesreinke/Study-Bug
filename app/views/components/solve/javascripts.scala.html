@@ -88,7 +88,7 @@
 			}
 			// iterate over the problem solution
 			for(s = 0; s < data[currentproblem].solution.length; s += 1){
-				solution.append('<span class="problem-solution-step">'+data[currentproblem].solution[s].contents+'<img src="'+data[currentproblem].solution[s].picture+'"></img><span>'+data[currentproblem].solution[s].subtopic+'</span></span><br>');
+				solution.append('<div class="problem-solution-step">'+data[currentproblem].solution[s].contents+'<img src="'+data[currentproblem].solution[s].picture+'"></img></div>');
 			}
 			// set the width to the maximum width of all of the answers
 			var answerelements = $('.answer-choice');
