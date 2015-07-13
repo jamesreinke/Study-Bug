@@ -11,7 +11,7 @@ import play.api.libs.json._
 case class Answer(
 	id: Long,
 	contents: String,
-	picture: Long,
+	picture: String,
 	pid: Long,
 	correct: Boolean
 	)
@@ -26,7 +26,7 @@ object Answer extends JNorm[Answer] {
 		"create table if not exists answers (id bigserial primary key, contents text, picture bigint, pid bigint, correct boolean);",
 		"create index answers_i on answers (pid);")
 
-	val parser = long("id") ~ str("contents") ~ long("picture") ~ long("pid") ~ bool("correct") map {
+	val parser = long("id") ~ str("contents") ~ str("picture") ~ long("pid") ~ bool("correct") map {
 		case id ~ contents ~ picture ~ pid ~ correct => Answer(id, contents, picture, pid, correct)
 	}
 

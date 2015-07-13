@@ -151,7 +151,7 @@ import java.io.File
 		tuple(
 			"id" -> default(of[Long], 0L),
 			"contents" -> default(text, ""),
-			"picture" -> default(of[Long], 0L),
+			"picture" -> default(text, ""),
 			"pid" -> default(of[Long], 0L),
 			"correct" -> default(of[Int], 1)))
 
@@ -199,7 +199,7 @@ import java.io.File
 			"id" -> default(of[Long], 0L),
 			"contents" -> default(text, ""),
 			"subtopic" -> default(of[Long], 0L),
-			"picture" -> default(of[Long], 0L),
+			"picture" -> default(text, ""),
 			"pid" -> default(of[Long], 0L),
 			"stepNum" -> default(of[Int], -1)))
 	/* POST - Creates/Updates solution steps for a given probelm identified by ID */

@@ -10,7 +10,7 @@ object Node {
 
 
 	/* Sidebar navigation */
-	val index = new Node.Link("Home", "fa fa-home", routes.Application.index())
+	val index = new Link("Home", "fa fa-home", routes.Application.index())
 	val database = new Link("Problems", "fa fa-database", routes.Problem.getPage())
 	val topics = new Link("Topics", "", routes.Topic.getPage())
 	val subtopics = new Link("Subtopics", "", routes.Subtopic.getPage())

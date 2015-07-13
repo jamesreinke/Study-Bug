@@ -1,5 +1,6 @@
 <script>
 	$(function(){
+
 		var id = $("#problem-id");
 		var contents = $("#problem-contents");
 		var pictures = $("#problem-pictures");
@@ -16,6 +17,8 @@
 		var currentproblem = 0;
 		var problems;
 		var priortopictext = "";
+		var problemstatement = $("#problem-statement");
+		var problemstatementhtml = $("#problem-statement").html();
 
 		function getChildren(id) {
 			$.ajax({
@@ -133,14 +136,17 @@
 
 		$(document).on('click', '.answer-choice', function() {
 			var answerid = $(this).val();
+			problemstatement.fadeOut(2000);
 			$.ajax({
 				type: 'POST',
 				url: '@routes.Account.submission',
 				data: {id: answerid},
 				success: function(data) {
 					currentproblem += 1;
-					if(problems.length > currentproblem) loadproblem();
-					else clear();
+					if(problems.length > currentproblem) {
+						loadproblem();
+						problemstatement.fadeIn(2000);
+					}
 				}
 			});
 		});
