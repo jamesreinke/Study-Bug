@@ -29,10 +29,15 @@ import models.problems.Subtopic
 	/* GET - Loads subtopic database page */
 	def getPage = Action {
 		implicit request => {
-			Ok(views.html.pages.temp.core(
+			Authentication.admin(request) match {
+				case true => {
+					Ok(views.html.pages.temp.core(
 						content = core(),
 						exStyles = styles(),
 						exJavascripts = javascripts()))
+				}
+				case false => Redirect("")
+			}
 		}
 	}
 	/* POST - Retrieves a subtopic item by id*/

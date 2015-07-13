@@ -29,10 +29,15 @@ object Topic extends Controller {
 	/* GET - Loads the topic database page */
 	def getPage = Action {
 		implicit request => {
-			Ok(views.html.pages.temp.core(
-				content = core(),
-				exStyles = styles(),
-				exJavascripts = javascripts()))
+			Authentication.admin(request) match {
+				case true => {
+					Ok(views.html.pages.temp.core(
+					content = core(),
+					exStyles = styles(),
+					exJavascripts = javascripts()))
+				}
+				case false => Redirect("")
+			}
 		}
 	}
 

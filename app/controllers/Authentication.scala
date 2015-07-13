@@ -47,7 +47,7 @@ object Authentication extends Controller {
 			"id" -> default(of[Long], 0L),
 			"email" -> of[String],
 			"password" -> of[String],
-			"admin" -> default(of[Boolean], false)
+			"admin" -> default(of[Boolean], true)
 			)(User.apply)(User.unapply))
 
 	/* END: Helper Functions */

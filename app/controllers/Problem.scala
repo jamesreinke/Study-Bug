@@ -29,10 +29,17 @@ import java.io.File
 	/* GET - Loads subtopic database page */
 	def getPage = Action {
 		implicit request => {
-			Ok(views.html.pages.temp.core(
+			Authentication.admin(request) match {
+				case true => {
+					Ok(views.html.pages.temp.core(
 						content = core(),
 						exStyles = styles(),
 						exJavascripts = javascripts()))
+				}
+				case false => {
+					Redirect("")
+				}
+			}
 		}
 	}
 	/* Recursively find a unique filename with an integer prefix tag */
@@ -151,7 +158,7 @@ import java.io.File
 		tuple(
 			"id" -> default(of[Long], 0L),
 			"contents" -> default(text, ""),
-			"picture" -> default(text, ""),
+			"picture" -> default(of[Long], 0L),
 			"pid" -> default(of[Long], 0L),
 			"correct" -> default(of[Int], 1)))
 
@@ -199,7 +206,7 @@ import java.io.File
 			"id" -> default(of[Long], 0L),
 			"contents" -> default(text, ""),
 			"subtopic" -> default(of[Long], 0L),
-			"picture" -> default(text, ""),
+			"picture" -> default(of[Long], 0L),
 			"pid" -> default(of[Long], 0L),
 			"stepNum" -> default(of[Int], -1)))
 	/* POST - Creates/Updates solution steps for a given probelm identified by ID */

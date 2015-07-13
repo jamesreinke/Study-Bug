@@ -13,7 +13,7 @@ case class Step(
 	id: Long,
 	contents: String,
 	subtopic: Long,
-	picture: String,
+	picture: Long,
 	pid: Long,
 	stepNum: Int
 	)
@@ -28,7 +28,7 @@ object Solution extends JNorm[Step] {
 		"create table if not exists solutions (id bigserial primary key, contents text, subtopic bigint, picture bigint, pid bigint, step_num int);",
 		"create index solutions_i on solutions (pid, subtopic);")
 
-	val parser = long("id") ~ str("contents") ~ long("subtopic") ~ str("picture") ~ long("pid") ~ int("step_num") map {
+	val parser = long("id") ~ str("contents") ~ long("subtopic") ~ long("picture") ~ long("pid") ~ int("step_num") map {
 		case id ~ contents ~ subtopic ~ picture ~ pid ~ stepNum => Step(id, contents, subtopic, picture, pid, stepNum)
 	}
 
