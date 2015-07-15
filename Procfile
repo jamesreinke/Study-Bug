@@ -1,1 +1,1 @@
-web: target/universal/stage/bin/studybug -Dhttp.port=$PORT -DapplyEvolutions.default=true -Ddb.default.driver=org.postgresql.Driver -Ddb.default.url=$DATABASE_URL
+web: target/universal/stage/bin/studybug -Dhttp.port=$PORT -DapplyEvolutions.default=true -Ddb.default.driver=org.postgresql.Driver -Ddb.default.url=$DATABASE_URL -Dplay.crypto.secret="PnTDC_V^xaDADYaxPnmbMx67uY4Uv873tT/X</?<IsmjnoP<f:JDvY7MqcFpn]S7"
