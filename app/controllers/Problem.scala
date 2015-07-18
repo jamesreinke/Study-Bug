@@ -34,7 +34,7 @@ import java.io.File
 					Ok(views.html.pages.temp.core(
 						content = core(),
 						exStyles = styles(),
-						exJavascripts = javascripts()))
+						exJavascripts = _javascripts()))
 				}
 				case false => {
 					Redirect("")

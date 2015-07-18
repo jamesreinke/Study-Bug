@@ -1,0 +1,336 @@
+@views.html.components.table.javascripts()
+<script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/dropzone/4.0.1/dropzone.js'></script>
+<script>
+// run this script after page load
+$(function(){
+	/* 
+		Initialization
+	*/
+	var problem_area_html = $("#problem-area").html();
+	var answer_group_html = $(".answer-group").html();
+	var solution_group_html = $('.solution-group').html();
+	var loading = 0; // number of active ajax requests
+	var num_answers = 1;
+	var num_solution_steps = 1;
+	$("#problem-specific").hide();
+	$("#ajax-load").hide();
+
+	/*
+		Send an ajax request to the server at a given url.  POST only.  Returns (Boolean, Response Data)
+	*/
+	function ajax(_url, _json_data, callback){
+		sLoad();
+		$.ajax({
+			type: 'POST',
+			url: _url,
+			data: _json_data,
+			success: function(_data){
+				callback(_data)
+			},
+			complete: function(data){
+				eLoad();
+			}
+		});
+	}
+	/* 
+		Loads a problem into the form given the problem ID.  
+	*/
+	function loadProblem(id){
+		var response = ajax('@routes.Problem.get', {id: id}, loadProblemCallback);
+	}
+	function loadProblemCallback(data){
+		$("#problem-id").val(data[0].id);
+		$("#problem-contents").val(data[0].contents);
+		$("#problem.topic").val(data[0].topic);
+		picrefresh();
+		$("#form-title").text("Problem ID: " + $("#problem-id").val());
+
+		// Iterate over problem answers
+		var answers = data[0].answers;
+		var length = answers.length;
+		for(a = 0; a < length; a += 1){
+			var answer = answers[a];
+			if(a != 0) $(".add-answer").trigger("click");
+			var answer_id = answer.id;
+			$(".problem-answer-contents:last").val(answer.contents);
+			var correct = $(".problem-answer-correct:last");
+			correct.removeClass("btn-danger btn-success");
+			var correctVal = answer.correct;
+			if(correctVal == 1) correct.addClass("btn-success");
+			else correct.addClass("btn-danger");
+			correct.val(correctVal);
+			$(".problem-answer-picture:last").val(answer.picture);
+		}
+
+		// Iterate over problem solution steps
+		var solution_steps = data[0].solution
+		var length = solution_steps.length;
+		for(s = 0; s < length; s += 1){
+			var solution_step = solution_steps[s];
+			if(s != 0) $(".add-solution-step").trigger("click");
+			$(".problem-solution-contents:last").val(solution_step.contents);
+			// TODO: Need to change to actual values, not the id
+			$(".problem-solution-subtopic:last").val(solution_step.subtopic);
+			$(".problem-solution-picture:last").val(solution_step.picture);
+		}
+		var submit = $("#submit-button");
+		submit.text("Update");
+		submit.removeClass();
+		submit.addClass("btn green update");
+		$("#problem-specific").show();
+	}
+	/* 
+		Updates the table view for a given problem and calls the mathjax display command to reformat "$$ $$" encoded strings 
+	*/
+	function updateTableRow(_id, _contents, _topic_name){
+		var row = $("tr#row-" + id);
+		var columns = $("td", row);
+		var id = columns.eq(0), contents = columns.eq(1), topic = columns.eq(2);
+		id.val(_id);
+		contents.val(_contents);
+		topic.val(_topic_name);
+	}
+	/* 
+		Adds a new problem to the table, sorted in order by id 
+	*/
+	function addTableRow(_id, _contents, _topic){
+		$("tbody").append("<tr id='row-"+_id+"' role='row'></tr>");
+		var latest_row = $("tbody > td:last");
+		latest_row.append("<td class='sorting_1'>"+_id+"</td>");
+		latest_row.append("<td>"+_contents+"</td>");
+		latest_row.append("<td>"+_topic+"</td>");
+		latest_row.append("<td><button class='edit' data='"+_id+"'><i class='fa fa-edit'></i></button></td>");
+		latest_row.append("<td><button class='edit' data='"+_id+"'><i class='fa fa-trash-o'></i></button></td>");
+	}
+
+	/* 
+		Updates picture selection state to represent the options that exist in the database.
+	*/
+	function picrefresh(){
+		$(".picture-selection").empty();
+		ajax('@routes.Problem.getPictures', {id: $("#problem-id").val()}, picrefreshCallback);
+	}
+	function picrefreshCallback(data){
+		var data = response[1];
+		var length = data.pictures.length;
+		for(i = 0; i < length; i += 1){
+			$(".picture-selection").append('<option value="'+data.pictures[i].id+'">'+data.pictures[i].name+'</option>');
+		}
+	}
+	/*
+		Delete any existing dropzone sections and create a new one.
+	*/
+	function dropzone(){
+		$("#my-dropzone").remove();
+		$("#dropzone-wrapper").append("<div class='' id='my-dropzone'></div>");
+		myDropzone = new Dropzone("#my-dropzone", {
+			url: '/problem/pictures/' + problem_id.val(),
+			parallelUploads: true,
+			paramName: 'pic',
+			createImageThumbnails: true,
+			thumbnailHeight: 80,
+			success: function(file, response){
+				$("#pic-list").append("<li><button data='"+response.id+"' class='pic-delete' type='button'><i class='fa fa-trash-o fa-3x'></i></button>  " + response.name + "</li>");
+				picrefresh();
+			}
+		});
+	}
+	/* 
+		Toggle the loading gears, representing a pending ajax request 
+	*/
+	function sLoad(){
+		loading += 1;
+		$('#ajax-load').show();
+	}
+	function eLoad(){
+		loading -= 1;
+		if(loading <= 0) $('#ajax-load').hide();
+	}
+	/*
+		Clear the form area and set contents equal to the original state
+	*/
+	function cancel(){
+		$("#problem-area").html(problem_area_html);
+		num_answers = 1;
+		num_solution_steps = 1;
+	}
+	/* 
+		Page listeners, which use the preceding helping functions to complete tasks.
+	*/
+	$(document).on('click', '.edit', function(){
+		cancel(); // clear the contents of the form
+		var id = $(this).attr("data");
+		loadProblem(id);
+	});
+
+	/*
+		Initial problem submission
+	*/
+	$(document).on('click', '.submit', function(){
+		var c = $("#problem-contents").val();
+		var t = $("#problem-topic").val();
+		ajax('@routes.Problem.create', {contents: c, topic: t}, submitCallback);
+	});
+	function submitCallback(data){
+		var data = response[1];
+		var empty = $("tbody tr td").attr("colspan") == "5";
+		if(empty) $("tbody tr").remove();
+		addTableRow(data.id, data.contents, data.topic);
+		loadProblem(data.id);
+	}
+	/*
+		Update an existing problem
+	*/
+	$(document).on('click', '.update', function(){
+		// Singletons
+		var pid = $("#problem-id").val();
+		var content = $("#problem-contents");
+		var topic = $("#problem-topic");
+		var picture = $("#problem-picture");
+		// Array elements
+		var answer_contents = $(".problem-answer-contents");
+		var answer_pictures = $(".problem-answer-picture");
+		var answer_corrects = $(".problem-answer-correct");
+		var solution_contents = $(".problem-solution-contents");
+		var solution_pictures = $(".problem-solution-picture");
+		var solution_subtopics = $(".problem-solution-subtopic");
+
+		// First update the problem and receive notification
+		ajax("@routes.Problem.update", {id: pid, contents: content.val(), topic: topic.val()});
+
+		var length = answer_contents.length;
+		for(a = 0; a < length; a += 1){
+			var contents = answer_contents[a].val();
+			var picture = answer_pictures[a].val();
+			var correct = answer_corrects[a].val();
+			ajax("@routes.Problem.postAnswer", {contents: contents, picture: picture, correct: correct}, updateAnswerCallback);
+		}
+
+		var length = answer_contents.length;
+		for(s = 0; s < length; s += 1){
+			var contents = solution_contents[s].val();
+			var picture = solution_pictures[s].val();
+			var subtopic = solution_subtopics[s].val();
+			ajax("@routes.Problem.postAnswer", {contents: contents, picture: picture, correct: correct}, updateSolutionStepCallback);
+		}
+	});
+	// TODO: Define these functions
+	function updateAnswerCallback(data){
+
+	}
+	function updateSolutionStepCallback(data){
+
+	}
+	/*
+		Delete a problem from the database.
+	*/
+	$(document).on('click', '.del', function(){
+		var id = $(this).attr("data");
+		ajax("@routes.Problem.delete", {id: id}, deleteCallback);
+	});
+	function deleteCallback(data){
+		$("tr#row-" + data.id).remove();
+	}
+	/*
+		User submitted cancel
+	*/
+	$(document).on('click', '.cancel', function(){
+		cancel();
+	});
+	/*
+		Toggle correction button values 
+	*/
+	$(document).on('click', '.problem-answer-correct', function(){
+		var butt = $(this);
+		var value = butt.val();
+		if(value == 1){
+			butt.text("Incorrect");
+			butt.removeClass("btn-success");
+			butt.addClass("btn-danger");
+			butt.val(0);
+		}
+		else{
+			butt.text("Correct");
+			butt.removeClass("btn-danger");
+			butt.addClass("btn-success");
+			butt.val(1);
+		}
+	});
+	/*
+		Add|Remove answer
+	*/
+	$(document).on('click', '.add-answer', function(){
+		$('.answer-group').slideUp({duration: 1000});
+		var toggles = $('.page-toggle.answers');
+		toggles.removeClass('on');
+		toggles.addClass('off');
+		var newgroup = $(".answer-group:last").clone();
+		newgroup.html(answer_group_html);
+		newgroup.css("height", "100%");
+		$(".answer-section").append(newgroup);
+		newgroup.slideDown({duration: 1000});
+		numanswers += 1;
+		$('#add-answer-toggle').append("<span value='"+numanswers+"' class='page-toggle answers on'>"+numanswers+"</span>");
+		picrefresh();
+	});
+	$(document).on('click', '.page-toggle.answers.off', function(){
+		var number = parseInt($(this).text(), 10);
+		$('.answer-group').eq(number-1).slideDown({duration: 1000});
+		$(this).addClass('on');
+		$(this).removeClass('off');
+	});
+	$(document).on('click', '.page-toggle.answers.on', function(){
+		var number = parseInt($(this).text(), 10);
+		$('.answer-group').eq(number-1).slideUp({duration: 1000});
+		$(this).addClass('off');
+		$(this).removeClass('on');
+	});
+	/*
+		Add|Remove solution step
+	*/
+	$(document).on('click', '.add-solution-step', function(){
+		$('.solution-group').slideUp({duration: 1000});
+		var toggles = $('.page-toggle.solution-steps');
+		toggles.removeClass('on');
+		toggles.addClass('off');
+		var newgroup =$('.solution-group:last').clone();
+		newgroup.css("height", "100%");
+		newgroup.html(solution_group_html);
+		$(".solution-section:last").append(newgroup);
+		newgroup.slideDown({duration: 1000});
+		num_solution_steps += 1;
+		$('#add-solution-step-toggle').append("<span value='"+num_solution_steps+"' class='page-toggle solution-steps on'>"+num_solution_steps+"</span>");
+		picrefresh();
+	});
+	$(document).on('click', '.page-toggle.solution-steps.off', function(){
+		var number = parseInt($(this).text(), 10);
+		$('.solution-group').eq(number-1).slideDown({duration: 1000});
+		$(this).addClass('on');
+		$(this).removeClass('off');
+	});
+	$(document).on('click', '.page-toggle.solution-steps.on', function(){
+		var number = parseInt($(this).text(), 10);
+		$('.solution-group').eq(number-1).slideUp({duration: 1000});
+		$(this).addClass('off');
+		$(this).removeClass('on');
+	});
+	/* 
+		Delete picture from database and disassociate with problem ID 
+	*/
+	$(document).on('click', '.pic-delete', function(){
+		var item = $(this);
+		var picid = $(this).attr("data");
+		var probid = $('#problem-id').val();
+		ajax('@routes.Problem.picDelete', {pid: probid, pic: picid}, callback);
+		item.parent().remove(); // remove the picture from the list
+		picrefresh();
+	});
+
+	/*
+		Do nothing callback
+	*/
+	function callback(data){
+
+	}	
+});
+</script>

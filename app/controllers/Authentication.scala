@@ -47,7 +47,7 @@ object Authentication extends Controller {
 			"id" -> default(of[Long], 0L),
 			"email" -> of[String],
 			"password" -> of[String],
-			"admin" -> default(of[Boolean], true)
+			"admin" -> default(of[Boolean], false)
 			)(User.apply)(User.unapply))
 
 	/* END: Helper Functions */
@@ -70,10 +70,6 @@ object Authentication extends Controller {
 					}
 				})
 		}
-	}
-
-	def forgetPost = Action {
-		Ok("Default Forget")
 	}
 
 	def registerPost = Action {

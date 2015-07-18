@@ -9,8 +9,6 @@ POST	/login						controllers.Authentication.loginPost
 
 POST 	/register					controllers.Authentication.registerPost
 
-POST 	/forget 					controllers.Authentication.forgetPost
-
 GET		/logout						controllers.Authentication.logout
 
 GET		/database					controllers.Problem.getPage
