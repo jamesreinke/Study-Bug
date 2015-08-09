@@ -119,15 +119,17 @@ $(function(){
 	*/
 	function picrefresh(){
 		$(".picture-selection").empty();
+		$('#pic-list').empty();
 		ajax('@routes.Problem.getPictures', {id: $("#problem-id").val()}, picrefreshCallback);
 	}
 	function picrefreshCallback(data){
-		var response = data[0];
-		if (typeof response != 'undefined'){
+		var response = data;
+		if (typeof response !== 'undefined'){
 			var length = response.pictures.length;
+			console.log("Number of pictures for refresh: " + length);
 			for(i = 0; i < length; i += 1){
-				console.log("adding a picture to the selection");
 				$(".picture-selection").append('<option value="'+response.pictures[i].id+'">'+response.pictures[i].name+'</option>');
+				$("#pic-list").append("<li><button data='"+response.pictures[i].path+"' class='pic-delete' type='button'><i class='fa fa-trash-o fa-3x'></i></button>  " + response.pictures[i].name + "</li>");
 			}
 		}
 	}
