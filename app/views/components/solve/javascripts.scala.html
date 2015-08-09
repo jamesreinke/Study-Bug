@@ -75,6 +75,12 @@
 		});
 
 		function loadproblem() {
+			problemstatement.html(problemstatementhtml);
+			var id = $("#problem-id");
+			contents = $("#problem-contents");
+			pictures = $("#problem-pictures");
+			answers = $("#problem-answers");
+			solution = $("#problem-solution");
 			var data = problems; // change the namespace
 			solstep = 0; // retstart sol step count
 

@@ -18,9 +18,9 @@ import play.api.libs.json._
 
 object Problem extends Controller {
 
-import models.problems.Problem
-import models.Picture
-import java.io.File
+	import models.problems.Problem
+	import models.Picture
+	import java.io.File
 
 	def database = Action {
 		implicit request => Ok(views.html.pages.temp.core(todo.render()))

@@ -15,6 +15,10 @@ $(function(){
 	$("#problem-specific").hide();
 	$("#ajax-load").hide();
 
+
+	function nothingCallback(){
+		// does nothing...
+	}
 	/*
 		Send an ajax request to the server at a given url.  POST only.  Returns (Boolean, Response Data)
 	*/
@@ -48,11 +52,14 @@ $(function(){
 		// Iterate over problem answers
 		var answers = data[0].answers;
 		var length = answers.length;
-		for(a = 0; a < length; a += 1){
+		for(a = 0; a < length; a += 1) {
 			var answer = answers[a];
 			if(a != 0) $(".add-answer").trigger("click");
 			var answer_id = answer.id;
-			$(".problem-answer-contents:last").val(answer.contents);
+			var contents = $(".problem-answer-contents:last")
+			contents.val(answer.contents);
+			// set the contents box to the id of the answer so that when we save, we do not save duplicates
+			contents.attr("answer-id", answer_id);  
 			var correct = $(".problem-answer-correct:last");
 			correct.removeClass("btn-danger btn-success");
 			var correctVal = answer.correct;
@@ -65,10 +72,13 @@ $(function(){
 		// Iterate over problem solution steps
 		var solution_steps = data[0].solution
 		var length = solution_steps.length;
-		for(s = 0; s < length; s += 1){
+		for(s = 0; s < length; s += 1) {
 			var solution_step = solution_steps[s];
+			var sid = solution_steps[s].id;
 			if(s != 0) $(".add-solution-step").trigger("click");
-			$(".problem-solution-contents:last").val(solution_step.contents);
+			var contents = $(".problem-solution-contents:last");
+			contents.val(solution_step.contents);
+			contents.attr("solution_id", sid)
 			// TODO: Need to change to actual values, not the id
 			$(".problem-solution-subtopic:last").val(solution_step.subtopic);
 			$(".problem-solution-picture:last").val(solution_step.picture);
@@ -77,6 +87,7 @@ $(function(){
 		submit.text("Update");
 		submit.removeClass();
 		submit.addClass("btn green update");
+		dropzone();
 		$("#problem-specific").show();
 	}
 	/* 
@@ -111,10 +122,13 @@ $(function(){
 		ajax('@routes.Problem.getPictures', {id: $("#problem-id").val()}, picrefreshCallback);
 	}
 	function picrefreshCallback(data){
-		var data = response[1];
-		var length = data.pictures.length;
-		for(i = 0; i < length; i += 1){
-			$(".picture-selection").append('<option value="'+data.pictures[i].id+'">'+data.pictures[i].name+'</option>');
+		var response = data[0];
+		if (typeof response != 'undefined'){
+			var length = response.pictures.length;
+			for(i = 0; i < length; i += 1){
+				console.log("adding a picture to the selection");
+				$(".picture-selection").append('<option value="'+response.pictures[i].id+'">'+response.pictures[i].name+'</option>');
+			}
 		}
 	}
 	/*
@@ -124,7 +138,7 @@ $(function(){
 		$("#my-dropzone").remove();
 		$("#dropzone-wrapper").append("<div class='' id='my-dropzone'></div>");
 		myDropzone = new Dropzone("#my-dropzone", {
-			url: '/problem/pictures/' + problem_id.val(),
+			url: '/problem/pictures/' + $("#problem-id").val(),
 			parallelUploads: true,
 			paramName: 'pic',
 			createImageThumbnails: true,
@@ -187,33 +201,38 @@ $(function(){
 		var content = $("#problem-contents");
 		var topic = $("#problem-topic");
 		var picture = $("#problem-picture");
-		// Array elements
-		var answer_contents = $(".problem-answer-contents");
-		var answer_pictures = $(".problem-answer-picture");
-		var answer_corrects = $(".problem-answer-correct");
 		var solution_contents = $(".problem-solution-contents");
 		var solution_pictures = $(".problem-solution-picture");
 		var solution_subtopics = $(".problem-solution-subtopic");
+		var answer_contents = $(".problem-answer-contents");
+		var answer_pictures = $(".problem-answer-picture");
+		var answer_corrects = $(".problem-answer-correct");
 
 		// First update the problem and receive notification
-		ajax("@routes.Problem.update", {id: pid, contents: content.val(), topic: topic.val()});
+		ajax("@routes.Problem.update", {id: pid, contents: content.val(), topic: topic.val()}, nothingCallback);
 
-		var length = answer_contents.length;
-		for(a = 0; a < length; a += 1){
-			var contents = answer_contents[a].val();
-			var picture = answer_pictures[a].val();
-			var correct = answer_corrects[a].val();
-			ajax("@routes.Problem.postAnswer", {contents: contents, picture: picture, correct: correct}, updateAnswerCallback);
+		if(typeof answer_contents !== 'undefined'){
+			var length = answer_contents.length;
+			for(a = 0; a < length; a += 1){
+				var id = answer_contents.eq(a).attr("answer_id"); // retrieve the answer id so that we do not produce duplicates
+				var contents = answer_contents.eq(a).val();
+				var picture = answer_pictures.eq(a).val();
+				var correct = answer_corrects.eq(a).val();
+				ajax("@routes.Problem.postAnswer", {id: id, contents: contents, picture: picture, pid: $("#problem-id").val(), correct: correct}, nothingCallback);
+			}
 		}
-
-		var length = answer_contents.length;
-		for(s = 0; s < length; s += 1){
-			var contents = solution_contents[s].val();
-			var picture = solution_pictures[s].val();
-			var subtopic = solution_subtopics[s].val();
-			ajax("@routes.Problem.postAnswer", {contents: contents, picture: picture, correct: correct}, updateSolutionStepCallback);
+		if(typeof solution_contents !== "undefined") {
+			var length = answer_contents.length;
+			for(s = 0; s < length; s += 1){
+				var id = solution_contents.eq(s).attr("solution_id");
+				var contents = solution_contents.eq(s).val();
+				var picture = solution_pictures.eq(s).val();
+				var subtopic = solution_subtopics.eq(s).val();
+				ajax("@routes.Problem.postStep", {id: id, contents: contents, picture: picture, pid: $("#problem-id").val(), correct: correct}, nothingCallback);
+			}
 		}
 	});
+
 	// TODO: Define these functions
 	function updateAnswerCallback(data){
 
@@ -269,8 +288,8 @@ $(function(){
 		newgroup.css("height", "100%");
 		$(".answer-section").append(newgroup);
 		newgroup.slideDown({duration: 1000});
-		numanswers += 1;
-		$('#add-answer-toggle').append("<span value='"+numanswers+"' class='page-toggle answers on'>"+numanswers+"</span>");
+		num_answers += 1;
+		$('#add-answer-toggle').append("<span value='"+num_answers+"' class='page-toggle answers on'>"+num_answers+"</span>");
 		picrefresh();
 	});
 	$(document).on('click', '.page-toggle.answers.off', function(){
