@@ -43,10 +43,10 @@ object Problem extends Controller {
 		}
 	}
 	/* Recursively find a unique filename with an integer prefix tag */
-	private def unique(filename: String, n: Int  = 0): String = {
+	private def unique(filename: String, n: Int  = 0): (Int, String) = {
 		val filepath = "public/images/" + n + "-" + filename
 		val f = new File(filepath)
-		if( !f.exists ) filepath
+		if( !f.exists ) (n, filepath)
 		else unique(filename, n + 1)
 	}
 
@@ -57,10 +57,10 @@ object Problem extends Controller {
 		implicit request => {
 			request.body.file("pic").map {
 				pic => {
-					val filepath = unique(pic.filename) // generate a unique filename for the picture
+					val (n, filepath) = unique(pic.filename) // generate a unique filename for the picture
 					val f = new File(filepath)
 					pic.ref.moveTo(f)
-					Picture.create(new Picture(0, pic.filename, filepath)) match {
+					Picture.create(new Picture(0, n + "-" + pic.filename, filepath)) match {
 						case Some(long) => {
 							models.problems.Problem.assign(id, long) match {
 								case Some(long) => Ok(Picture.toJson(new Picture(long, pic.filename, filepath)))
@@ -158,7 +158,7 @@ object Problem extends Controller {
 		tuple(
 			"id" -> default(of[Long], 0L),
 			"contents" -> default(text, ""),
-			"picture" -> default(of[Long], 0L),
+			"picture" -> default(text, ""),
 			"pid" -> default(of[Long], 0L),
 			"correct" -> default(of[Int], 1)))
 
