@@ -26,7 +26,7 @@ object Answer extends JNorm[Answer] {
 		"create table if not exists answers (id bigserial primary key, contents text, picture varchar, pid bigint, correct boolean);",
 		"create index answers_i on answers (pid);")
 
-	val parser = long("id") ~ str("contents") ~ str("picture") ~ long("pid") ~ bool("correct") map {
+	val parser = long("id") ~ str("contents") ~ long("pid") ~ bool("correct") ~ str("picture") map {
 		case id ~ contents ~ picture ~ pid ~ correct => Answer(id, contents, picture, pid, correct)
 	}
 
