@@ -27,7 +27,7 @@ object Answer extends JNorm[Answer] {
 		"create index answers_i on answers (pid);")
 
 	val parser = long("id") ~ str("contents") ~ long("pid") ~ bool("correct") ~ str("picture") map {
-		case id ~ contents ~ picture ~ pid ~ correct => Answer(id, contents, picture, pid, correct)
+		case id ~ contents ~ pid ~ correct ~ picture => Answer(id, contents, picture, pid, correct)
 	}
 
 	def toJson(a: Answer): JsObject = {

@@ -29,7 +29,7 @@ object Solution extends JNorm[Step] {
 		"create index solutions_i on solutions (pid, subtopic);")
 
 	val parser = long("id") ~ str("contents") ~ long("subtopic") ~ long("pid") ~ int("step_num") ~ str("picture") map {
-		case id ~ contents ~ subtopic ~ picture ~ pid ~ stepNum => Step(id, contents, subtopic, picture, pid, stepNum)
+		case id ~ contents ~ subtopic ~ pid ~ stepNum ~ picture => Step(id, contents, subtopic, picture, pid, stepNum)
 	}
 
 	def toJson(s: Step): JsObject = {
