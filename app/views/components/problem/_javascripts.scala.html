@@ -128,8 +128,8 @@ $(function(){
 			var length = response.pictures.length;
 			console.log("Number of pictures for refresh: " + length);
 			for(i = 0; i < length; i += 1){
-				$(".picture-selection").append('<option value="'+response.pictures[i].id+'">'+response.pictures[i].name+'</option>');
-				$("#pic-list").append("<li><button data='"+response.pictures[i].path+"' class='pic-delete' type='button'><i class='fa fa-trash-o fa-3x'></i></button>  " + response.pictures[i].name + "</li>");
+				$(".picture-selection").append('<option value="'+response.pictures[i].name+'">'+response.pictures[i].name+'</option>');
+				$("#pic-list").append("<li><button data='"+response.pictures[i].id+"' class='pic-delete' type='button'><i class='fa fa-trash-o fa-3x'></i></button>  " + response.pictures[i].name + "</li>");
 			}
 		}
 	}
