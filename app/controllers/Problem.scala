@@ -16,7 +16,26 @@ import views.html.components.problem._
 
 import play.api.libs.json._
 
+object Amazon {
+	println("Fuck a Goose")
+	import jp.co.bizreach.s3scala.S3
+	import awscala.s3._
+	import awscala.Region
+
+	implicit val region = Region.NorthernCalifornia
+	implicit val s3 = S3(accessKeyId = "AKIAJVF4OIVK3GG4Y6VQ", secretAccessKey = "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")
+
+	var bucket: Bucket = null
+	val buckets: Seq[Bucket] = s3.buckets
+	
+	buckets foreach { x => if(x.name == "study-bug") bucket = x }
+
+}
+
+
 object Problem extends Controller {
+
+	import Amazon.{region, s3}
 
 	import models.problems.Problem
 	import models.Picture
@@ -42,13 +61,7 @@ object Problem extends Controller {
 			}
 		}
 	}
-	/* Recursively find a unique filename with an integer prefix tag */
-	private def unique(filename: String, n: Int  = 0): (Int, String) = {
-		val filepath = "public/images/" + n + "-" + filename
-		val f = new File(filepath)
-		if( !f.exists ) (n, filepath)
-		else unique(filename, n + 1)
-	}
+
 
 	/* POST - upload problem related pictures 
 		We use a path variable to accomidate the dropbox module functionality
@@ -57,13 +70,16 @@ object Problem extends Controller {
 		implicit request => {
 			request.body.file("pic").map {
 				pic => {
-					val (n, filepath) = unique(pic.filename) // generate a unique filename for the picture
-					val f = new File(filepath)
+					val f = new java.io.File("temp")
 					pic.ref.moveTo(f)
-					Picture.create(new Picture(0, n + "-" + pic.filename, filepath)) match {
+					Amazon.bucket.put(pic.filename, f)
+					val s3obj: Option[awscala.s3.S3Object] = Amazon.bucket.getObject(pic.filename)
+					var path = ""
+					s3obj foreach { x => path = x.publicUrl.toString}
+					Picture.create(new Picture(0, path, path)) match {
 						case Some(long) => {
 							models.problems.Problem.assign(id, long) match {
-								case Some(long) => Ok(Picture.toJson(new Picture(long, pic.filename, filepath)))
+								case Some(long) => Ok(Picture.toJson(new Picture(long, path, path)))
 								case _ => BadRequest("Error while assigning picture to problem")
 							}
 						}
@@ -86,9 +102,9 @@ object Problem extends Controller {
 			val (pid, pic) = pictureDeleteForm.bindFromRequest.get
 			Picture.get(pic) match {
 				case Some(Picture(id, name, path)) => {
-					new File(path).delete()
 					models.problems.Problem.unassign(pid, pic)
 					Picture.delete(id)
+					Amazon.bucket.delete(name)
 					Ok("Sucessfully deleted picture name: " + name)
 				}
 				case _ => BadRequest("Error while retrieving filepath from picture id")
@@ -138,7 +154,6 @@ object Problem extends Controller {
 		implicit request => {
 			val (id, contents, topic) = pForm.bindFromRequest.get
 			val pics = models.problems.Problem.getAllPictures(id) // list of Pictures
-			println("This is how many pictures were returned from get pictures", pics.length)
 			val jsonArray = Json.obj("pictures" -> pics.map(x => models.Picture.toJson(x)))
 			Ok(jsonArray)
 		}

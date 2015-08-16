@@ -11,10 +11,10 @@ libraryDependencies ++= Seq(
   "com.typesafe.play" %% "anorm" % "2.4.0",
   cache,
   ws,
-  "postgresql" 			% 	"postgresql" 	% 	"9.1-901.jdbc4",
+  "postgresql" 			    % 	"postgresql" 	% 	"9.1-901.jdbc4",
   "com.github.t3hnar" 	%% 	"scala-bcrypt" 	% 	"2.4",
-  "org.scalatest"		%%	"scalatest"		%	"2.2.4"	%	"test",
-  "com.github.seratch" %% "awscala" % "0.5.+"
+  "org.scalatest"		    %%	"scalatest"		%	"2.2.4"	%	"test",
+  "jp.co.bizreach"      %% "aws-s3-scala" % "0.0.5"
 )
 
 includeFilter in (Assets, LessKeys.less) := "*.less"
