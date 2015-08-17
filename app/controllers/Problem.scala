@@ -23,7 +23,7 @@ object Amazon {
 	import awscala.Region
 
 	implicit val region = Region.NorthernCalifornia
-	implicit val s3 = S3(accessKeyId = "AKIAJVF4OIVK3GG4Y6VQ", secretAccessKey = "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")
+	implicit val s3 = S3(accessKeyId = "", secretAccessKey = "")
 
 	var bucket: Bucket = null
 	val buckets: Seq[Bucket] = s3.buckets
