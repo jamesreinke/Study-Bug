@@ -17,18 +17,17 @@ import views.html.components.problem._
 import play.api.libs.json._
 
 object Amazon {
-	println("Fuck a Goose")
 	import jp.co.bizreach.s3scala.S3
 	import awscala.s3._
 	import awscala.Region
 
 	implicit val region = Region.NorthernCalifornia
-	implicit val s3 = S3(accessKeyId = "AKIAJYKYA2XNDSYZH54A", secretAccessKey = "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")
+	implicit val s3 = S3(accessKeyId = ${?AWS_ACCESS_KEY}, secretAccessKey = ${?AWS_SECRET_ACCESS_KEY})
 
 	var bucket: Bucket = null
 	val buckets: Seq[Bucket] = s3.buckets
 	
-	buckets foreach { x => if(x.name == "study-bug") bucket = x }
+	buckets foreach { x => if(x.name == ${?S3_BUCKET_NAME}) bucket = x }
 
 }
 
