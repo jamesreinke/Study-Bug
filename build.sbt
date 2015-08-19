@@ -1,4 +1,4 @@
-name := """studybug"""
+name := """study-bug"""
 
 version := "0.0.1"
 
