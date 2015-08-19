@@ -17,6 +17,7 @@ import views.html.components.problem._
 import play.api.libs.json._
 
 object Amazon {
+
 	import jp.co.bizreach.s3scala.S3
 	import awscala.s3._
 	import awscala.Region
@@ -69,7 +70,8 @@ object Problem extends Controller {
 		implicit request => {
 			request.body.file("pic").map {
 				pic => {
-					val f = new java.io.File("temp")
+					val r = scala.util.Random
+					val f = new java.io.File(r.nextInt.toString)
 					pic.ref.moveTo(f)
 					Amazon.bucket.put(pic.filename, f)
 					val s3obj: Option[awscala.s3.S3Object] = Amazon.bucket.getObject(pic.filename)
