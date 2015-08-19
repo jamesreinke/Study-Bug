@@ -1,1 +1,1 @@
-web: target/universal/stage/bin/study-bug -Dhttp.port=$PORT -Ddb.default.driver=org.postgresql.Driver -Ddb.default.url=$DATABASE_URL -Dapplication.secret=":EwAICF87qEW3S37ZHNOzE?iygm2706UkaMpi2D3<8Rf2roW??8]Lc;=zoyywjl9" ${JAVA_OPTS} -Dconfig.resource=application.conf
+web: target/universal/stage/bin/studybug -Dhttp.port=$PORT -Ddb.default.driver=org.postgresql.Driver -Ddb.default.url=$DATABASE_URL -Dapplication.secret=":EwAICF87qEW3S37ZHNOzE?iygm2706UkaMpi2D3<8Rf2roW??8]Lc;=zoyywjl9" ${JAVA_OPTS}

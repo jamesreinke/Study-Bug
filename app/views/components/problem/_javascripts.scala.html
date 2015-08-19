@@ -128,7 +128,7 @@ $(function(){
 			var length = response.pictures.length;
 			for(i = 0; i < length; i += 1){
 				$(".picture-selection").append('<option value="nothing">No Picture</option>');
-				$(".picture-selection").append('<option value="'+response.pictures[i].name+'">'+response.pictures[i].name+'</option>');
+				$(".picture-selection").append('<option value="'+response.pictures[i].path+'">'+response.pictures[i].name+'</option>');
 				$("#pic-list").append("<li><button data='"+response.pictures[i].id+"' class='pic-delete' type='button'><i class='fa fa-trash-o fa-3x'></i></button>  " + response.pictures[i].name + "</li>");
 			}
 		}

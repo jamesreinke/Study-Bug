@@ -23,12 +23,16 @@ object Amazon {
 	import awscala.Region
 
 	implicit val region = Region.NorthernCalifornia
-	implicit val s3 = S3(accessKeyId = ${AWS_ACCESS_KEY}, secretAccessKey = ${AWS_SECRET_ACCESS_KEY})
+	var key = ""
+
+	implicit val s3 = S3(
+		accessKeyId = scala.util.Properties.envOrElse("AWS_ACCESS_KEY", ""), 
+		secretAccessKey = scala.util.Properties.envOrElse("AWS_SECRET_ACCESS_KEY", ""))
 
 	var bucket: Bucket = null
 	val buckets: Seq[Bucket] = s3.buckets
 	
-	buckets foreach { x => if(x.name == ${S3_BUCKET_NAME}) bucket = x }
+	buckets foreach { x => if(x.name == scala.util.Properties.envOrElse("S3_BUCKET_NAME", "")) bucket = x }
 
 }
 
@@ -74,13 +78,14 @@ object Problem extends Controller {
 					val f = new java.io.File(r.nextInt.toString)
 					pic.ref.moveTo(f)
 					Amazon.bucket.put(pic.filename, f)
+					f.delete
 					val s3obj: Option[awscala.s3.S3Object] = Amazon.bucket.getObject(pic.filename)
 					var path = ""
 					s3obj foreach { x => path = x.publicUrl.toString}
-					Picture.create(new Picture(0, path, path)) match {
+					Picture.create(new Picture(0, pic.filename, path)) match {
 						case Some(long) => {
 							models.problems.Problem.assign(id, long) match {
-								case Some(long) => Ok(Picture.toJson(new Picture(long, path, path)))
+								case Some(long) => Ok(Picture.toJson(new Picture(long, pic.filename, path)))
 								case _ => BadRequest("Error while assigning picture to problem")
 							}
 						}
