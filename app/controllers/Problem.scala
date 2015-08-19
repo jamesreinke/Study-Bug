@@ -23,12 +23,12 @@ object Amazon {
 	import awscala.Region
 
 	implicit val region = Region.NorthernCalifornia
-	implicit val s3 = S3(accessKeyId = ${?AWS_ACCESS_KEY}, secretAccessKey = ${?AWS_SECRET_ACCESS_KEY})
+	implicit val s3 = S3(accessKeyId = ${AWS_ACCESS_KEY}, secretAccessKey = ${AWS_SECRET_ACCESS_KEY})
 
 	var bucket: Bucket = null
 	val buckets: Seq[Bucket] = s3.buckets
 	
-	buckets foreach { x => if(x.name == ${?S3_BUCKET_NAME}) bucket = x }
+	buckets foreach { x => if(x.name == ${S3_BUCKET_NAME}) bucket = x }
 
 }
 
