@@ -45,7 +45,7 @@ $(function(){
 	function loadProblemCallback(data){
 		$("#problem-id").val(data[0].id);
 		$("#problem-contents").val(data[0].contents);
-		$("#problem.topic").val(data[0].topic);
+		$("#problem-topic").val(data[0].topic);
 		picrefresh();
 		$("#form-title").text("Problem ID: " + $("#problem-id").val());
 
@@ -119,14 +119,13 @@ $(function(){
 	*/
 	function picrefresh(){
 		$(".picture-selection").empty();
-		$('#pic-list').empty();
+		$("#pic-list").empty();
 		ajax('@routes.Problem.getPictures', {id: $("#problem-id").val()}, picrefreshCallback);
 	}
 	function picrefreshCallback(data){
 		var response = data;
 		if (typeof response !== 'undefined'){
 			var length = response.pictures.length;
-			console.log("Number of pictures for refresh: " + length);
 			for(i = 0; i < length; i += 1){
 				$(".picture-selection").append('<option value="nothing">No Picture</option>');
 				$(".picture-selection").append('<option value="'+response.pictures[i].name+'">'+response.pictures[i].name+'</option>');
@@ -355,16 +354,19 @@ $(function(){
 		var item = $(this);
 		var picid = $(this).attr("data");
 		var probid = $('#problem-id').val();
-		ajax('@routes.Problem.picDelete', {pid: probid, pic: picid}, callback);
+		ajax('@routes.Problem.picDelete', {pid: probid, pic: picid}, picrefreshcallback);
 		item.parent().remove(); // remove the picture from the list
-		picrefresh();
 	});
 
 	/*
 		Do nothing callback
 	*/
 	function callback(data){
-
+		picrefresh();
 	}	
+
+	function picrefreshcallback(data){
+		picrefresh();
+	}
 });
 </script>
