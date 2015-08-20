@@ -13,7 +13,8 @@ case class Answer(
 	contents: String,
 	picture: String,
 	pid: Long,
-	correct: Boolean
+	correct: Boolean,
+	closeness: Int
 	)
 
 object Answer extends JNorm[Answer] {
@@ -23,11 +24,11 @@ object Answer extends JNorm[Answer] {
 	val aTable = "answers_a"
 
 	val statements = List(
-		"create table if not exists answers (id bigserial primary key, contents text, picture varchar, pid bigint, correct boolean);",
+		"create table if not exists answers (id bigserial primary key, contents text, picture varchar, pid bigint, correct boolean, closeness int);",
 		"create index answers_i on answers (pid);")
 
-	val parser = long("id") ~ str("contents") ~ long("pid") ~ bool("correct") ~ str("picture") map {
-		case id ~ contents ~ pid ~ correct ~ picture => Answer(id, contents, picture, pid, correct)
+	val parser = long("id") ~ str("contents") ~ long("pid") ~ bool("correct") ~ str("picture") ~ int("closeness") map {
+		case id ~ contents ~ pid ~ correct ~ picture ~ closeness => Answer(id, contents, picture, pid, correct, closeness)
 	}
 
 	def toJson(a: Answer): JsObject = {
@@ -36,7 +37,8 @@ object Answer extends JNorm[Answer] {
 			"contents" -> a.contents,
 			"picture" -> a.picture,
 			"pid" -> a.pid,
-			"correct" -> a.correct)
+			"correct" -> a.correct,
+			"closeness" -> a.closeness)
 	}
 
 	def create(a: Answer): Option[Long] = {
@@ -45,10 +47,10 @@ object Answer extends JNorm[Answer] {
 				SQL(
 					"""
 					insert into answers
-						(contents, picture, pid, correct)
+						(contents, picture, pid, correct, closeness)
 					values
-						({contents}, {picture}, {pid}, {correct})
-					""").on("contents" -> a.contents, "picture" -> a.picture, "pid" -> a.pid, "correct" -> a.correct).executeInsert()
+						({contents}, {picture}, {pid}, {correct}, {closeness})
+					""").on("contents" -> a.contents, "picture" -> a.picture, "pid" -> a.pid, "correct" -> a.correct, "closeness" -> a.closeness).executeInsert()
 			}
 		}
 	}
@@ -61,10 +63,10 @@ object Answer extends JNorm[Answer] {
 					update 
 						answers
 					set
-						contents = {contents}, picture = {picture}, pid = {pid}, correct = {correct}
+						contents = {contents}, picture = {picture}, pid = {pid}, correct = {correct}, closeness = {closeness}
 					where
 						id = {id}
-					""").on("id" -> a.id, "contents" -> a.contents, "picture" -> a.picture, "pid" -> a.pid, "correct" -> a.correct).executeUpdate()
+					""").on("id" -> a.id, "contents" -> a.contents, "picture" -> a.picture, "pid" -> a.pid, "correct" -> a.correct, "closeness" -> a.closeness).executeUpdate()
 			}
 		}
 	}

@@ -52,10 +52,20 @@
 								<div class="col-md-6">
 									<label class="control-label col-md-3">Problem Picture</label>
 									<div class="form-group col-md-9">
-										<select id="problem-picture" name="picture-select" class="answer picture-selection select2me select2_category form-control" data-placeholder="No Picture">
+										<select id="problem-picture" name="picture-select" class="answer picture-selection select2me select2_category form-control" data-placeholder="No Picture" multiple>
 											<option value="0" selected="selected">No Picture</option>
 										</select>
 									</div>
+								</div>
+								<label class="control-label col-md-2">Difficulty</label>
+								<div class="col-md-4">
+									<select id="problem-difficulty" class="problem-difficulty selection select2me select2_category form-control" data-placeholder="1" value="1">
+										<option value="1" selected="selected">1</option>
+										<option value="2">2</option>
+										<option value="3">3</option>
+										<option value="4">4</option>
+										<option value="5">5</option>
+									</select>
 								</div>
 								<div class="row"></div>
 								<h3 class="form-section">Answers</h3>
@@ -69,7 +79,7 @@
 												<div class="col-md-6">
 													<label class="control-label col-md-3">Contents</label>
 													<div class="col-md-6">
-														<textarea type="text" value="" class="problem-answer-contents form-control" answer_id="0" placeholder=""></textarea>
+														<textarea type="text" value="" class="problem-answer-contents form-control"></textarea>
 													</div>
 													<div class="col-md-3">
 														<div class="checkbox">
@@ -78,10 +88,25 @@
 													</div>
 												</div>
 												<div class="col-md-6">
-													<label class="control-label col-md-3">Picture</label>
-													<div class="col-md-6">
+													<label class="control-label col-md-2">Picture</label>
+													<div class="col-md-4">
 														<select name="picture-select" class="answer problem-answer-picture picture-selection select2me select2_category form-control" data-placeholder="No Picture" value="">
 															<option value="0" selected="selected">No Picture</option>
+														</select>
+													</div>
+													<label class="control-label col-md-2">Closeness</label>
+													<div class="col-md-4">
+														<select name="closeness" class="problem-answer-closeness selection select2me select2_category form-control" data-placeholder="0" value="0">
+															<option value="0" selected="selected">0</option>
+															<option value="10">10</option>
+															<option value="20">20</option>
+															<option value="30">30</option>
+															<option value="40">40</option>
+															<option value="50">50</option>
+															<option value="60">60</option>
+															<option value="70">70</option>
+															<option value="80">80</option>
+															<option value="90">90</option>
 														</select>
 													</div>
 												</div>

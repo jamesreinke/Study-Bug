@@ -12,7 +12,8 @@ import play.api.libs.json._
 case class Problem(
 	id: Long,
 	contents: String,
-	topic: String
+	topic: String,
+	difficulty: Int
 	)
 
 
@@ -24,18 +25,68 @@ object Problem extends JNorm[Problem] {
 		"create table if not exists problems (id bigserial primary key, contents text, topic text);",
 		"create index problems_i on problems using gin(to_tsvector('english', contents));",
 		"create table if not exists problems_p (id bigserial primary key, pid bigint, pic_id bigint);",
-		"create index problems_a_i on problems_p (pid, pic_id);")
+		"create index problems_a_i on problems_p (pid, pic_id);",
+		"create table if not exists problems_cp (id bigserial primary key, pid bigint, pic_id bigint);",
+		"create index problems_cpi on problems_cp (pid, pic_id);")
 
-	val parser = long("id") ~ str("contents") ~ str("topic") map {
-		case id ~ contents ~ topic => Problem(id, contents, topic)
+	val parser = long("id") ~ str("contents") ~ str("topic") ~ int("difficulty") map {
+		case id ~ contents ~ topic ~ difficulty => Problem(id, contents, topic, difficulty)
 	}
 
 	def toJson(p: Problem): JsObject = {
 		Json.obj(
 			"id" -> p.id,
 			"contents" -> p.contents,
-			"topic" -> p.topic
+			"topic" -> p.topic,
+			"difficulty" -> p.difficulty
 			)
+	}
+
+	def assignContentPicture(pid: Long, picId: Long): Option[Long] = {
+		DB.withConnection {
+			implicit session => {
+				SQL(
+					"""
+					insert into problems_cp
+						(pid, pic_id)
+					values
+						({pid}, {picId})
+					""").on("pid" -> pid, "picId" -> picId).executeInsert()
+			}
+		}
+	}
+
+	/* Retrieves all content pictures */
+	def getContentPictures(pid: Long): List[models.Picture] = {
+		DB.withConnection {
+			implicit session => {
+				SQL(
+					"""
+					select
+						p.id, p.name, p.path
+					from
+						pictures p, problems_cp cp
+					where
+						p.id = cp.pic_id
+					and
+						cp.pid = {pid}
+					""").on("pid" -> pid).as(models.Picture.parser*)
+			}
+		}
+	}
+
+	def clearContentPictures(pid: Long): Int = {
+		DB.withConnection {
+			implicit session => {
+				SQL(
+					"""
+					delete from
+						problems_cp cp
+					where
+						cp.id = {pid}
+					""").on("pid" -> pid).executeUpdate()
+			}
+		}
 	}
 
 	def create(p: Problem): Option[Long] = {
@@ -44,10 +95,10 @@ object Problem extends JNorm[Problem] {
 				SQL(
 					"""
 					insert into problems
-						(contents, topic)
+						(contents, topic, difficulty)
 					values
-						({contents}, {topic})
-					""").on("contents" -> p.contents, "topic" -> p.topic).executeInsert()
+						({contents}, {topic}, {difficulty})
+					""").on("contents" -> p.contents, "topic" -> p.topic, "difficulty" -> p.difficulty).executeInsert()
 			}
 		}
 	}
@@ -60,10 +111,10 @@ object Problem extends JNorm[Problem] {
 					update 
 						problems
 					set
-						contents = {contents}, topic = {topic}
+						contents = {contents}, topic = {topic}, difficulty = {difficulty}
 					where
 						id = {pid}
-					""").on("contents" -> p.contents, "topic" -> p.topic, "pid" -> p.id).executeUpdate()
+					""").on("contents" -> p.contents, "topic" -> p.topic, "pid" -> p.id, "difficulty" -> p.difficulty).executeUpdate()
 			}
 		}
 	}
@@ -115,7 +166,6 @@ object Problem extends JNorm[Problem] {
 	}
 	/* Retrieves all pictures related to the problem */
 	def getAllPictures(pid: Long): List[models.Picture] = {
-		println("retrieving all pictures")
 		DB.withConnection {
 			implicit session => {
 				SQL(

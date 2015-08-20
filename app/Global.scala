@@ -6,17 +6,16 @@ import users._
 class Global extends GlobalSettings {
 
 	/* Initialize our databases */
-	override def onStart(app: Application) {
+	override def onStart(app: Application){
 			/*
-			println("initializing databases")
-			Topic.init
-			Subtopic.init
-			Answer.init
-			Authentication.init
-			Picture.init
-			Problem.init
-			Solution.init
-			ProblemSubmission.init
+				Topic.init
+				Subtopic.init
+				Answer.init
+				Authentication.init
+				Picture.init
+				Problem.init
+				Solution.init
+				ProblemSubmission.init
 			*/
 	}
 }

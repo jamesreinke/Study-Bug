@@ -29,7 +29,7 @@ $(function(){
 			url: _url,
 			data: _json_data,
 			success: function(_data){
-				callback(_data)
+				callback(_data);
 			},
 			complete: function(data){
 				eLoad();
@@ -46,6 +46,7 @@ $(function(){
 		$("#problem-id").val(data[0].id);
 		$("#problem-contents").val(data[0].contents);
 		$("#problem-topic").val(data[0].topic);
+		$("#problem-difficulty").val(data[0].difficulty);
 		picrefresh();
 		$("#form-title").text("Problem ID: " + $("#problem-id").val());
 
@@ -56,13 +57,17 @@ $(function(){
 			var answer = answers[a];
 			if(a != 0) $(".add-answer").trigger("click");
 			var answer_id = answer.id;
-			var contents = $(".problem-answer-contents:last")
+			var contents = $(".problem-answer-contents:last");
 			contents.val(answer.contents);
+			var closeness = $('.problem-answer-closeness:last');
+			closeness.val(answer.closeness);
 			// set the contents box to the id of the answer so that when we save, we do not save duplicates
 			contents.attr("answer-id", answer_id);  
 			var correct = $(".problem-answer-correct:last");
 			correct.removeClass("btn-danger btn-success");
 			var correctVal = answer.correct;
+			if(correctVal == "false") correctVal = 0
+			else correctVal = 1
 			if(correctVal == 1) correct.addClass("btn-success");
 			else correct.addClass("btn-danger");
 			correct.val(correctVal);
@@ -78,7 +83,7 @@ $(function(){
 			if(s != 0) $(".add-solution-step").trigger("click");
 			var contents = $(".problem-solution-contents:last");
 			contents.val(solution_step.contents);
-			contents.attr("solution_id", sid)
+			contents.attr("solution_id", sid);
 			// TODO: Need to change to actual values, not the id
 			$(".problem-solution-subtopic:last").val(solution_step.subtopic);
 			$(".problem-solution-picture:last").val(solution_step.picture);
@@ -123,12 +128,13 @@ $(function(){
 		ajax('@routes.Problem.getPictures', {id: $("#problem-id").val()}, picrefreshCallback);
 	}
 	function picrefreshCallback(data){
+		$(".picture-selection").append("<option>None</option>");
+		$(".picture-selection:first").empty();
 		var response = data;
 		if (typeof response !== 'undefined'){
 			var length = response.pictures.length;
 			for(i = 0; i < length; i += 1){
-				$(".picture-selection").append('<option value="nothing">No Picture</option>');
-				$(".picture-selection").append('<option value="'+response.pictures[i].path+'">'+response.pictures[i].name+'</option>');
+				$(".picture-selection").append('<option dbid="'+response.pictures[i].id+'" value="'+response.pictures[i].path+'">'+response.pictures[i].name+'</option>');
 				$("#pic-list").append("<li><button data='"+response.pictures[i].id+"' class='pic-delete' type='button'><i class='fa fa-trash-o fa-3x'></i></button>  " + response.pictures[i].name + "</li>");
 			}
 		}
@@ -206,25 +212,35 @@ $(function(){
 		var pid = $("#problem-id").val();
 		var content = $("#problem-contents");
 		var topic = $("#problem-topic");
-		var picture = $("#problem-picture");
 		var solution_contents = $(".problem-solution-contents");
 		var solution_pictures = $(".problem-solution-picture");
 		var solution_subtopics = $(".problem-solution-subtopic");
 		var answer_contents = $(".problem-answer-contents");
 		var answer_pictures = $(".problem-answer-picture");
 		var answer_corrects = $(".problem-answer-correct");
+		var answer_closenesses = $(".problem-answer-closeness");
 
 		// First update the problem and receive notification
 		ajax("@routes.Problem.update", {id: pid, contents: content.val(), topic: topic.val()}, nothingCallback);
 
+
+		// clear all prior assignments
+		ajax("@routes.Problem.clearContentPictures", {pid: pid}, nothingCallback);
+
+		// Assign content pictures
+		$("#problem-picture > option:selected").each(function(){
+			ajax("@routes.Problem.addContentPicture", {pid: pid, picture_id: $(this).attr("dbid")}, nothingCallback);
+		});
+
 		if(typeof answer_contents !== 'undefined'){
 			var length = answer_contents.length;
 			for(a = 0; a < length; a += 1){
-				var id = answer_contents.eq(a).attr("answer_id"); // retrieve the answer id so that we do not produce duplicates
+				var id = answer_contents.eq(a).attr("answer-id"); // retrieve the answer id so that we do not produce duplicates
 				var contents = answer_contents.eq(a).val();
 				var picture = answer_pictures.eq(a).val();
 				var correct = answer_corrects.eq(a).val();
-				ajax("@routes.Problem.postAnswer", {id: id, contents: contents, picture: picture, pid: $("#problem-id").val(), correct: correct}, nothingCallback);
+				var closeness = answer_closenesses.eq(a).val();
+				ajax("@routes.Problem.postAnswer", {id: id, contents: contents, picture: picture, pid: $("#problem-id").val(), correct: correct, closeness: closeness}, nothingCallback);
 			}
 		}
 		if(typeof solution_contents !== "undefined") {

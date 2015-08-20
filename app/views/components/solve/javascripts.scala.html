@@ -87,8 +87,8 @@
 			id.val(data[currentproblem].id);
 			contents.text(data[currentproblem].contents); // problem contents
 			// iterate over the problem's pictures
-			for(p = 0; p < data[currentproblem].pictures.length; p += 1){
-				pictures.append('<img src="'+data[currentproblem].pictures[p].path+'"></img>');
+			for(p = 0; p < data[currentproblem].contentpictures.length; p += 1){
+				pictures.append('<img src="'+data[currentproblem].contentpictures[p].path+'"></img>');
 			}
 			// iterate over the problem answers
 			for(a = 0; a < data[currentproblem].answers.length; a += 1){

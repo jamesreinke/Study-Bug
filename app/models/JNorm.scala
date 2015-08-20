@@ -78,6 +78,7 @@ abstract class JNorm [T]{
 
 	/* Initialize the database */
 	def init: Unit = {
+		println("Initializing table: " + table)
 		DB.withConnection {
 			implicit session => {
 				val orders = dropQueries(statements) ++ statements

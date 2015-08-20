@@ -43,6 +43,9 @@ POST 	/problem/bytopic 			controllers.Problem.problemsByTopic
 POST 	/problem/pictures/delete	controllers.Problem.picDelete
 POST 	/problem/pictures/get 		controllers.Problem.getPictures
 POST 	/problem/pictures/:pid	 	controllers.Problem.pictures(pid: Long)
+POST 	/problem/content/pictures/create 	controllers.Problem.addContentPicture
+POST 	/problem/content/pictures/get 		controllers.Problem.getContentPictures	
+POST 	/problem/content/pictures/clear 	controllers.Problem.clearContentPictures	
 
 POST 	/account/submission 		controllers.Account.submission
 

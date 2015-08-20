@@ -16,6 +16,8 @@ import views.html.components.problem._
 
 import play.api.libs.json._
 
+import Play.current
+
 object Amazon {
 
 	import jp.co.bizreach.s3scala.S3
@@ -26,13 +28,13 @@ object Amazon {
 	var key = ""
 
 	implicit val s3 = S3(
-		accessKeyId = scala.util.Properties.envOrElse("AWS_ACCESS_KEY", ""), 
-		secretAccessKey = scala.util.Properties.envOrElse("AWS_SECRET_ACCESS_KEY", ""))
+		accessKeyId = sys.env("AWS_ACCESS_KEY"), 
+		secretAccessKey = sys.env("AWS_SECRET_ACCESS_KEY"))
 
 	var bucket: Bucket = null
 	val buckets: Seq[Bucket] = s3.buckets
 	
-	buckets foreach { x => if(x.name == scala.util.Properties.envOrElse("S3_BUCKET_NAME", "")) bucket = x }
+	buckets foreach { x => if(x.name == sys.env("S3_BUCKET_NAME")) bucket = x }
 
 }
 
@@ -98,6 +100,40 @@ object Problem extends Controller {
 		}
 	}
 
+
+	/*
+		Content Pictures
+	*/
+	val iForm = Form(
+		tuple(
+			"pid" -> default(of[Long], 0L),
+			"picture_id" -> default(of[Long], 0L)))
+	def addContentPicture = Action {
+		implicit request => {
+			val (pid, picId) = iForm.bindFromRequest.get
+			models.problems.Problem.assignContentPicture(pid, picId) match {
+				case Some(long) => Ok("Success!")
+				case _ => BadRequest("Error while generating content picture for problem: " + pid)
+			}
+		}
+	}
+	def getContentPictures = Action {
+		implicit request => {
+			val (id, contents, topic, difficulty) = pForm.bindFromRequest.get
+			val pics = models.problems.Problem.getContentPictures(id) // list of Pictures
+			val jsonArray = Json.obj("pictures" -> pics.map(x => models.Picture.toJson(x)))
+			Ok(jsonArray)
+		}
+	}
+
+	def clearContentPictures = Action {
+		implicit request => {
+			val (pid, picId) = iForm.bindFromRequest.get
+			val num = models.problems.Problem.clearContentPictures(pid)
+			Ok("Deleted " + num + " contenet pictures for pid: " + pid)
+		}
+	}
+
 	val pictureDeleteForm = Form(
 		tuple(
 			"pid" -> default(of[Long], 0L),
@@ -122,11 +158,12 @@ object Problem extends Controller {
 		tuple(
 			"id" -> default(of[Long], 0L),
 			"contents" -> default(text, ""),
-			"topic" -> default(text, "")))
+			"topic" -> default(text, ""),
+			"difficulty" -> default(of[Int], 1)))
 
 	def delete = Action {
 		implicit request => {
-			val (id, contents, topic) = pForm.bindFromRequest.get
+			val (id, contents, topic, difficulty) = pForm.bindFromRequest.get
 			models.problems.Problem.delete(id) > 0 match {
 				case true => Ok("Deleted problem ID: " + id)
 				case false => BadRequest("Unable to delete from ID: " + id)
@@ -136,7 +173,7 @@ object Problem extends Controller {
 
 	def get = Action {
 		implicit request => {
-			val (id, contents, topic) = pForm.bindFromRequest.get
+			val (id, contents, topic, difficulty) = pForm.bindFromRequest.get
 			models.problems.Problem.get(id) match {
 				case Some(problem) => Ok(problemsToJson(List(problem))) // transform problem to a list and grab aux information to form the problem statement
 				case _ => BadRequest("Error retrieving problem ID: " + id)
@@ -146,10 +183,10 @@ object Problem extends Controller {
 
 	def create = Action {
 		implicit request => {
-			val (id, contents, topic) = pForm.bindFromRequest.get
-			models.problems.Problem.create(new Problem(id, contents, topic)) match {
+			val (id, contents, topic, difficulty) = pForm.bindFromRequest.get
+			models.problems.Problem.create(new Problem(id, contents, topic, difficulty)) match {
 				case Some(long) => {
-					Ok(models.problems.Problem.toJson(new Problem(long, contents, topic)))
+					Ok(models.problems.Problem.toJson(new Problem(long, contents, topic, difficulty)))
 				}
 				case _ => BadRequest("Error while inserting new problem into database")
 			}
@@ -158,7 +195,7 @@ object Problem extends Controller {
 
 	def getPictures = Action {
 		implicit request => {
-			val (id, contents, topic) = pForm.bindFromRequest.get
+			val (id, contents, topic, difficulty) = pForm.bindFromRequest.get
 			val pics = models.problems.Problem.getAllPictures(id) // list of Pictures
 			val jsonArray = Json.obj("pictures" -> pics.map(x => models.Picture.toJson(x)))
 			Ok(jsonArray)
@@ -168,8 +205,8 @@ object Problem extends Controller {
 	/* POST - Updates a subtopic */
 	def update = Action {
 		implicit request => {
-			val (id, contents, topic) = pForm.bindFromRequest.get
-			models.problems.Problem.update(new Problem(id, contents, topic)) match {
+			val (id, contents, topic, difficulty) = pForm.bindFromRequest.get
+			models.problems.Problem.update(new Problem(id, contents, topic, difficulty)) match {
 				case 1 => Ok("Success")
 				case _ => BadRequest("Could not update problem ID: " + id)
 			}
@@ -181,18 +218,21 @@ object Problem extends Controller {
 			"contents" -> default(text, ""),
 			"picture" -> default(text, ""),
 			"pid" -> default(of[Long], 0L),
-			"correct" -> default(of[Int], 1)))
+			"correct" -> default(of[Int], 1),
+			"closeness" -> default(of[Int], 0)))
 
 	/* POST - Creates/Updates an answer for a given problem identified by ID */
 	def postAnswer = Action {
 		implicit request => {
 			import models.problems.Answer
-			val (id, contents, picture, pid, correctVal) = aForm.bindFromRequest.get
+			val (id, contents, picture, pid, correctVal, closeness) = aForm.bindFromRequest.get
 			val correct = correctVal == 1
+			println(id, contents, picture, pid, correctVal, closeness)
+			println("adding asnwer with id: " + id)
 			id > 0 match {
 				// create new answer
 				case false => {
-					Answer.create(new Answer(id, contents, picture, pid, correct)) match {
+					Answer.create(new Answer(id, contents, picture, pid, correct, closeness)) match {
 						case Some(long) => {
 							Ok(long.toString)
 						}
@@ -201,7 +241,7 @@ object Problem extends Controller {
 				}
 				// edit an existing answer
 				case true => {
-					Answer.update(new Answer(id, contents, picture, pid, correct)) > 0 match {
+					Answer.update(new Answer(id, contents, picture, pid, correct, closeness)) > 0 match {
 						case false => BadRequest("Unable to update answer ID: " + id)
 						case true => Ok("Successfully updated answer ID: " + id)
 					}
@@ -260,14 +300,18 @@ object Problem extends Controller {
 				val answers = models.problems.Answer.getByProblemId(p.id) // returns a List[Answer]
 				val solution = models.problems.Solution.getByProblemId(p.id) // returns List[Step]
 				val pictures = models.problems.Problem.getAllPictures(p.id) // returns List[Picture]
+				val cPictures = models.problems.Problem.getContentPictures(p.id) // returns List[Picture]
 				val jsonAnswers = JsArray(answers.map(x => models.problems.Answer.toJson(x)))
 				val jsonSteps = JsArray(solution.map(x => models.problems.Solution.toJson(x)))
 				val jsonPictures = JsArray(pictures.map(x => models.Picture.toJson(x))) // we can instantiate implicit json conversions
+				val jsonContentPictures = JsArray(pictures.map(x => models.Picture.toJson(x)))
 				val json = Json.obj(
 					"id" -> p.id,
 					"contents" -> p.contents,
 					"topic" -> p.topic,
+					"difficulty" -> p.difficulty,
 					"pictures" -> jsonPictures,
+					"contentpictures" -> jsonContentPictures,
 					"answers" -> jsonAnswers,
 					"solution" -> jsonSteps)
 				problemList = problemList.+:(json)  // TODO: A better solution, but i can't believe this one works....
